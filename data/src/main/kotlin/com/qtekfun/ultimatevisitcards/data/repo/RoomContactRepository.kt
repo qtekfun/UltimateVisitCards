@@ -89,6 +89,19 @@ class RoomContactRepository @Inject constructor(
         updated.success()
     }
 
+    override suspend fun restore(contact: Contact): DomainResult<Contact> = db.writeResult {
+        if (dao.get(contact.id) != null) return@writeResult failure(DomainError.Conflict(DomainError.Field.NAME, contact.id))
+        dao.insert(contact.toEntity())
+        indexer.reindex(contact.id)
+        contact.success()
+    }
+
+    override suspend fun markExportedToPhone(id: String): DomainResult<Unit> = db.writeResult {
+        val current = dao.get(id) ?: return@writeResult failure(DomainError.NotFound(id))
+        dao.update(current.copy(exportedToPhoneAt = clock.nowMillis()))
+        Unit.success()
+    }
+
     override suspend fun delete(id: String): DomainResult<Unit> = db.writeResult {
         db.searchDao().delete(id)
         if (dao.delete(id) == 0) return@writeResult failure(DomainError.NotFound(id))
