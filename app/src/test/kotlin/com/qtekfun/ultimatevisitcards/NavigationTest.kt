@@ -2,6 +2,7 @@ package com.qtekfun.ultimatevisitcards
 
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -23,10 +24,25 @@ class NavigationTest {
 
     private fun string(id: Int) = compose.activity.getString(id)
 
+    /** The home screen loads from the database off the main thread: wait for its content. */
+    private fun waitForText(text: String) = compose.waitUntil(TIMEOUT) {
+        compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
+    }
+
     @Test
     fun startsOnCards() {
         compose.onNodeWithText(string(R.string.nav_cards)).assertIsSelected()
-        compose.onNodeWithText(string(R.string.cards_empty)).assertExists()
+        waitForText(string(R.string.cards_empty))
+    }
+
+    @Test
+    fun addCardOpensCaptureOverTheBottomBar() {
+        compose.onNodeWithText(string(R.string.cards_add), useUnmergedTree = true).performClick()
+        // Without the camera permission, capture asks for it first.
+        compose.onNodeWithText(string(R.string.capture_permission_title)).assertExists()
+        compose.onNodeWithText(string(R.string.nav_events)).assertDoesNotExist()
+        compose.onNodeWithText(string(R.string.capture_close)).performClick()
+        compose.onNodeWithText(string(R.string.nav_events)).assertExists()
     }
 
     @Test
@@ -41,7 +57,11 @@ class NavigationTest {
         sections.forEach { (label, content) ->
             compose.onNodeWithText(string(label)).performClick()
             compose.onNodeWithText(string(label)).assertIsSelected()
-            compose.onNodeWithText(string(content)).assertExists()
+            waitForText(string(content))
         }
+    }
+
+    private companion object {
+        const val TIMEOUT = 5_000L
     }
 }
