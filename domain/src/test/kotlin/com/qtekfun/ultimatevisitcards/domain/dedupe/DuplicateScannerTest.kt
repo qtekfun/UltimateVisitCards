@@ -55,7 +55,9 @@ class DuplicateScannerTest {
         val naive = buildSet {
             for (i in list.indices) {
                 for (j in i + 1 until list.size) {
-                    detector.bestReason(detector.normalise(list[i]), detector.normalise(list[j]))?.let { add(Triple(list[i].contact.id, list[j].contact.id, it)) }
+                    detector.bestReason(detector.normalise(list[i]), detector.normalise(list[j]))?.let {
+                        add(Triple(list[i].contact.id, list[j].contact.id, it))
+                    }
                 }
             }
         }
@@ -71,7 +73,14 @@ class DuplicateScannerTest {
     fun `5000 contacts in well under two seconds`() {
         val random = Random(42)
         val list = (0 until 5000).map { i ->
-            c("$i", "First${random.nextInt(800)}", "Last${random.nextInt(1500)}", "Company${random.nextInt(300)}", email = "p$i@example.com", phone = "+34 6${10_000_000 + i}")
+            c(
+                "$i",
+                "First${random.nextInt(800)}",
+                "Last${random.nextInt(1500)}",
+                "Company${random.nextInt(300)}",
+                email = "p$i@example.com",
+                phone = "+34 6${10_000_000 + i}"
+            )
         }
         val start = System.nanoTime()
         scanner.scan(list)

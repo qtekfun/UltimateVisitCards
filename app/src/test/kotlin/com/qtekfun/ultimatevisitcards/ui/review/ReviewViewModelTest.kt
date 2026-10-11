@@ -15,7 +15,6 @@ import com.qtekfun.ultimatevisitcards.data.repo.RoomSectorRepository
 import com.qtekfun.ultimatevisitcards.data.repo.RoomTransactionRunner
 import com.qtekfun.ultimatevisitcards.data.repo.SearchIndexer
 import com.qtekfun.ultimatevisitcards.data.storage.ImageStore
-import com.qtekfun.ultimatevisitcards.settings.UiPreferences
 import com.qtekfun.ultimatevisitcards.domain.dedupe.DuplicateDetector
 import com.qtekfun.ultimatevisitcards.domain.dedupe.MatchReason
 import com.qtekfun.ultimatevisitcards.domain.extract.CardField
@@ -33,6 +32,7 @@ import com.qtekfun.ultimatevisitcards.domain.usecase.AddCardToContactUseCase
 import com.qtekfun.ultimatevisitcards.domain.usecase.SaveReviewedCardUseCase
 import com.qtekfun.ultimatevisitcards.domain.util.Clock
 import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
+import com.qtekfun.ultimatevisitcards.settings.UiPreferences
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull

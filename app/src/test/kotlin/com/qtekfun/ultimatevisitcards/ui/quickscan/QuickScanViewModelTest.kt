@@ -23,9 +23,9 @@ import com.qtekfun.ultimatevisitcards.domain.ocr.OcrService
 import com.qtekfun.ultimatevisitcards.domain.repository.EventDraft
 import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
 import com.qtekfun.ultimatevisitcards.ocr.processing.CardImageProcessor
+import com.qtekfun.ultimatevisitcards.settings.UiPreferences
 import com.qtekfun.ultimatevisitcards.testing.AppTestData
 import com.qtekfun.ultimatevisitcards.testing.RecordingScheduler
-import com.qtekfun.ultimatevisitcards.settings.UiPreferences
 import com.qtekfun.ultimatevisitcards.ui.capture.CardCaptureSaver
 import com.qtekfun.ultimatevisitcards.work.OcrQueue
 import com.qtekfun.ultimatevisitcards.work.OcrWorker

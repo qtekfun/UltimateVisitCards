@@ -94,4 +94,21 @@ class MergeViewModelTest {
         assertNull(contacts.get(other.id))
         assertEquals(keep.id, holder.last.value?.keptBefore?.id)
     }
+
+    @Test
+    fun `coming from possible duplicates, the comparison opens straight away`() = runTest(dispatcher) {
+        val keep = contacts.create(ContactDraft("John", "Smith", jobTitle = "Manager")).value()
+        val other = contacts.create(ContactDraft("John", "Smith", jobTitle = "Director")).value()
+        val vm = MergeViewModel(
+            SavedStateHandle(mapOf(MergeViewModel.ARG_KEEP_ID to keep.id, MergeViewModel.ARG_OTHER_ID to other.id)),
+            contacts,
+            companies,
+            data.cards,
+            MergeContactsUseCase(contacts, companies, data.cards, RoomTransactionRunner(data.db), data.clock),
+            MergeUndoHolder()
+        )
+        advanceUntilIdle()
+        assertEquals(other.id, vm.state.value.other?.id)
+        assertEquals(listOf(MergeField.JOB_TITLE), assertNotNull(vm.state.value.plan).conflicts)
+    }
 }
