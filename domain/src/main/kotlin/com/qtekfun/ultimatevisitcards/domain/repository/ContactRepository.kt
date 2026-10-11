@@ -18,6 +18,9 @@ data class ContactDraft(
     val notes: String? = null
 )
 
+/** A contact with its company name, as needed to compare it with a new one (duplicates). */
+data class ContactWithCompany(val contact: Contact, val companyName: String?)
+
 interface ContactRepository {
     /** All contacts, most recent first. */
     fun observeAll(): Flow<List<Contact>>
@@ -45,6 +48,9 @@ interface ContactRepository {
     suspend fun addToEvent(contactId: String, eventId: String): DomainResult<Unit>
 
     suspend fun removeFromEvent(contactId: String, eventId: String): DomainResult<Unit>
+
+    /** Every contact with its company name, for the duplicate check on save. */
+    suspend fun allWithCompany(): List<ContactWithCompany>
 
     /** Rebuilds the whole search index (after a restore, or from Settings). */
     suspend fun rebuildSearchIndex()

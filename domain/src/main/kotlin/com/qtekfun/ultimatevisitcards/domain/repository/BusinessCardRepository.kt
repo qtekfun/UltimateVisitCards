@@ -49,6 +49,9 @@ interface BusinessCardRepository {
 
     suspend fun setPrimary(cardId: String): DomainResult<Unit>
 
+    /** Where the card was obtained; for a linked card the contact joins that event too. */
+    suspend fun setEvent(cardId: String, eventId: String?): DomainResult<Unit>
+
     /** Deletes a card. The only card of a contact cannot be deleted on its own (delete the contact instead). */
     suspend fun delete(id: String): DomainResult<Unit>
 }
