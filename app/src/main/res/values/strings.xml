@@ -206,11 +206,17 @@
   <string name="merge_undone">Merge undone</string>
   <string name="merge_existing">Saved contact</string>
   <string name="merge_this_card">This card</string>
-  <string name="cards_export_vcf">Export .vcf</string>
-  <string name="cards_export_file_name" translatable="false">ultimatevisitcards_contacts.vcf</string>
+  <string name="cards_export_file_name" translatable="false">ultimatevisitcards_contacts</string>
   <string name="cards_export_failed">The contacts could not be exported.</string>
   <plurals name="cards_exported">
     <item quantity="one">%1$d contact exported</item>
     <item quantity="other">%1$d contacts exported</item>
   </plurals>
+  <string name="cards_export">Export</string>
+  <string name="export_vcf">Contacts (.vcf)</string>
+  <string name="export_csv">Table (.csv)</string>
+  <string name="export_xlsx">Spreadsheet (.xlsx)</string>
+  <string name="export_col_sector">Sector</string>
+  <string name="export_col_event">Event</string>
+  <string name="export_col_date">Date</string>
 </resources>

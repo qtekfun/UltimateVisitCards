@@ -27,6 +27,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -71,8 +73,14 @@ class CardsActions(val onAddCard: () -> Unit = {}, val onQuickScan: () -> Unit =
 fun CardsScreen(actions: CardsActions, modifier: Modifier = Modifier, viewModel: CardsViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val exported by viewModel.exported.collectAsStateWithLifecycle()
-    val exportFile = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/x-vcard")) { uri -> uri?.let(viewModel::exportVcf) }
-    val vcfName = stringResource(R.string.cards_export_file_name)
+    // The picker needs its MIME type up front: one launcher per format.
+    val header = EXPORT_COLUMNS.map { stringResource(it) }
+    val baseName = stringResource(R.string.cards_export_file_name)
+    val launchers = ExportFormat.entries.associateWith { format ->
+        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(format.mimeType)) { uri ->
+            uri?.let { viewModel.export(format, it, header, ::formatDate) }
+        }
+    }
     exported?.let { result ->
         AlertDialog(
             onDismissRequest = viewModel::exportShown,
@@ -106,7 +114,7 @@ fun CardsContent(
     onApplyFilter: (ContactFilter) -> Unit = {},
     onClearFilters: () -> Unit = {},
     onView: (CardsView) -> Unit = {},
-    onExportVcf: () -> Unit = {},
+    onExport: (ExportFormat) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var filtersOpen by remember { mutableStateOf(false) }
@@ -124,7 +132,7 @@ fun CardsContent(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     item(span = { GridItemSpan(maxLineSpan) }) {
-                        Header(state, onSearch, onOpenFilters = { filtersOpen = true }, onApplyFilter, onClearFilters, onView, actions, onExportVcf)
+                        Header(state, onSearch, onOpenFilters = { filtersOpen = true }, onApplyFilter, onClearFilters, onView, actions, onExport)
                     }
                     if (state.items.isEmpty()) {
                         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -169,7 +177,7 @@ private fun Header(
     onClearFilters: () -> Unit,
     onView: (CardsView) -> Unit,
     actions: CardsActions,
-    onExportVcf: () -> Unit
+    onExport: (ExportFormat) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedTextField(
@@ -221,7 +229,7 @@ private fun Header(
                 modifier = Modifier.weight(1f)
             )
             // Exports exactly what is listed: everything, a search, an event, a company, a sector…
-            if (state.items.isNotEmpty()) TextButton(onClick = onExportVcf) { Text(stringResource(R.string.cards_export_vcf)) }
+            if (state.items.isNotEmpty()) ExportMenu(onExport)
             SingleChoiceSegmentedButtonRow {
                 listOf(CardsView.GRID to R.string.cards_view_grid, CardsView.LIST to R.string.cards_view_list).forEachIndexed { i, (view, label) ->
                     SegmentedButton(selected = state.view == view, onClick = { onView(view) }, shape = SegmentedButtonDefaults.itemShape(i, 2)) {
@@ -341,3 +349,41 @@ private fun displayName(item: com.qtekfun.ultimatevisitcards.domain.model.Contac
     "${item.contact.firstName} ${item.contact.lastName}".trim().ifEmpty { item.companyName ?: item.contact.email ?: stringResource(R.string.cards_unnamed) }
 
 private const val RECENT_EVENTS = 5
+
+/** The table columns of docs/05 §6, in order. */
+private val EXPORT_COLUMNS = listOf(
+    R.string.field_first_name,
+    R.string.field_last_name,
+    R.string.field_job_title,
+    R.string.field_company,
+    R.string.export_col_sector,
+    R.string.field_country,
+    R.string.field_phone,
+    R.string.field_mobile,
+    R.string.field_email,
+    R.string.field_website,
+    R.string.field_address,
+    R.string.export_col_event,
+    R.string.export_col_date,
+    R.string.field_notes
+)
+
+@Composable
+private fun ExportMenu(onExport: (ExportFormat) -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    Box {
+        TextButton(onClick = { open = true }) { Text(stringResource(R.string.cards_export)) }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            listOf(
+                ExportFormat.VCF to R.string.export_vcf,
+                ExportFormat.CSV to R.string.export_csv,
+                ExportFormat.XLSX to R.string.export_xlsx
+            ).forEach { (format, label) ->
+                DropdownMenuItem(text = { Text(stringResource(label)) }, onClick = {
+                    open = false
+                    onExport(format)
+                })
+            }
+        }
+    }
+}

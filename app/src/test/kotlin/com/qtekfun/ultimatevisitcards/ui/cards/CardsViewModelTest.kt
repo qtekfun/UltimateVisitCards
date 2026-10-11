@@ -2,6 +2,7 @@ package com.qtekfun.ultimatevisitcards.ui.cards
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.qtekfun.ultimatevisitcards.data.export.SpreadsheetExporter
 import com.qtekfun.ultimatevisitcards.data.export.VcfExporter
 import com.qtekfun.ultimatevisitcards.data.repo.RoomCompanyRepository
 import com.qtekfun.ultimatevisitcards.data.repo.RoomContactRepository
@@ -72,6 +73,7 @@ class CardsViewModelTest {
         data.store,
         UiPreferences(data.app),
         VcfExporter(data.db, dispatcher),
+        SpreadsheetExporter(data.db, dispatcher),
         Documents(data.app),
         dispatcher
     )
@@ -134,7 +136,7 @@ class CardsViewModelTest {
         vm.search("ruiz")
         advanceUntilIdle()
         val file = folder.newFile("out.vcf")
-        vm.exportVcf(android.net.Uri.fromFile(file))
+        vm.export(ExportFormat.VCF, android.net.Uri.fromFile(file), emptyList()) { "" }
         advanceUntilIdle()
         assertEquals(ExportResult.Done(1), vm.exported.value)
         val text = file.readText()
@@ -142,6 +144,21 @@ class CardsViewModelTest {
         assertTrue(text.contains("FN:Ana Ruiz"))
         vm.exportShown()
         assertEquals(null, vm.exported.value)
+    }
+
+    @Test
+    fun `the listed contacts are exported as a csv table with the given header`() = runTest(dispatcher) {
+        contacts.create(ContactDraft("Ana", "Ruiz", notes = "=risky"))
+        val vm = viewModel()
+        backgroundScope.launch { vm.state.collect {} }
+        advanceUntilIdle()
+        val file = folder.newFile("out.csv")
+        vm.export(ExportFormat.CSV, android.net.Uri.fromFile(file), (1..14).map { "C$it" }) { "day" }
+        advanceUntilIdle()
+        assertEquals(ExportResult.Done(1), vm.exported.value)
+        val lines = file.readText().split("\r\n")
+        assertTrue(lines[0].endsWith("C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14"))
+        assertTrue(lines[1].startsWith("Ana,Ruiz,") && lines[1].endsWith(",day,'=risky"))
     }
 
     @Test
