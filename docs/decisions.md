@@ -49,3 +49,14 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
 - **2026-10-11 · OCR lanzado al guardar la captura (modo normal).** Se encola en la cola normal de WorkManager (sin trabajo *expedited*, que exigiría servicio en primer plano y notificación). WorkManager lo ejecuta al momento si no hay otra tarjeta delante.
 - **2026-10-11 · Tesseract4Android desde JitPack, acotado.** Solo existe allí; el repositorio se limita al grupo `cz.adaptech.tesseract4android`. Los modelos *fast* se versionan en el repo (Apache-2.0, ~12 MB) con su commit y SHA-256, en lugar de descargarlos al compilar (builds reproducibles y sin red, también para F-Droid).
 - **2026-10-11 · Tamaño del APK pendiente.** Con ML Kit (play) y Tesseract + modelos (foss) los APK de debug con todas las ABI pasan de 80 MB. La reducción (ABIs, *splits*, AAB) es parte de la fase 10 («tamaño de APK por flavour»).
+
+## Fase 4
+
+- **2026-10-11 · Guardar en una transacción (`TransactionRunner`).** Empresa (enlazar o crear), contacto, evento de la tarjeta, enlace tarjeta→contacto y estado `REVIEWED` se escriben juntos; cualquier fallo lo deshace todo (las transacciones de cada repositorio se anidan). *Descartado*: escribir paso a paso (dejaría empresas o contactos huérfanos si falla el último paso).
+- **2026-10-11 · Empresa enlazada por nombre normalizado.** «Navaltech, S.L.» enlaza con «NAVALTECH». Si se elige un sector para una empresa existente, se le asigna (es la intención del usuario); una empresa nueva toma sector, país y web de la tarjeta.
+- **2026-10-11 · Duplicados en memoria.** Al guardar se cargan todos los contactos con su empresa y se aplican las reglas de `docs/06` en Kotlin (`DuplicateDetector`). Con miles de contactos es un recorrido de milisegundos y mantiene las reglas testeables sin SQL. Se medirá con 5 000 contactos en la fase 10.
+- **2026-10-11 · El aviso de duplicado no bloquea.** Se muestra antes de escribir nada; «Guardar como nuevo» guarda igualmente; cualquier cambio en el formulario vuelve a comprobar.
+- **2026-10-11 · El formulario no espera al OCR.** Se puede escribir mientras se lee la tarjeta; al terminar se rellenan solo los campos no tocados y se resaltan los dudosos (< 0,6). Si el OCR falla, formulario vacío con la foto y un aviso.
+- **2026-10-11 · Mínimo para guardar.** Nombre, apellidos, empresa, email, teléfono o móvil: al menos uno. Un contacto sin nada de eso no se podría encontrar ni usar.
+- **2026-10-11 · Sugerencias.** Empresa: las existentes que contienen lo escrito (plegado). País: nombres normalizados cuyo alias en cualquiera de los 5 idiomas empieza por lo escrito («Corea» → «South Korea»); se guarda el nombre normalizado en inglés, como pide `docs/02`.
+- **2026-10-11 · Coil solo para archivos locales.** `coil-compose` sin módulos de red: no arrastra OkHttp ni permisos.
