@@ -21,8 +21,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.qtekfun.ultimatevisitcards.ui.capture.CaptureScreen
+import com.qtekfun.ultimatevisitcards.ui.cards.CardsActions
 import com.qtekfun.ultimatevisitcards.ui.cards.CardsScreen
+import com.qtekfun.ultimatevisitcards.ui.cards.CardsViewModel
 import com.qtekfun.ultimatevisitcards.ui.companies.CompaniesScreen
+import com.qtekfun.ultimatevisitcards.ui.contact.ContactDetailScreen
+import com.qtekfun.ultimatevisitcards.ui.contact.ContactDetailViewModel
 import com.qtekfun.ultimatevisitcards.ui.events.EventsScreen
 import com.qtekfun.ultimatevisitcards.ui.queue.ReviewQueueScreen
 import com.qtekfun.ultimatevisitcards.ui.quickscan.QuickScanScreen
@@ -40,6 +44,15 @@ object Routes {
     const val REVIEW = "review/{${ReviewViewModel.ARG_CARD_ID}}?${ReviewViewModel.ARG_FROM_QUEUE}={${ReviewViewModel.ARG_FROM_QUEUE}}"
 
     fun review(cardId: String, fromQueue: Boolean = false) = "review/$cardId?${ReviewViewModel.ARG_FROM_QUEUE}=$fromQueue"
+
+    const val CONTACT = "contact/{${ContactDetailViewModel.ARG_CONTACT_ID}}"
+
+    fun contact(contactId: String) = "contact/$contactId"
+
+    /** The Cards tab with an optional starting search (global search from an event). */
+    const val CARDS_WITH_QUERY = "cards?${CardsViewModel.ARG_QUERY}={${CardsViewModel.ARG_QUERY}}"
+
+    fun cards(query: String) = "cards?${CardsViewModel.ARG_QUERY}=${android.net.Uri.encode(query)}"
 }
 
 /** Root scaffold: bottom navigation over the five top-level sections. */
@@ -56,15 +69,29 @@ fun UvcApp(navController: NavHostController = rememberNavController()) {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = TopLevelDestination.CARDS.route,
+            startDestination = Routes.CARDS_WITH_QUERY,
             modifier = Modifier.padding(padding)
         ) {
-            composable(TopLevelDestination.CARDS.route) {
-                CardsScreen(
-                    onAddCard = { navController.navigate(Routes.CAPTURE) },
-                    onQuickScan = { navController.navigate(Routes.QUICK_SCAN) },
-                    onPending = { navController.navigate(Routes.QUEUE) }
+            composable(
+                Routes.CARDS_WITH_QUERY,
+                arguments = listOf(
+                    navArgument(CardsViewModel.ARG_QUERY) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    }
                 )
+            ) {
+                CardsScreen(
+                    CardsActions(
+                        onAddCard = { navController.navigate(Routes.CAPTURE) },
+                        onQuickScan = { navController.navigate(Routes.QUICK_SCAN) },
+                        onPending = { navController.navigate(Routes.QUEUE) },
+                        onOpenContact = { navController.navigate(Routes.contact(it)) }
+                    )
+                )
+            }
+            composable(Routes.CONTACT, arguments = listOf(navArgument(ContactDetailViewModel.ARG_CONTACT_ID) { type = NavType.StringType })) {
+                ContactDetailScreen(onBack = { navController.popBackStack() }, onOpenCompany = { /* company detail wired with the companies screen */ })
             }
             composable(TopLevelDestination.EVENTS.route) { EventsScreen() }
             composable(TopLevelDestination.COMPANIES.route) { CompaniesScreen() }
@@ -133,4 +160,6 @@ private fun BottomBar(navController: NavHostController, currentDestination: NavD
     }
 }
 
-private fun NavDestination?.isOn(destination: TopLevelDestination): Boolean = this?.hierarchy?.any { it.route == destination.route } == true
+// Routes may carry optional arguments («cards?q={q}»): compare the path only.
+private fun NavDestination?.isOn(destination: TopLevelDestination): Boolean =
+    this?.hierarchy?.any { it.route?.substringBefore('?') == destination.route } == true
