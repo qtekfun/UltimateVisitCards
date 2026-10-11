@@ -68,6 +68,8 @@ android {
 
     androidResources {
         generateLocaleConfig = true
+        // Solo los idiomas de la app: descarta las traducciones que traen las librerías de AndroidX.
+        localeFilters += listOf("en", "es")
     }
 }
 
