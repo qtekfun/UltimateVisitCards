@@ -132,6 +132,58 @@ class ImageStore(private val filesRoot: File, private val cacheRoot: File, priva
         paths.filter { !file(it).isFile }
     }
 
+    // --- Restore staging ---------------------------------------------------------------------------------
+    // A restore writes its images into a staging folder inside the store first; they replace the live ones
+    // only after the database transaction committed, so a failed restore leaves no file behind.
+
+    /** A new, empty staging folder for one restore (same file system as the store, so moves are renames). */
+    suspend fun newStaging(): File = withContext(io) {
+        File(filesRoot, STAGING_PREFIX + java.util.UUID.randomUUID()).apply { if (!mkdirs()) throw IOException("Cannot create $this") }
+    }
+
+    /**
+     * Copies [input] into [staging] at the store path [relativePath] (`cards/<id>/front.jpg`…), atomically.
+     * Only card image paths are accepted, so a hostile archive cannot write anywhere else.
+     */
+    suspend fun stageImage(staging: File, relativePath: String, input: java.io.InputStream) = withContext(io) {
+        if (!IMAGE_PATH.matches(relativePath)) throw IOException("Not a card image path: $relativePath")
+        val target = File(staging, relativePath)
+        val dir = target.parentFile ?: throw IOException("No folder for $target")
+        if (!dir.isDirectory && !dir.mkdirs()) throw IOException("Cannot create $dir")
+        val temp = File.createTempFile(TEMP_PREFIX, ".tmp", dir)
+        try {
+            FileOutputStream(temp).use { out ->
+                input.copyTo(out)
+                out.flush()
+                out.fd.sync()
+            }
+            if (!temp.renameTo(target)) throw IOException("Cannot move $temp to $target")
+        } finally {
+            temp.delete()
+        }
+    }
+
+    /** Moves every staged image into place (replacing older versions, dropping their thumbnails). Returns how many. */
+    suspend fun commitStaging(staging: File): Int = withContext(io) {
+        var moved = 0
+        File(staging, CARDS).listFiles().orEmpty().forEach { cardDir ->
+            val cardId = checkId(cardDir.name)
+            val target = File(filesRoot, "$CARDS/$cardId").apply { mkdirs() }
+            cardDir.listFiles().orEmpty().filter { it.isFile && !it.name.startsWith(TEMP_PREFIX) }.forEach { image ->
+                if (!image.renameTo(File(target, image.name))) throw IOException("Cannot move $image")
+                moved++
+            }
+            CardSide.entries.forEach { thumbnailFile(cardId, it).delete() }
+        }
+        staging.deleteRecursively()
+        moved
+    }
+
+    /** Drops a staging folder (failed or cancelled restore). */
+    suspend fun discardStaging(staging: File) = withContext(io) {
+        staging.deleteRecursively()
+    }
+
     private fun thumbnailFile(cardId: String, side: CardSide) = File(cacheRoot, "$THUMBS/${checkId(cardId)}_${side.fileStem}.jpg")
 
     private fun writeJpeg(target: File, bitmap: Bitmap, maxSide: Int, quality: Int) {
@@ -176,5 +228,9 @@ class ImageStore(private val filesRoot: File, private val cacheRoot: File, priva
         private const val SHARED = "shared"
         private const val TEMP_PREFIX = ".write-"
         private val ID = Regex("[A-Za-z0-9-]{1,64}")
+        private const val STAGING_PREFIX = ".restore-"
+
+        /** The only paths a card image may have: `cards/<id>/(front|back)[_original].jpg`. */
+        val IMAGE_PATH = Regex("cards/[A-Za-z0-9-]{1,64}/(front|back)(_original)?\\.jpg")
     }
 }

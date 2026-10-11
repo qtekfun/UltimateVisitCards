@@ -51,4 +51,12 @@ interface BusinessCardDao {
 
     @Query("DELETE FROM BusinessCard WHERE id = :id")
     suspend fun delete(id: String): Int
+
+    /** Every row (backup and restore). */
+    @Query("SELECT * FROM BusinessCard")
+    suspend fun all(): List<BusinessCardEntity>
+
+    /** Restore in «replace everything» mode. */
+    @Query("DELETE FROM BusinessCard")
+    suspend fun deleteAll()
 }
