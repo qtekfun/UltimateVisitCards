@@ -7,7 +7,7 @@
 3. El workflow **CI** (`.github/workflows/ci.yml`) ejecuta `./gradlew ci` y un build de release sin firmar de `play` y `foss`. No se fusiona nada en rojo.
 4. Merge en `main` (merge commit, conservando los commits de la rama).
 5. Nueva versión: se sube `appVersion` en `gradle.properties` dentro del propio PR y, tras el merge, se crea el tag `vX.Y.Z` sobre `main`.
-6. El workflow **Release** (`.github/workflows/release.yml`) comprueba que el tag coincide con `appVersion`, compila y firma los APK de release y publica la GitHub Release con `UltimateVisitCards-X.Y.Z-play.apk`, `UltimateVisitCards-X.Y.Z-foss.apk` y `SHA256SUMS`.
+6. El workflow **Release** (`.github/workflows/release.yml`) comprueba que el tag coincide con `appVersion`, compila y firma los APK de release y publica la GitHub Release con `UltimateVisitCards-X.Y.Z-play.apk`, `UltimateVisitCards-X.Y.Z-foss.apk`, el App Bundle para Google Play `UltimateVisitCards-X.Y.Z-play.aab` y `SHA256SUMS`. La publicación en las tiendas está en [09-publicacion.md](09-publicacion.md).
 
 ## Esquema de versiones
 
