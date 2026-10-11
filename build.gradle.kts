@@ -18,6 +18,17 @@ subprojects {
     }
 }
 
+// Tests con poca memoria: un fork, heap acotado y temporales en build/ (disco), nunca en /tmp.
+subprojects {
+    tasks.withType<Test>().configureEach {
+        maxParallelForks = 1
+        maxHeapSize = "1g"
+        val tmp = layout.buildDirectory.dir("tmp/test").get().asFile
+        doFirst { tmp.mkdirs() }
+        systemProperty("java.io.tmpdir", tmp.absolutePath)
+    }
+}
+
 // CI local en un único comando: ./gradlew ci
 tasks.register("ci") {
     group = "verification"
