@@ -13,6 +13,8 @@ interface EventRepository {
 
     fun observe(id: String): Flow<Event?>
 
+    fun observeCount(): Flow<Int>
+
     suspend fun get(id: String): Event?
 
     suspend fun create(draft: EventDraft): DomainResult<Event>

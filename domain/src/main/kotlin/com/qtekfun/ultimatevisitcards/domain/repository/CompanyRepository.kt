@@ -1,6 +1,7 @@
 package com.qtekfun.ultimatevisitcards.domain.repository
 
 import com.qtekfun.ultimatevisitcards.domain.model.Company
+import com.qtekfun.ultimatevisitcards.domain.model.CompanySummary
 import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import kotlinx.coroutines.flow.Flow
 
@@ -11,6 +12,11 @@ interface CompanyRepository {
     fun observeAll(): Flow<List<Company>>
 
     fun observe(id: String): Flow<Company?>
+
+    /** Companies with their sector name and number of contacts, by name. */
+    fun observeSummaries(): Flow<List<CompanySummary>>
+
+    fun observeCount(): Flow<Int>
 
     suspend fun get(id: String): Company?
 

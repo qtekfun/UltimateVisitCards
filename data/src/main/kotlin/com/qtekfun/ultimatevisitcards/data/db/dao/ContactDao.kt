@@ -5,12 +5,19 @@ import androidx.room3.Embedded
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
+import androidx.room3.RawQuery
+import androidx.room3.RoomRawQuery
 import androidx.room3.Update
+import com.qtekfun.ultimatevisitcards.data.db.entity.BusinessCardEntity
+import com.qtekfun.ultimatevisitcards.data.db.entity.CompanyEntity
 import com.qtekfun.ultimatevisitcards.data.db.entity.ContactEntity
 import com.qtekfun.ultimatevisitcards.data.db.entity.ContactEventEntity
+import com.qtekfun.ultimatevisitcards.data.db.entity.ContactFtsEntity
 import kotlinx.coroutines.flow.Flow
 
 data class ContactWithCompanyRow(@Embedded val contact: ContactEntity, val companyName: String?)
+
+data class ContactListRow(@Embedded val contact: ContactEntity, val companyName: String?, val effectiveCountry: String?, val primaryCardId: String?)
 
 @Dao
 interface ContactDao {
@@ -41,6 +48,19 @@ interface ContactDao {
 
     @Query("SELECT id FROM Contact")
     suspend fun allIds(): List<String>
+
+    /** The list query built by `ContactQueryBuilder` (filters are bound parameters, never concatenated). */
+    @RawQuery(observedEntities = [ContactEntity::class, CompanyEntity::class, BusinessCardEntity::class, ContactEventEntity::class, ContactFtsEntity::class])
+    fun observeList(query: RoomRawQuery): Flow<List<ContactListRow>>
+
+    @Query(
+        "SELECT DISTINCT country FROM (SELECT COALESCE(c.country, co.country) AS country FROM Contact c " +
+            "LEFT JOIN Company co ON co.id = c.companyId) WHERE country IS NOT NULL ORDER BY country COLLATE NOCASE"
+    )
+    fun observeCountries(): Flow<List<String>>
+
+    @Query("SELECT COUNT(*) FROM Contact")
+    fun observeCount(): Flow<Int>
 
     @Query("SELECT c.*, co.name AS companyName FROM Contact c LEFT JOIN Company co ON co.id = c.companyId")
     suspend fun allWithCompany(): List<ContactWithCompanyRow>

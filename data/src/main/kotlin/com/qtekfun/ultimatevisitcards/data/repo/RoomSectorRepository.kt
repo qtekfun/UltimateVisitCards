@@ -6,6 +6,7 @@ import com.qtekfun.ultimatevisitcards.data.db.toDomain
 import com.qtekfun.ultimatevisitcards.domain.model.DomainError
 import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import com.qtekfun.ultimatevisitcards.domain.model.Sector
+import com.qtekfun.ultimatevisitcards.domain.model.SectorSummary
 import com.qtekfun.ultimatevisitcards.domain.repository.SectorRepository
 import com.qtekfun.ultimatevisitcards.domain.text.TextNormalizer
 import com.qtekfun.ultimatevisitcards.domain.util.Clock
@@ -23,6 +24,9 @@ class RoomSectorRepository @Inject constructor(
     private val dao = db.sectorDao()
 
     override fun observeAll(): Flow<List<Sector>> = dao.observeAll().map { list -> list.map { it.toDomain() } }
+
+    override fun observeSummaries(): Flow<List<SectorSummary>> =
+        dao.observeSummaries().map { rows -> rows.map { SectorSummary(it.sector.toDomain(), it.companyCount) } }
 
     override suspend fun get(id: String): Sector? = dao.get(id)?.toDomain()
 

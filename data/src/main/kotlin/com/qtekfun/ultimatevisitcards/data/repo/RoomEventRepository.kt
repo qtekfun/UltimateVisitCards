@@ -29,6 +29,8 @@ class RoomEventRepository @Inject constructor(
 
     override fun observe(id: String): Flow<Event?> = dao.observe(id).map { it?.toDomain() }
 
+    override fun observeCount(): Flow<Int> = dao.observeCount()
+
     override suspend fun get(id: String): Event? = dao.get(id)?.toDomain()
 
     override suspend fun create(draft: EventDraft): DomainResult<Event> = db.writeResult {

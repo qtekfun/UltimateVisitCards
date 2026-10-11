@@ -11,8 +11,15 @@ object SearchQuery {
      * Terms are folded like the index ([TextNormalizer]) and FTS operators can never be injected: only
      * letters and digits survive tokenisation.
      */
-    fun toFtsMatch(input: String): String? = TextNormalizer.tokens(input)
-        .distinct()
-        .takeIf { it.isNotEmpty() }
-        ?.joinToString(" ") { "$it*" }
+    fun toFtsMatch(input: String): String? = toFtsMatch(input, emptyMap())
+
+    /**
+     * Free text plus per-column filters, all ANDed: `{"jobTitle": "sales dir"}` adds `jobTitle:sales*
+     * jobTitle:dir*`. Column names are those of the index; values are tokenised like the free text.
+     */
+    fun toFtsMatch(input: String, columns: Map<String, String>): String? {
+        val terms = TextNormalizer.tokens(input).distinct().map { "$it*" } +
+            columns.flatMap { (column, value) -> TextNormalizer.tokens(value).distinct().map { "$column:$it*" } }
+        return terms.takeIf { it.isNotEmpty() }?.joinToString(" ")
+    }
 }

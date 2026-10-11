@@ -15,7 +15,10 @@ import androidx.room3.FtsOptions
 @Entity(tableName = "contact_fts")
 data class ContactFtsEntity(
     val contactId: String,
+    /** First name and surname together (free text); [firstName] and [lastName] for the name filters (v2). */
     val name: String,
+    val firstName: String,
+    val lastName: String,
     val company: String,
     val jobTitle: String,
     val country: String,

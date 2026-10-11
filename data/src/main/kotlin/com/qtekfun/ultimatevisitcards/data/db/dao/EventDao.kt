@@ -22,6 +22,9 @@ interface EventDao {
     @Query("SELECT * FROM Event WHERE id = :id")
     fun observe(id: String): Flow<EventEntity?>
 
+    @Query("SELECT COUNT(*) FROM Event")
+    fun observeCount(): Flow<Int>
+
     @Query("SELECT * FROM Event WHERE id = :id")
     suspend fun get(id: String): EventEntity?
 

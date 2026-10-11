@@ -7,6 +7,8 @@ import com.qtekfun.ultimatevisitcards.domain.text.TextNormalizer
 data class ContactSearchDocument(
     val contactId: String,
     val name: String,
+    val firstName: String,
+    val lastName: String,
     val company: String,
     val jobTitle: String,
     val country: String,
@@ -32,6 +34,8 @@ data class ContactSearchDocument(
         ): ContactSearchDocument = ContactSearchDocument(
             contactId = contact.id,
             name = fold(contact.firstName, contact.lastName),
+            firstName = fold(contact.firstName),
+            lastName = fold(contact.lastName),
             company = fold(companyName),
             jobTitle = fold(contact.jobTitle),
             country = fold(contact.country ?: companyCountry),
