@@ -26,8 +26,8 @@
 :domain  model/ · repository/ · usecase/ · extract/ (CardFieldExtractor, dictionaries) · dedupe/ · ocr/ (OcrService, OcrResult)
          text/ (TextNormalizer, CompanyNameNormalizer) · search/ (SearchQuery, ContactSearchDocument) · util/ (Clock, IdGenerator, qualifiers de Dispatchers)
 :data    db/ (entities, daos, migrations, fts) · repo/ · storage/ (ImageStore) · backup/ · export/ (vcf, csv, xlsx) · contacts/ (PhoneContactsWriter)
-:ocr     processing/ (CardDetector, ImagePreprocessor) · play/MlKitOcrService · foss/TesseractOcrService
-:app     ui/<feature>/ · navigation/ · work/ · di/ · settings/
+:ocr     processing/ (CardDetector, PerspectiveTransform, BlurMeter, CaptureGuide, StabilityTracker, CardImageProcessor, ImagePreprocessor) · play/MlKitOcrService · foss/TesseractOcrService
+:app     ui/<feature>/ (capture/: CameraPreview, FrameAnalyzer, CardCaptureSaver, ManualCrop) · navigation/ · work/ · di/ · settings/
 ```
 
 ## Flujo de datos de una captura
@@ -69,7 +69,7 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 | WorkManager | cola OCR | ambos |
 | Hilt (+ hilt-work, navigation-compose) | DI | ambos |
 | Coil | miniaturas/visor | ambos |
-| kotlinx-serialization-json | `database.json` del backup | ambos |
+| kotlinx-serialization-json | `database.json` del backup; `CardQuad` (esquinas en JSON) en `:domain` | ambos |
 | zip4j | ZIP con AES-256 (backup cifrado) | ambos |
 | androidx.biometric | bloqueo opcional | ambos |
 | `com.google.mlkit:text-recognition` (modelo **empaquetado**, no el de Play Services) | OCR | `play` |
@@ -77,6 +77,7 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 | JUnit, Truth/Kotest, Turbine, MockK, Robolectric, AndroidX Test | tests | ambos |
 | `hilt-android-testing`, Compose `ui-test-junit4`/`ui-test-manifest` | tests (smoke de Hilt, navegación con Robolectric) | ambos |
 | `room3-testing`, `sqlite-bundled-jvm` | tests de BD en JVM (`MigrationTestHelper`, SQLite empaquetado con FTS4) — solo `testImplementation` | ambos |
+| `androidx.hilt:hilt-lifecycle-viewmodel-compose`, `lifecycle-viewmodel-compose` | `hiltViewModel()` en Compose (parte de Hilt/Lifecycle) | ambos |
 | `compose.material:material-icons-core` | iconos de la barra inferior (solo el set pequeño; no `-extended`) | ambos |
 | kotlinx-coroutines-android | `Dispatchers` inyectados, `Flow` | ambos |
 

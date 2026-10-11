@@ -15,4 +15,45 @@
   <string name="companies_empty">No companies yet. They are created when you save a card.</string>
   <string name="sectors_empty">No sectors yet.</string>
   <string name="settings_empty">Backup, export and security will appear here.</string>
+  <!-- Tarjetas -->
+  <string name="cards_add">Add card</string>
+  <string name="cards_pending">Pending review: %1$d</string>
+
+  <string name="cards_error">The cards could not be loaded.</string>
+
+  <!-- Captura -->
+  <string name="capture_close">Close</string>
+  <string name="capture_hint_front">Fit the front of the card in the frame</string>
+  <string name="capture_hint_back">Now the back of the card</string>
+  <string name="capture_shutter">Take photo</string>
+  <string name="capture_flash">Flash</string>
+  <string name="capture_auto">Auto</string>
+  <string name="capture_auto_description">Shoot automatically when the card is still</string>
+  <string name="capture_blurry">Move the phone, the image is blurry</string>
+  <string name="capture_processing">Processing…</string>
+  <string name="capture_front_preview">Front of the card</string>
+  <string name="capture_back_preview">Back of the card</string>
+  <string name="capture_not_detected">The card edges were not found, so it was cropped by the guide. Adjust the crop if needed.</string>
+  <string name="capture_add_back">Add back</string>
+  <string name="capture_skip_back">Continue without back</string>
+  <string name="capture_save">Save card</string>
+  <string name="capture_retake">Retake</string>
+  <string name="capture_adjust_crop">Adjust crop</string>
+  <string name="capture_saved">Card saved. It is waiting for review.</string>
+  <string name="capture_scan_another">Scan another</string>
+  <string name="capture_done">Done</string>
+  <string name="capture_error_save">The card could not be saved. Try again.</string>
+  <string name="capture_error_camera">The camera failed. Try again.</string>
+  <string name="capture_dismiss">OK</string>
+  <string name="capture_permission_title">Camera access needed</string>
+  <string name="capture_permission_body">To photograph business cards the app needs the camera. Photos stay on this device.</string>
+  <string name="capture_permission_grant">Allow camera</string>
+  <string name="capture_permission_settings">Open settings</string>
+
+  <!-- Recorte manual -->
+  <string name="crop_title">Drag the corners to the edges of the card</string>
+  <string name="crop_apply">Apply</string>
+  <string name="crop_cancel">Cancel</string>
+  <string name="crop_whole_photo">Use whole photo</string>
+  <string name="crop_corner">Corner %1$d</string>
 </resources>

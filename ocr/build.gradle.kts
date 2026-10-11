@@ -18,6 +18,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+
     flavorDimensions += "distribution"
     productFlavors {
         create("play") { dimension = "distribution" }
@@ -26,10 +30,16 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
+    api(project(":domain"))
+
+    // ImageProxy para el análisis en vivo de la vista previa.
+    implementation(libs.androidx.camera.core)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
+    testImplementation(kotlin("test"))
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.ext.junit)
 }

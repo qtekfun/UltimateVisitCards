@@ -6,9 +6,13 @@ Objetivo: reconocer tarjetas con diseños arbitrarios en inglés, español, fran
 
 1. `ImageCapture` de CameraX (modo calidad, sin flash por defecto).
 2. Se guarda el **original** reducido a ≤ 2400 px de lado largo (JPEG q88, sin EXIF de ubicación).
-3. `CardDetector` (en `:ocr/processing`, Kotlin puro sobre `Bitmap`):
-   - escala de grises → desenfoque → bordes → contorno de mayor cuadrilátero con proporción de tarjeta (≈1,4–1,8) → transformación de perspectiva;
-   - si no encuentra un cuadrilátero fiable, **recorta por la guía rectangular** y deja el recorte manual disponible en la revisión.
+3. `CardDetector` (en `:ocr/processing`, Kotlin puro sobre arrays de luminancia; `Bitmaps.kt` convierte en los bordes):
+   - reducción a ~640 px → desenfoque gaussiano 5×5 → umbral de Otsu probado en **ambas polaridades** (tarjeta clara sobre mesa oscura y al revés) → apertura/cierre morfológicos → componentes conexas;
+   - por componente grande (6–97 % del encuadre, sin tocar 3 o más bordes de la imagen, que sería la mesa): envolvente convexa → simplificación a 4 vértices (Visvalingam) → cuadrilátero convexo con proporción de tarjeta (≈1,25–2,1 en cualquier orientación), que cubra la envolvente (≥ 92 %) y sea sólido (≥ 72 %); gana la mejor puntuación;
+   - esquinas en sentido horario empezando por la del borde superior más horizontal: la tarjeta conserva la orientación que tiene en la foto;
+   - transformación de perspectiva (homografía + muestreo bilineal);
+   - si no encuentra un cuadrilátero fiable, **recorta por la guía rectangular** (la misma que se dibuja, centrada, 85×55, 88 % del encuadre) y avisa para que se reencuadre a mano. El recorte manual (cuatro esquinas arrastrables y «Usar la foto completa») está en la pantalla de captura y reutilizable en la revisión.
+   - En vivo, el mismo detector y un medidor de nitidez (varianza del laplaciano, media de 5 fotogramas) se ejecutan sobre el plano Y de `ImageAnalysis`: se dibuja el cuadrilátero, se avisa del desenfoque y, con «Auto» activado, se dispara cuando la tarjeta lleva 0,7 s quieta y nítida.
 4. Se guarda la **imagen enderezada** (≤ 1600 px, JPEG q90) y las esquinas (`quad`) para reencuadrar sin repetir la captura.
 5. `ImagePreprocessor` genera la entrada del OCR: reescalado a ~300 dpi equivalentes, mejora de contraste, binarización adaptativa (solo para Tesseract; ML Kit recibe color/gris).
 

@@ -82,7 +82,16 @@ Regla: **cada fase termina con el proyecto compilando en `play` y `foss`, tests 
 - **2026-10-11 · Fase 1 · Room 3**: se usa `androidx.room3` (API KMP con drivers) en lugar de Room 2; ver `docs/decisions.md`.
 - **2026-10-11 · Fase 1 · `Sector.normalizedName`**: columna nueva con índice único para la unicidad sin mayúsculas ni acentos.
 - **2026-10-11 · Fase 1 · Tokenizer FTS**: `unicode61` sin `remove_diacritics=2`; el plegado lo hace la app (`TextNormalizer`).
+- **2026-10-11 · Fase 2 · Detector**: umbral de Otsu + componentes conexas + envolvente convexa en lugar de «bordes → contorno»; ver `docs/04` y `docs/decisions.md`.
+- **2026-10-11 · Fase 2 · Recorte manual en captura**: además de en la revisión (fase 4), se ofrece «Reencuadrar» al confirmar cada cara.
+- **2026-10-11 · Fase 2 · Disparo automático desactivado por defecto** (interruptor «Auto» en la captura).
 - **2026-10-11 · Fase 0 · JVM 21**: todos los módulos compilan con target Java/Kotlin 21 (JDK de desarrollo: Temurin 21).
 
 ## Resultados de medición
 *(Fase 2: detector. Fase 3: acierto de OCR por campo `play` vs `foss`. Fase 10: rendimiento.)*
+
+### Fase 2 · Detector de tarjeta (2026-10-11)
+
+Medido sobre imágenes **sintéticas** generadas en los tests (`CardDetectorTest`, `CardImageProcessorTest`, `CaptureViewModelTest`): tarjeta clara u oscura, giros de −40° a +45°, perspectiva, vertical, fondo con textura y ruido, 800×600 y 2400×1800. Todas las esquinas se encuentran a menos del 2,5 % de la diagonal; sin tarjeta, tarjeta diminuta o cuadrado → no se detecta (recorte por guía). Coste: ~640 px de trabajo, apto para el análisis en vivo.
+
+**Pendiente**: la medición con fotos reales (fondos y luces variados, no versionadas) que pide el spike no se ha podido hacer en esta sesión (no hay fotos ni se han usado los teléfonos del usuario). Criterio para reabrir la decisión: si con fotos reales falla en más del 20 % de los casos habituales (tarjeta sobre mesa, encuadrada con la guía), evaluar OpenCV en un spike aparte.

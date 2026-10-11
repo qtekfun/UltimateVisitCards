@@ -13,4 +13,45 @@
   <string name="companies_empty">Aún no hay empresas. Se crean al guardar una tarjeta.</string>
   <string name="sectors_empty">Aún no hay sectores.</string>
   <string name="settings_empty">Aquí aparecerán la copia de seguridad, la exportación y la seguridad.</string>
+  <!-- Tarjetas -->
+  <string name="cards_add">Añadir tarjeta</string>
+  <string name="cards_pending">Pendientes de revisar: %1$d</string>
+
+  <string name="cards_error">No se pudieron cargar las tarjetas.</string>
+
+  <!-- Captura -->
+  <string name="capture_close">Cerrar</string>
+  <string name="capture_hint_front">Encuadra el anverso de la tarjeta</string>
+  <string name="capture_hint_back">Ahora el reverso de la tarjeta</string>
+  <string name="capture_shutter">Hacer foto</string>
+  <string name="capture_flash">Flash</string>
+  <string name="capture_auto">Auto</string>
+  <string name="capture_auto_description">Disparar solo cuando la tarjeta esté quieta</string>
+  <string name="capture_blurry">Mueve el móvil, la imagen está borrosa</string>
+  <string name="capture_processing">Procesando…</string>
+  <string name="capture_front_preview">Anverso de la tarjeta</string>
+  <string name="capture_back_preview">Reverso de la tarjeta</string>
+  <string name="capture_not_detected">No se encontraron los bordes de la tarjeta y se ha recortado por la guía. Reencuádrala si hace falta.</string>
+  <string name="capture_add_back">Añadir reverso</string>
+  <string name="capture_skip_back">Continuar sin reverso</string>
+  <string name="capture_save">Guardar tarjeta</string>
+  <string name="capture_retake">Repetir</string>
+  <string name="capture_adjust_crop">Reencuadrar</string>
+  <string name="capture_saved">Tarjeta guardada. Queda pendiente de revisar.</string>
+  <string name="capture_scan_another">Escanear otra</string>
+  <string name="capture_done">Hecho</string>
+  <string name="capture_error_save">No se pudo guardar la tarjeta. Inténtalo de nuevo.</string>
+  <string name="capture_error_camera">La cámara ha fallado. Inténtalo de nuevo.</string>
+  <string name="capture_dismiss">Aceptar</string>
+  <string name="capture_permission_title">Se necesita acceso a la cámara</string>
+  <string name="capture_permission_body">Para fotografiar tarjetas de visita la app necesita la cámara. Las fotos se quedan en este dispositivo.</string>
+  <string name="capture_permission_grant">Permitir cámara</string>
+  <string name="capture_permission_settings">Abrir ajustes</string>
+
+  <!-- Recorte manual -->
+  <string name="crop_title">Arrastra las esquinas hasta los bordes de la tarjeta</string>
+  <string name="crop_apply">Aplicar</string>
+  <string name="crop_cancel">Cancelar</string>
+  <string name="crop_whole_photo">Usar la foto completa</string>
+  <string name="crop_corner">Esquina %1$d</string>
 </resources>
