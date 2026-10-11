@@ -18,7 +18,7 @@ enum class TopLevelDestination(val route: String, @StringRes val label: Int) {
     EVENTS("events", R.string.nav_events),
     COMPANIES("companies", R.string.nav_companies),
     SECTORS("sectors", R.string.nav_sectors),
-    SETTINGS("settings", R.string.nav_settings),
+    SETTINGS("settings", R.string.nav_settings)
 }
 
 @Suppress("DEPRECATION") // Icons.Filled.List: the auto-mirrored variant is not in material-icons-core.

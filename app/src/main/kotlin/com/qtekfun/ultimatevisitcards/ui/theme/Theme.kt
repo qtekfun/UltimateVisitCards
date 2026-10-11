@@ -17,14 +17,14 @@ private val LightColors = lightColorScheme(
     secondary = Teal,
     onSecondary = Color.White,
     tertiary = Amber,
-    onTertiary = Color.White,
+    onTertiary = Color.White
 )
 
 private val DarkColors = darkColorScheme(
     primary = PetrolLight,
     onPrimary = OnPetrolDark,
     secondary = TealLight,
-    tertiary = AmberLight,
+    tertiary = AmberLight
 )
 
 /** Material 3 light/dark theme, with dynamic colour on Android 12+. */

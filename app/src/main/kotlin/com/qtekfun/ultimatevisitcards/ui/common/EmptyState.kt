@@ -21,7 +21,7 @@ fun EmptyState(@StringRes message: Int, modifier: Modifier = Modifier) {
             text = stringResource(message),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Center
         )
     }
 }

@@ -1,7 +1,7 @@
 package com.qtekfun.ultimatevisitcards
 
 import androidx.compose.ui.test.assertIsSelected
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -36,7 +36,7 @@ class NavigationTest {
             R.string.nav_companies to R.string.companies_empty,
             R.string.nav_sectors to R.string.sectors_empty,
             R.string.nav_settings to R.string.settings_empty,
-            R.string.nav_cards to R.string.cards_empty,
+            R.string.nav_cards to R.string.cards_empty
         )
         sections.forEach { (label, content) ->
             compose.onNodeWithText(string(label)).performClick()

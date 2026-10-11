@@ -45,16 +45,16 @@ fun UvcApp(navController: NavHostController = rememberNavController()) {
                         },
                         // The label already names the item: the icon would only repeat it to TalkBack.
                         icon = { Icon(destination.iconPainter(), contentDescription = null) },
-                        label = { Text(label) },
+                        label = { Text(label) }
                     )
                 }
             }
-        },
+        }
     ) { padding ->
         NavHost(
             navController = navController,
             startDestination = TopLevelDestination.CARDS.route,
-            modifier = Modifier.padding(padding),
+            modifier = Modifier.padding(padding)
         ) {
             composable(TopLevelDestination.CARDS.route) { CardsScreen() }
             composable(TopLevelDestination.EVENTS.route) { EventsScreen() }
