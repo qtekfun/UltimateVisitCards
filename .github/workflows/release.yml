@@ -1,0 +1,67 @@
+# Publica una versión al empujar un tag vX.Y.Z (o vX.Y.Z-rc.N): compila los APK de release de
+# play y foss firmados con la clave de release y crea la GitHub Release. Ver docs/08-versiones-y-publicacion.md.
+#
+# Sin los secretos UVC_* el workflow falla: nunca se publica un APK firmado con la clave de debug.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      - name: Comprobar que el tag coincide con appVersion
+        run: |
+          version=$(grep '^appVersion=' gradle.properties | cut -d= -f2)
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "El tag $GITHUB_REF_NAME no coincide con appVersion $version"; exit 1; }
+
+      - name: Verificar y compilar los APK de release firmados
+        env:
+          UVC_KEYSTORE_BASE64: ${{ secrets.UVC_KEYSTORE_BASE64 }}
+          UVC_KEYSTORE_PASSWORD: ${{ secrets.UVC_KEYSTORE_PASSWORD }}
+          UVC_KEY_ALIAS: ${{ secrets.UVC_KEY_ALIAS }}
+          UVC_KEY_PASSWORD: ${{ secrets.UVC_KEY_PASSWORD }}
+        run: |
+          if [ -z "$UVC_KEYSTORE_BASE64" ]; then
+            echo "Faltan los secretos UVC_KEYSTORE_* : no se publica sin la clave de release."; exit 1
+          fi
+          export UVC_KEYSTORE_FILE="$RUNNER_TEMP/release.jks"
+          echo "$UVC_KEYSTORE_BASE64" | base64 -d > "$UVC_KEYSTORE_FILE"
+          ./gradlew --continue ci assemblePlayRelease assembleFossRelease
+          rm -f "$UVC_KEYSTORE_FILE"
+
+      - name: Publicar la GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | tail -1)
+          files=()
+          for flavour in play foss; do
+            apk="UltimateVisitCards-$version-$flavour.apk"
+            cp "app/build/outputs/apk/$flavour/release/app-$flavour-release.apk" "$apk"
+            "$apksigner" verify --print-certs "$apk" | head -3
+            files+=("$apk")
+          done
+          sha256sum "${files[@]}" > SHA256SUMS
+          prerelease=()
+          case "$version" in *-rc.*) prerelease=(--prerelease) ;; esac
+          gh release create "$GITHUB_REF_NAME" "${files[@]}" SHA256SUMS \
+            --title "UltimateVisitCards $version" --generate-notes "${prerelease[@]}"

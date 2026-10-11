@@ -8,6 +8,7 @@ La documentación manda: si el código y `docs/` se contradicen, se arregla uno 
 - **Una fase de `docs/07-fases.md` cada vez.** Al cerrar una fase el proyecto compila (`./gradlew assemblePlayDebug assembleFossDebug`) y los tests pasan (`./gradlew testPlayDebugUnitTest testFossDebugUnitTest`).
 - No empieces la fase N+1 sin cerrar la N. No implementes todo en un único bloque.
 - Antes de dar una fase por cerrada: tests nuevos de esa fase, estados loading/error/empty en la UI que toque y actualización de `docs/` si cambió una decisión.
+- Cada cambio terminado sigue `docs/08-versiones-y-publicacion.md`: PR → CI verde → merge → versión (tag `vX.Y.Z`).
 - Cada decisión que se desvíe de `docs/` se anota en `docs/07-fases.md` (sección *Desviaciones*) con el motivo.
 
 ## Reglas duras
@@ -38,4 +39,5 @@ La documentación manda: si el código y `docs/` se contradicen, se arregla uno 
 ./gradlew testPlayDebugUnitTest testFossDebugUnitTest
 ./gradlew connectedPlayDebugAndroidTest   # tests de Room y backup en dispositivo/emulador
 ./gradlew lint ktlintCheck
+./gradlew ci                              # todo lo anterior (sin dispositivo) + verificación de que no hay permiso INTERNET
 ```

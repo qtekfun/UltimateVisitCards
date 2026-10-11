@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Solo la ventana; el tema Material 3 real está en ui/theme (Compose). -->
+  <style name="Theme.UltimateVisitCards" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

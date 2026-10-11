@@ -4,7 +4,7 @@ Regla: **cada fase termina con el proyecto compilando en `play` y `foss`, tests 
 
 ## Fase 0 · Esqueleto
 - Proyecto multi-módulo (`:app`, `:domain`, `:data`, `:ocr`), flavours `play`/`foss`, catálogo de versiones, Hilt, tema M3 claro/oscuro, navegación inferior con pantallas vacías, `strings.xml` es/en.
-- Lint, ktlint y CI local (`./gradlew` en un único comando).
+- Lint, ktlint y CI local (`./gradlew` en un único comando: `./gradlew ci`).
 - Manifest sin `INTERNET`; `allowBackup=false`; permiso `CAMERA`.
 - **Cierre**: instala y arranca en ambos flavours; test de humo de Hilt.
 
@@ -74,6 +74,12 @@ Regla: **cada fase termina con el proyecto compilando en `play` y `foss`, tests 
 
 ## Desviaciones
 *(Anotar aquí cualquier cambio respecto a estos documentos, con fecha y motivo.)*
+
+- **2026-10-11 · Fase 0 · `missingDimensionStrategy`**: no se usa. `:data` y `:domain` no tienen flavours y AGP los resuelve sin ella; `docs/01-arquitectura.md` corregido.
+- **2026-10-11 · Fase 0 · `OcrEngineInfo`**: marcador provisional en `:domain` (`engineId` = `mlkit`/`tesseract`) que el `OcrModule` de cada flavour enlaza en Hilt, para probar el cableado por flavour antes de que exista `OcrService`. En la fase 3 se sustituye por `OcrService.engineId`.
+- **2026-10-11 · Fase 0 · Permisos de red**: además de no declarar `INTERNET`, el manifest de `:app` los elimina con `tools:node="remove"` (por si una dependencia futura, p. ej. ML Kit, los arrastra) y la tarea `verifyNoInternetPermission` falla si aparecen en el manifest fusionado de cualquier variante.
+- **2026-10-11 · Fase 0 · Memoria del build**: `gradle.properties` limita el daemon a 2 GB, compila Kotlin dentro del daemon y los tests corren en un único fork de 1 GB, para poder compilar en máquinas con poca RAM libre.
+- **2026-10-11 · Fase 0 · JVM 21**: todos los módulos compilan con target Java/Kotlin 21 (JDK de desarrollo: Temurin 21).
 
 ## Resultados de medición
 *(Fase 2: detector. Fase 3: acierto de OCR por campo `play` vs `foss`. Fase 10: rendimiento.)*
