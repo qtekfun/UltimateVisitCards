@@ -36,7 +36,7 @@ class ImageStore(private val filesRoot: File, private val cacheRoot: File, priva
     @Inject
     constructor(@ApplicationContext context: Context, @IoDispatcher io: CoroutineDispatcher) : this(context.filesDir, context.cacheDir, io)
 
-    fun originalPath(cardId: String, side: CardSide): String = "$CARDS/${checkId(cardId)}/${side.fileStem}_original.jpg"
+    fun originalPath(cardId: String, side: CardSide): String = "$CARDS/${checkId(cardId)}/${side.fileStem}$ORIGINAL_SUFFIX"
 
     fun processedPath(cardId: String, side: CardSide): String = "$CARDS/${checkId(cardId)}/${side.fileStem}.jpg"
 
@@ -100,6 +100,18 @@ class ImageStore(private val filesRoot: File, private val cacheRoot: File, priva
         file(originalPath(cardId, side)).delete()
         file(processedPath(cardId, side)).delete()
         thumbnailFile(cardId, side).delete()
+    }
+
+    /** Deletes the uncropped originals of a card (keep-originals switched off); the straightened ones stay. */
+    suspend fun deleteOriginals(cardId: String) = withContext(io) {
+        CardSide.entries.forEach { file(originalPath(cardId, it)).delete() }
+    }
+
+    /** Deletes the uncropped originals of every card (keep-originals switched off). Returns how many went. */
+    suspend fun deleteAllOriginals(): Int = withContext(io) {
+        File(filesRoot, CARDS).listFiles().orEmpty().sumOf { dir ->
+            CardSide.entries.count { side -> File(dir, "${side.fileStem}$ORIGINAL_SUFFIX").delete() }
+        }
     }
 
     /** Deletes every image of a card (when the card or its contact is deleted). */
@@ -226,6 +238,7 @@ class ImageStore(private val filesRoot: File, private val cacheRoot: File, priva
         private const val PROCESSED_QUALITY = 90
         private const val THUMBNAIL_QUALITY = 85
         private const val CARDS = "cards"
+        private const val ORIGINAL_SUFFIX = "_original.jpg"
         private const val THUMBS = "thumbs"
         private const val SHARED = "shared"
         private const val TEMP_PREFIX = ".write-"

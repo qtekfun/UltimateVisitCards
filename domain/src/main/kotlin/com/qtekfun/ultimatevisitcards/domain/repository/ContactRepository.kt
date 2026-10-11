@@ -72,5 +72,5 @@ interface ContactRepository {
     suspend fun allWithCompany(): List<ContactWithCompany>
 
     /** Rebuilds the whole search index (after a restore, or from Settings). */
-    suspend fun rebuildSearchIndex()
+    suspend fun rebuildSearchIndex(): DomainResult<Unit>
 }

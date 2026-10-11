@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- App lock (phase 10). -->
+  <string name="lock_title">UltimateVisitCards is locked</string>
+  <string name="lock_unlock">Unlock</string>
+  <string name="lock_prompt_title">Unlock UltimateVisitCards</string>
+  <string name="lock_prompt_subtitle">Use your fingerprint, face or screen lock</string>
+
+  <!-- Settings: security. -->
+  <string name="settings_security">Security</string>
+  <string name="settings_lock">Lock the app</string>
+  <string name="settings_lock_hint">Asks for your fingerprint, face or screen lock when opening the app or coming back after 30 seconds.</string>
+  <string name="settings_lock_unavailable">Set up a screen lock on the phone to use this.</string>
+  <string name="settings_secure_screen">Hide in recent apps</string>
+  <string name="settings_secure_screen_hint">The app content is hidden in the recent apps view and screenshots are blocked.</string>
+
+  <!-- Settings: capture and review. -->
+  <string name="settings_capture">Capture and review</string>
+  <string name="settings_keep_originals">Keep uncropped originals</string>
+  <string name="settings_keep_originals_hint">Keeps the full photo of each card besides the straightened one. Turning it off saves space.</string>
+  <string name="settings_keep_originals_off_title">Delete the originals?</string>
+  <string name="settings_keep_originals_off_warning">The uncropped photos already stored will be deleted. The straightened cards stay.</string>
+  <string name="settings_keep_originals_off_confirm">Delete</string>
+  <string name="settings_threshold">Highlight doubtful fields below %1$d%% confidence</string>
+  <string name="settings_threshold_hint">Fields the reader is less sure about are marked for review.</string>
+
+  <!-- Settings: maintenance and info. -->
+  <string name="settings_maintenance">Maintenance</string>
+  <string name="settings_reindex">Rebuild search index</string>
+  <string name="settings_reindex_done">Search index rebuilt.</string>
+  <string name="settings_originals_deleted">Originals deleted.</string>
+  <string name="settings_maintenance_failed">The action could not be completed.</string>
+  <string name="settings_duplicates">Possible duplicates</string>
+  <string name="settings_about">About</string>
+</resources>

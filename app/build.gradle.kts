@@ -74,6 +74,9 @@ android {
 
     buildTypes {
         release {
+            // Phones only: the x86/x86_64 native libraries (emulators) add 15-22 MB to each APK
+            // (OCR engines). Debug builds keep every ABI. Google Play gets per-ABI splits from the AAB.
+            ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
             signingConfig = signingConfigs.findByName("release")
             // El commit de git no entra en el APK: un build desde el código fuente debe coincidir (F-Droid).
             vcsInfo.include = false
@@ -174,6 +177,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     // Solo carga de archivos locales: sin el módulo de red de Coil.
     implementation(libs.coil.compose)
+    implementation(libs.androidx.biometric)
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(platform(libs.androidx.compose.bom))

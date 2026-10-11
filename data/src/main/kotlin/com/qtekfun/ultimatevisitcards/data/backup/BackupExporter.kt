@@ -102,6 +102,11 @@ class BackupExporter @Inject constructor(
         )
     }
 
+    private fun allOriginalsPresent(database: BackupDatabase, images: List<Pair<String, File>>): Boolean {
+        val present = images.map { it.first }.toSet()
+        return database.businessCards.all { card -> listOfNotNull(card.frontOriginal, card.backOriginal).all { it in present } }
+    }
+
     /** Existing image files to include, by storage path (a missing file is left out, never invented). */
     private fun imagesOf(database: BackupDatabase, includeOriginals: Boolean): List<Pair<String, File>> = database.businessCards.flatMap { card ->
         listOfNotNull(card.frontProcessed, card.backProcessed) +
