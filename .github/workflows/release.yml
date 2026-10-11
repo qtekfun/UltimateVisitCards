@@ -32,7 +32,7 @@ jobs:
           version=$(grep '^appVersion=' gradle.properties | cut -d= -f2)
           test "v$version" = "$GITHUB_REF_NAME" || { echo "El tag $GITHUB_REF_NAME no coincide con appVersion $version"; exit 1; }
 
-      - name: Verificar y compilar los APK de release firmados
+      - name: Verificar y compilar los APK y el AAB de release firmados
         env:
           UVC_KEYSTORE_BASE64: ${{ secrets.UVC_KEYSTORE_BASE64 }}
           UVC_KEYSTORE_PASSWORD: ${{ secrets.UVC_KEYSTORE_PASSWORD }}
@@ -44,7 +44,7 @@ jobs:
           fi
           export UVC_KEYSTORE_FILE="$RUNNER_TEMP/release.jks"
           echo "$UVC_KEYSTORE_BASE64" | base64 -d > "$UVC_KEYSTORE_FILE"
-          ./gradlew --continue ci assemblePlayRelease assembleFossRelease
+          ./gradlew --continue ci assemblePlayRelease assembleFossRelease bundlePlayRelease
           rm -f "$UVC_KEYSTORE_FILE"
 
       - name: Publicar la GitHub Release
@@ -60,6 +60,11 @@ jobs:
             "$apksigner" verify --print-certs "$apk" | head -3
             files+=("$apk")
           done
+          # Google Play: the play flavour as an App Bundle, signed with the same (upload) key.
+          aab="UltimateVisitCards-$version-play.aab"
+          cp app/build/outputs/bundle/playRelease/app-play-release.aab "$aab"
+          jarsigner -verify "$aab" | tail -1
+          files+=("$aab")
           sha256sum "${files[@]}" > SHA256SUMS
           prerelease=()
           case "$version" in *-rc.*) prerelease=(--prerelease) ;; esac
