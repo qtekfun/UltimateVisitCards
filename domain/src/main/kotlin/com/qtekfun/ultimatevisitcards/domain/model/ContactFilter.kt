@@ -18,7 +18,7 @@ data class ContactFilter(
     val eventId: String? = null,
     /** Contact creation date range, epoch millis UTC, inclusive. */
     val from: Long? = null,
-    val to: Long? = null,
+    val to: Long? = null
 ) {
     val isEmpty: Boolean
         get() = text.isBlank() && firstName.isBlank() && lastName.isBlank() && jobTitle.isBlank() &&
@@ -26,7 +26,16 @@ data class ContactFilter(
 
     /** Number of active filters besides the free text (for the «Filters (N)» button). */
     val activeFilters: Int
-        get() = listOf(firstName.isNotBlank(), lastName.isNotBlank(), jobTitle.isNotBlank(), companyId != null, country != null, sectorId != null, eventId != null, from != null || to != null)
+        get() = listOf(
+            firstName.isNotBlank(),
+            lastName.isNotBlank(),
+            jobTitle.isNotBlank(),
+            companyId != null,
+            country != null,
+            sectorId != null,
+            eventId != null,
+            from != null || to != null
+        )
             .count { it }
 }
 
@@ -37,7 +46,7 @@ data class ContactListItem(
     /** The contact's country or, if missing, its company's (docs/02). */
     val country: String?,
     /** Card shown for the contact (primary, else newest), for the thumbnail. */
-    val primaryCardId: String?,
+    val primaryCardId: String?
 )
 
 data class CompanySummary(val company: Company, val sectorName: String?, val contactCount: Int)
