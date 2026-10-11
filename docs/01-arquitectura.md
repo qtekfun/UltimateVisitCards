@@ -17,7 +17,7 @@
 ```
 
 - Flavour dimension única `distribution` con `play` y `foss` en `:app` y `:ocr`. `:data` y `:domain` no tienen flavours.
-- `:app` usa `missingDimensionStrategy` para `:data` y `:domain`.
+- `:data` y `:domain` no declaran flavours, así que `:app` los consume sin configuración extra (`missingDimensionStrategy` solo haría falta si un módulo tuviera una dimensión que `:app` no tiene).
 - Catálogo de versiones en `gradle/libs.versions.toml`.
 
 ## Paquetes (por módulo)
@@ -72,6 +72,16 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 | `com.google.mlkit:text-recognition` (modelo **empaquetado**, no el de Play Services) | OCR | `play` |
 | Tesseract4Android | OCR | `foss` |
 | JUnit, Truth/Kotest, Turbine, MockK, Robolectric, AndroidX Test | tests | ambos |
+| `hilt-android-testing`, Compose `ui-test-junit4`/`ui-test-manifest` | tests (smoke de Hilt, navegación con Robolectric) | ambos |
+| `compose.material:material-icons-core` | iconos de la barra inferior (solo el set pequeño; no `-extended`) | ambos |
+| kotlinx-coroutines-android | `Dispatchers` inyectados, `Flow` | ambos |
+
+### Herramientas de build (no van en el APK)
+
+| Herramienta | Uso |
+|---|---|
+| Android Gradle Plugin, Kotlin (+ plugin Compose), KSP, plugin de Hilt | compilación |
+| `org.jlleitschuh.gradle.ktlint` (ktlint) | estilo (`./gradlew ktlintCheck`), pedido por la fase 0 |
 
 Cualquier otra requiere justificación aquí antes de añadirla. Excluidas por diseño: Firebase, Retrofit/OkHttp, Apache POI, OpenCV (salvo decisión en fase 2), libphonenumber (salvo decisión en fase 3).
 
