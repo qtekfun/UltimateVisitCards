@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_21 } }
@@ -38,6 +39,9 @@ dependencies {
     api(project(":domain"))
 
     implementation(libs.room.runtime)
+    implementation(libs.kotlinx.serialization.json)
+    // ZIP con AES-256 para la copia de seguridad cifrada (docs/01, lista aprobada).
+    implementation(libs.zip4j)
     ksp(libs.room.compiler)
 
     implementation(libs.hilt.android)
