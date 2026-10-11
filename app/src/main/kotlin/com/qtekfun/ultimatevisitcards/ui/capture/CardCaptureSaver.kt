@@ -10,7 +10,7 @@ import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardDraft
 import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardRepository
 import com.qtekfun.ultimatevisitcards.domain.util.DefaultDispatcher
 import com.qtekfun.ultimatevisitcards.ocr.processing.CardImageProcessor
-import com.qtekfun.ultimatevisitcards.work.OcrQueue
+import com.qtekfun.ultimatevisitcards.work.OcrScheduler
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -36,7 +36,7 @@ class CardCaptureSaver @Inject constructor(
     private val store: ImageStore,
     private val processor: CardImageProcessor,
     private val cards: BusinessCardRepository,
-    private val ocrQueue: OcrQueue,
+    private val ocrQueue: OcrScheduler,
     @DefaultDispatcher private val default: CoroutineDispatcher
 ) {
     /** Saves the original, straightens it and saves the result. [photo] must be upright. */

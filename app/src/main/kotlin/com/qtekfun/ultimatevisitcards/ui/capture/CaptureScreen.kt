@@ -1,13 +1,6 @@
 package com.qtekfun.ultimatevisitcards.ui.capture
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.provider.Settings
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,7 +35,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +42,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -58,7 +49,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.qtekfun.ultimatevisitcards.R
@@ -69,36 +59,16 @@ import com.qtekfun.ultimatevisitcards.domain.model.CardSide
 fun CaptureScreen(onClose: () -> Unit, onSaved: (cardId: String) -> Unit, viewModel: CaptureViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.savedCardId) { state.savedCardId?.let(onSaved) }
-    val context = LocalContext.current
-    var granted by remember {
-        mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-    }
-    var asked by rememberSaveable { mutableStateOf(false) }
-    val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
-        granted = it
-        asked = true
-    }
-
     BackHandler(enabled = state.crop != null) { viewModel.cancelCrop() }
 
     Box(Modifier.fillMaxSize().background(Color.Black)) {
-        when {
-            !granted -> PermissionRequest(
-                askedBefore = asked,
-                onGrant = { permission.launch(Manifest.permission.CAMERA) },
-                onOpenSettings = {
-                    context.startActivity(
-                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
-                    )
-                },
-                onClose = onClose
-            )
-
-            state.crop != null -> state.crop?.let { crop ->
+        CameraPermission(onClose = onClose) {
+            val crop = state.crop
+            if (crop != null) {
                 ManualCrop(crop.original, crop.quad, onApply = viewModel::applyCrop, onCancel = viewModel::cancelCrop)
+            } else {
+                CaptureContent(state, viewModel, onClose)
             }
-
-            else -> CaptureContent(state, viewModel, onClose)
         }
         if (state.busy) {
             Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.5f)), contentAlignment = Alignment.Center) {
@@ -264,22 +234,4 @@ private fun FlowButtons(content: @Composable () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
     ) { content() }
-}
-
-@Composable
-private fun PermissionRequest(askedBefore: Boolean, onGrant: () -> Unit, onOpenSettings: () -> Unit, onClose: () -> Unit) {
-    Surface(Modifier.fillMaxSize()) {
-        Column(
-            Modifier.fillMaxSize().safeDrawingPadding().padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(stringResource(R.string.capture_permission_title), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
-            Text(stringResource(R.string.capture_permission_body), textAlign = TextAlign.Center)
-            Button(onClick = onGrant) { Text(stringResource(R.string.capture_permission_grant)) }
-            // After a refusal the system may not ask again: offer the app settings too.
-            if (askedBefore) OutlinedButton(onClick = onOpenSettings) { Text(stringResource(R.string.capture_permission_settings)) }
-            TextButton(onClick = onClose) { Text(stringResource(R.string.capture_close)) }
-        }
-    }
 }
