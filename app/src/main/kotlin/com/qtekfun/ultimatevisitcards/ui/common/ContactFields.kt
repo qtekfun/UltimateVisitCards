@@ -43,7 +43,7 @@ fun ContactFieldInput(field: CardField, value: String, doubtful: Boolean = false
         } else {
             OutlinedTextFieldDefaults.colors()
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
     )
 }
 

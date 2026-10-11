@@ -162,4 +162,55 @@
   <string name="contact_section_card">Card</string>
   <string name="contact_added_on">Added on %1$s</string>
   <string name="contact_cards_count">%1$d cards of this contact</string>
+  <!-- Ficha completa, fusión y contactos del teléfono -->
+  <string name="contact_edit_title">Edit contact</string>
+  <string name="contact_edit">Edit</string>
+  <string name="contact_more">More options</string>
+  <string name="contact_merge_with">Merge with…</string>
+  <string name="contact_delete">Delete contact</string>
+  <string name="contact_delete_confirm">Delete this contact, its cards and their photos? This cannot be undone.</string>
+  <string name="contact_call">Call</string>
+  <string name="contact_write_email">Email</string>
+  <string name="contact_open_web">Open website</string>
+  <string name="contact_copy_email">Copy email</string>
+  <string name="contact_copy_phone">Copy phone</string>
+  <string name="contact_share">Share (vCard)</string>
+  <string name="contact_add_to_phone">Add to phone contacts</string>
+  <string name="contact_copied">Copied</string>
+  <string name="contact_added_to_phone">Added to the phone\'s contacts</string>
+  <string name="contact_phone_failed">It could not be added to the phone\'s contacts.</string>
+  <string name="contact_already_added">You already added it on %1$s. Add it again?</string>
+  <string name="contact_add_again">Add again</string>
+  <string name="contact_action_failed">Something went wrong. Try again.</string>
+  <string name="contact_cards">Cards (%1$d)</string>
+  <string name="contact_primary">Primary card</string>
+  <string name="contact_make_primary">Make primary</string>
+  <string name="contact_delete_card">Delete card</string>
+  <string name="contact_delete_card_confirm">Delete this card and its photos?</string>
+  <string name="contact_card_deleted">Card deleted</string>
+  <string name="contact_only_card">The only card of a contact cannot be deleted. Delete the contact instead.</string>
+  <string name="contact_add_card">Add new card</string>
+  <string name="duplicates_merge">Merge</string>
+  <string name="duplicates_add_card">Add as new card</string>
+  <string name="merge_title">Merge contacts</string>
+  <string name="merge_pick">Choose the contact to merge into %1$s</string>
+  <string name="merge_into">%1$s will be merged into %2$s.</string>
+  <string name="merge_choose">Choose the value to keep</string>
+  <string name="merge_kept">Kept</string>
+  <string name="merge_notes_joined">Notes are joined, nothing is lost.</string>
+  <string name="merge_cards_events">All cards and events of both contacts are kept.</string>
+  <string name="merge_confirm">Merge</string>
+  <string name="merge_failed">The contacts could not be merged.</string>
+  <string name="merge_done">Contacts merged</string>
+  <string name="merge_undo">Undo</string>
+  <string name="merge_undone">Merge undone</string>
+  <string name="merge_existing">Saved contact</string>
+  <string name="merge_this_card">This card</string>
+  <string name="cards_export_vcf">Export .vcf</string>
+  <string name="cards_export_file_name" translatable="false">ultimatevisitcards_contacts.vcf</string>
+  <string name="cards_export_failed">The contacts could not be exported.</string>
+  <plurals name="cards_exported">
+    <item quantity="one">%1$d contact exported</item>
+    <item quantity="other">%1$d contacts exported</item>
+  </plurals>
 </resources>
