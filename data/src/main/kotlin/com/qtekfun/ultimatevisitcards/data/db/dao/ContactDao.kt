@@ -19,6 +19,10 @@ data class ContactWithCompanyRow(@Embedded val contact: ContactEntity, val compa
 
 data class ContactListRow(@Embedded val contact: ContactEntity, val companyName: String?, val effectiveCountry: String?, val primaryCardId: String?)
 
+data class ContactEventName(val contactId: String, val name: String)
+
+data class CompanySectorName(val companyId: String, val sectorName: String)
+
 @Dao
 interface ContactDao {
     @Query("SELECT * FROM Contact ORDER BY createdAt DESC, id")
@@ -65,6 +69,13 @@ interface ContactDao {
 
     @Query("SELECT COUNT(*) FROM Contact")
     fun observeCount(): Flow<Int>
+
+    /** Every contact-event link with the event name, for exports (one query instead of one per contact). */
+    @Query("SELECT ce.contactId AS contactId, e.name AS name FROM ContactEvent ce JOIN Event e ON e.id = ce.eventId ORDER BY e.name COLLATE NOCASE")
+    suspend fun allEventNames(): List<ContactEventName>
+
+    @Query("SELECT co.id AS companyId, s.name AS sectorName FROM Company co JOIN Sector s ON s.id = co.sectorId")
+    suspend fun companySectorNames(): List<CompanySectorName>
 
     @Query("SELECT c.*, co.name AS companyName FROM Contact c LEFT JOIN Company co ON co.id = c.companyId")
     suspend fun allWithCompany(): List<ContactWithCompanyRow>
