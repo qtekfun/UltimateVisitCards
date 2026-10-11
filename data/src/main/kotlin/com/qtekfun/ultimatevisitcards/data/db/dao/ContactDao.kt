@@ -53,6 +53,10 @@ interface ContactDao {
     @RawQuery(observedEntities = [ContactEntity::class, CompanyEntity::class, BusinessCardEntity::class, ContactEventEntity::class, ContactFtsEntity::class])
     fun observeList(query: RoomRawQuery): Flow<List<ContactListRow>>
 
+    /** One-shot version of [observeList], for exports. */
+    @RawQuery
+    suspend fun list(query: RoomRawQuery): List<ContactListRow>
+
     @Query(
         "SELECT DISTINCT country FROM (SELECT COALESCE(c.country, co.country) AS country FROM Contact c " +
             "LEFT JOIN Company co ON co.id = c.companyId) WHERE country IS NOT NULL ORDER BY country COLLATE NOCASE"

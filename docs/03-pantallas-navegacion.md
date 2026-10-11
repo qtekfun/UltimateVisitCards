@@ -76,6 +76,8 @@ Acciones rápidas, solo si hay dato: **llamar · email · abrir web · copiar em
 
 **Histórico**: si el contacto tiene varias tarjetas, carrusel con fecha y evento de cada una y «Añadir nueva tarjeta». Se puede marcar cuál es la principal y borrar una tarjeta antigua (con confirmación).
 
+Fase 7: barra superior con «Editar» (pantalla `contact/{id}/edit`) y menú «Fusionar con…» (`merge/{id}`) y «Borrar contacto» (con sus tarjetas y fotos). Acciones rápidas como chips. Tras fusionar, «Deshacer» durante unos segundos. Si se niega `WRITE_CONTACTS`, se comparte el `.vcf`.
+
 ## Eventos y empresas
 
 - Evento: nombre, fechas, lugar, notas, «N contactos». Su detalle incluye lista, buscador limitado al evento (chip «Solo en este evento» que se quita para volver a global), filtros y exportación del evento.

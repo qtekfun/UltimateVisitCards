@@ -81,6 +81,12 @@ class ImageStore(private val filesRoot: File, private val cacheRoot: File, priva
         thumbnailFile(cardId, side).takeIf { it.isFile } ?: file(processedPath(cardId, side)).takeIf { it.isFile }
     }
 
+    /**
+     * Cache folder for files the user explicitly shares (vCards, exports), exposed only through the
+     * FileProvider (`res/xml/file_paths.xml`). Regenerable: the system may clear it.
+     */
+    fun sharedDir(): File = File(cacheRoot, SHARED)
+
     /** Resolves a relative path inside the app's private storage; rejects anything that would escape it. */
     fun file(relativePath: String): File {
         val root = filesRoot.canonicalFile
@@ -167,6 +173,7 @@ class ImageStore(private val filesRoot: File, private val cacheRoot: File, priva
         private const val THUMBNAIL_QUALITY = 85
         private const val CARDS = "cards"
         private const val THUMBS = "thumbs"
+        private const val SHARED = "shared"
         private const val TEMP_PREFIX = ".write-"
         private val ID = Regex("[A-Za-z0-9-]{1,64}")
     }

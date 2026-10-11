@@ -58,6 +58,7 @@ tasks.register("ci") {
         // Los tests instrumentados (OCR por flavour) se compilan siempre aunque solo corran en dispositivo.
         ":ocr:assemblePlayDebugAndroidTest",
         ":ocr:assembleFossDebugAndroidTest",
+        ":data:assembleDebugAndroidTest",
     )
     subprojects.forEach { dependsOn("${it.path}:ktlintCheck") }
 }

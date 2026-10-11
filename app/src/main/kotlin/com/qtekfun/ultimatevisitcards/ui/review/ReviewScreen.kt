@@ -59,7 +59,9 @@ import com.qtekfun.ultimatevisitcards.domain.dedupe.DuplicateCandidate
 import com.qtekfun.ultimatevisitcards.domain.dedupe.MatchReason
 import com.qtekfun.ultimatevisitcards.domain.extract.CardField
 import com.qtekfun.ultimatevisitcards.domain.model.CardSide
+import com.qtekfun.ultimatevisitcards.ui.common.ContactFieldInput
 import com.qtekfun.ultimatevisitcards.ui.common.EmptyState
+import com.qtekfun.ultimatevisitcards.ui.merge.MergeComparison
 
 @Composable
 fun ReviewScreen(onExit: (ReviewExit) -> Unit, onBack: () -> Unit, viewModel: ReviewViewModel = hiltViewModel()) {
@@ -91,7 +93,8 @@ private fun ReviewContent(state: ReviewUiState, viewModel: ReviewViewModel, onBa
             }
         }
     }
-    if (state.duplicates.isNotEmpty() && state.preview == null) DuplicatesDialog(state.duplicates, viewModel)
+    if (state.duplicates.isNotEmpty() && state.preview == null && state.merge == null) DuplicatesDialog(state.duplicates, viewModel)
+    state.merge?.let { MergeDialog(it, state.saving, viewModel) }
     state.preview?.let { ExistingContactDialog(it, onClose = viewModel::closePreview) }
     state.error?.let { error ->
         AlertDialog(
@@ -113,7 +116,7 @@ private fun Form(state: ReviewUiState, viewModel: ReviewViewModel) {
             if (state.reading) Notice(stringResource(R.string.review_reading), progress = true)
             if (state.ocrFailed) Notice(stringResource(R.string.review_ocr_failed), progress = false)
             REVIEW_FIELDS.forEach { field ->
-                FieldInput(field, state, viewModel)
+                ContactFieldInput(field, state.value(field), field in state.doubtful) { viewModel.onChange(field, it) }
                 if (field == CardField.COMPANY) {
                     state.companySuggestions.forEach { company ->
                         TextButton(onClick = { viewModel.chooseCompany(company) }) { Text(company.name) }
@@ -184,58 +187,6 @@ private fun Notice(text: String, progress: Boolean) {
             Text(text, style = MaterialTheme.typography.bodyMedium)
         }
     }
-}
-
-@Composable
-private fun FieldInput(field: CardField, state: ReviewUiState, viewModel: ReviewViewModel) {
-    val doubtful = field in state.doubtful
-    val warning = MaterialTheme.colorScheme.tertiary
-    OutlinedTextField(
-        value = state.value(field),
-        onValueChange = { viewModel.onChange(field, it) },
-        label = { Text(stringResource(field.label())) },
-        singleLine = field != CardField.ADDRESS && field != CardField.NOTES,
-        keyboardOptions = field.keyboard(),
-        supportingText = if (doubtful) {
-            { Text(stringResource(R.string.review_check_field)) }
-        } else {
-            null
-        },
-        trailingIcon = if (doubtful) {
-            { Icon(Icons.Filled.Warning, contentDescription = null, tint = warning) }
-        } else {
-            null
-        },
-        colors = if (doubtful) {
-            OutlinedTextFieldDefaults.colors(unfocusedBorderColor = warning, unfocusedLabelColor = warning, unfocusedSupportingTextColor = warning)
-        } else {
-            OutlinedTextFieldDefaults.colors()
-        },
-        modifier = Modifier.fillMaxWidth()
-    )
-}
-
-private fun CardField.label(): Int = when (this) {
-    CardField.FIRST_NAME -> R.string.field_first_name
-    CardField.LAST_NAME -> R.string.field_last_name
-    CardField.JOB_TITLE -> R.string.field_job_title
-    CardField.COMPANY -> R.string.field_company
-    CardField.COUNTRY -> R.string.field_country
-    CardField.PHONE -> R.string.field_phone
-    CardField.MOBILE -> R.string.field_mobile
-    CardField.EMAIL -> R.string.field_email
-    CardField.WEBSITE -> R.string.field_website
-    CardField.ADDRESS -> R.string.field_address
-    CardField.NOTES -> R.string.field_notes
-}
-
-/** Keyboards that fit each field (docs/03): email, phone and URL keyboards. */
-private fun CardField.keyboard(): KeyboardOptions = when (this) {
-    CardField.EMAIL -> KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next)
-    CardField.PHONE, CardField.MOBILE -> KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next)
-    CardField.WEBSITE -> KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next)
-    CardField.ADDRESS, CardField.NOTES -> KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-    else -> KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Next)
 }
 
 /** Drop-down with «None», the options and «Create new…» (a small dialog, without leaving the review). */
@@ -327,11 +278,36 @@ private fun DuplicatesDialog(candidates: List<DuplicateCandidate>, viewModel: Re
                         }
                         TextButton(onClick = { viewModel.viewExisting(candidate) }) { Text(stringResource(R.string.duplicates_view)) }
                     }
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        TextButton(onClick = { viewModel.mergeInto(candidate) }) { Text(stringResource(R.string.duplicates_merge)) }
+                        TextButton(onClick = { viewModel.addAsNewCard(candidate) }) { Text(stringResource(R.string.duplicates_add_card)) }
+                    }
                 }
             }
         },
         confirmButton = { TextButton(onClick = viewModel::saveAsNew) { Text(stringResource(R.string.duplicates_save_new)) } },
         dismissButton = { TextButton(onClick = viewModel::dismissDuplicates) { Text(stringResource(R.string.review_cancel)) } }
+    )
+}
+
+/** «Merge»: the existing contact on the left, this card on the right; the newest card wins by default. */
+@Composable
+private fun MergeDialog(target: MergeTarget, saving: Boolean, viewModel: ReviewViewModel) {
+    AlertDialog(
+        onDismissRequest = viewModel::cancelMerge,
+        title = { Text(stringResource(R.string.merge_title)) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                MergeComparison(
+                    target.plan,
+                    existingLabel = stringResource(R.string.merge_existing),
+                    incomingLabel = stringResource(R.string.merge_this_card),
+                    onChoose = viewModel::chooseMerge
+                )
+            }
+        },
+        confirmButton = { TextButton(onClick = viewModel::confirmMerge, enabled = !saving) { Text(stringResource(R.string.merge_confirm)) } },
+        dismissButton = { TextButton(onClick = viewModel::cancelMerge) { Text(stringResource(R.string.review_cancel)) } }
     )
 }
 

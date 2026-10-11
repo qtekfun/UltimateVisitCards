@@ -1,5 +1,7 @@
 package com.qtekfun.ultimatevisitcards.ui.cards
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,6 +70,23 @@ class CardsActions(val onAddCard: () -> Unit = {}, val onQuickScan: () -> Unit =
 @Composable
 fun CardsScreen(actions: CardsActions, modifier: Modifier = Modifier, viewModel: CardsViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val exported by viewModel.exported.collectAsStateWithLifecycle()
+    val exportFile = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/x-vcard")) { uri -> uri?.let(viewModel::exportVcf) }
+    val vcfName = stringResource(R.string.cards_export_file_name)
+    exported?.let { result ->
+        AlertDialog(
+            onDismissRequest = viewModel::exportShown,
+            confirmButton = { TextButton(onClick = viewModel::exportShown) { Text(stringResource(R.string.review_ok)) } },
+            text = {
+                Text(
+                    when (result) {
+                        is ExportResult.Done -> pluralStringResource(R.plurals.cards_exported, result.count, result.count)
+                        ExportResult.Failed -> stringResource(R.string.cards_export_failed)
+                    }
+                )
+            }
+        )
+    }
     CardsContent(
         state = state,
         actions = actions,
@@ -85,6 +106,7 @@ fun CardsContent(
     onApplyFilter: (ContactFilter) -> Unit = {},
     onClearFilters: () -> Unit = {},
     onView: (CardsView) -> Unit = {},
+    onExportVcf: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var filtersOpen by remember { mutableStateOf(false) }
@@ -102,7 +124,7 @@ fun CardsContent(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     item(span = { GridItemSpan(maxLineSpan) }) {
-                        Header(state, onSearch, onOpenFilters = { filtersOpen = true }, onApplyFilter, onClearFilters, onView, actions)
+                        Header(state, onSearch, onOpenFilters = { filtersOpen = true }, onApplyFilter, onClearFilters, onView, actions, onExportVcf)
                     }
                     if (state.items.isEmpty()) {
                         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -146,7 +168,8 @@ private fun Header(
     onApplyFilter: (ContactFilter) -> Unit,
     onClearFilters: () -> Unit,
     onView: (CardsView) -> Unit,
-    actions: CardsActions
+    actions: CardsActions,
+    onExportVcf: () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedTextField(
@@ -197,6 +220,8 @@ private fun Header(
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.weight(1f)
             )
+            // Exports exactly what is listed: everything, a search, an event, a company, a sector…
+            if (state.items.isNotEmpty()) TextButton(onClick = onExportVcf) { Text(stringResource(R.string.cards_export_vcf)) }
             SingleChoiceSegmentedButtonRow {
                 listOf(CardsView.GRID to R.string.cards_view_grid, CardsView.LIST to R.string.cards_view_list).forEachIndexed { i, (view, label) ->
                     SegmentedButton(selected = state.view == view, onClick = { onView(view) }, shape = SegmentedButtonDefaults.itemShape(i, 2)) {

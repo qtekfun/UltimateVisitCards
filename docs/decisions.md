@@ -80,3 +80,27 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
 - **2026-10-11 · Búsqueda global desde un evento.** Quitar el chip «Solo en este evento» abre Tarjetas con el mismo texto (`cards?q=`).
 - **2026-10-11 · Ficha de contacto básica ya en la fase 6** (solo lectura) para que la lista lleve a algún sitio; la fase 7 añade edición, acciones, histórico y fusión.
 - **2026-10-11 · Paralelización con un subagente.** Las pantallas de Eventos, Empresas y Sectores las escribió un subagente en un worktree sin compilar (solo quedaban ~2,5 GB de RAM libres y dos builds de Gradle a la vez no caben); se integraron y compilaron después en una sola build.
+
+## Fase 7 · vCard y contactos del teléfono
+
+- **2026-10-11 · Escritor vCard 3.0 propio (`VCardWriter`, Kotlin puro).** UTF-8, CRLF, escapado RFC 2426 (`\`, `,`, `;`, saltos) y plegado a 75 octetos sin partir caracteres multibyte. Sin foto por ahora (desactivada por defecto en `docs/05`). *Descartado*: ez-vcard (dependencia no aprobada, solo para unas pocas propiedades).
+- **2026-10-11 · Validación con un parser independiente escrito en el test.** `docs/05` pide validar contra un parser independiente; añadir una librería solo para tests no está aprobado, así que el test trae su propio lector mínimo (desplegado, parámetros, desescapado, componentes) sin compartir código con el escritor.
+- **2026-10-11 · `PhoneContactsWriter` en un solo lote.** `ContentProviderOperation` con el contacto en bruto en la cuenta local/por defecto (sin tipo ni nombre de cuenta) y una fila por dato. No lee la agenda (sin `READ_CONTACTS`); el permiso que falta se devuelve como resultado (`Failed(PERMISSION)`), nunca como excepción. Su test instrumentado concede `READ_CONTACTS` solo al test para comprobar los campos.
+- **2026-10-11 · Exportación `.vcf` reutilizando los filtros.** `VcfExporter` exporta lo que seleccione un `ContactFilter` (evento, empresa, sector…) o una lista de ids (en bloques de 500 parámetros), con el país de la empresa si el contacto no tiene, sobre un `OutputStream` que abre quien llama (SAF o FileProvider).
+
+## Fase 7 · Ficha, fusión e histórico
+
+- **2026-10-11 · Plan de fusión explícito (`MergePlan`).** Por campo: el valor no vacío; si ambos difieren, el del lado con la tarjeta más reciente; el otro, a un toque. Las notas se unen bajo un separador con la fecha (ISO). La pantalla solo pregunta por los campos en conflicto y resume el resto.
+- **2026-10-11 · «Fusionar» y «Añadir como nueva tarjeta» desde la revisión.** «Fusionar» abre la comparación (la tarjeta nueva gana por defecto en los conflictos, por ser la más reciente). «Añadir como nueva tarjeta» la une al historial sin tocar los datos del contacto salvo para rellenar huecos. Ambas usan `AddCardToContactUseCase` en una transacción.
+- **2026-10-11 · Deshacer la fusión en memoria.** `MergeUndo` guarda ambos contactos, sus eventos y las tarjetas movidas; la ficha lo ofrece con un *snackbar* largo y desaparece al cerrarla o reiniciar (`MergeUndoHolder`, nunca persistido).
+- **2026-10-11 · «Añadir nueva tarjeta» desde el histórico.** Captura ligada al contacto → revisión que, al guardar, compara con ese contacto (misma comparación que «Fusionar»).
+- **2026-10-11 · `PhoneContacts` como interfaz.** El ViewModel de la ficha se prueba con un falso; `PhoneContactsWriter` tiene su test instrumentado (contactos reales del dispositivo).
+- **2026-10-11 · Compartir solo la carpeta `cache/shared`.** El `FileProvider` expone únicamente esa carpeta (vCards y exportaciones), nunca las fotos; se usa solo por acción explícita.
+- **2026-10-11 · Si se niega `WRITE_CONTACTS`, se ofrece el `.vcf`.** Como pide `docs/05 §5`.
+- **2026-10-11 · Exportar `.vcf` lo que se ve.** El botón de Tarjetas exporta exactamente la lista con la búsqueda y filtros actuales (todo, un evento, una empresa, un sector…), por SAF.
+- **2026-10-11 · Fusión manual desde la ficha** («Fusionar con…» → elegir contacto → comparar). La selección múltiple de la lista y «Posibles duplicados» llegan en las fases 8 y 10.
+
+## Repositorio
+
+- **2026-10-11 · Público, con GitGuardian, Dependabot y *secret scanning*.** Por petición del usuario el repositorio pasa a público (se revisó antes que la historia no tuviera claves ni secretos). GitGuardian revisa cada PR; Dependabot propone actualizaciones semanales agrupadas (Gradle y Actions) que pasan por el CI como cualquier cambio; *secret scanning* y *push protection* de GitHub activados.
+- **2026-10-11 · Cambios que no tocan la app no generan versión.** La configuración del repositorio (p. ej. Dependabot) se fusiona tras el CI sin nueva etiqueta; cada fase y cada cambio de la app sí sube versión.

@@ -1,8 +1,10 @@
 package com.qtekfun.ultimatevisitcards.ui.cards
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.qtekfun.ultimatevisitcards.data.export.VcfExporter
 import com.qtekfun.ultimatevisitcards.data.storage.ImageStore
 import com.qtekfun.ultimatevisitcards.domain.model.CardSide
 import com.qtekfun.ultimatevisitcards.domain.model.Company
@@ -16,23 +18,35 @@ import com.qtekfun.ultimatevisitcards.domain.repository.CompanyRepository
 import com.qtekfun.ultimatevisitcards.domain.repository.ContactRepository
 import com.qtekfun.ultimatevisitcards.domain.repository.EventRepository
 import com.qtekfun.ultimatevisitcards.domain.repository.SectorRepository
+import com.qtekfun.ultimatevisitcards.domain.util.IoDispatcher
 import com.qtekfun.ultimatevisitcards.settings.CardsView
 import com.qtekfun.ultimatevisitcards.settings.UiPreferences
+import com.qtekfun.ultimatevisitcards.ui.common.Documents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+sealed interface ExportResult {
+    data class Done(val count: Int) : ExportResult
+
+    data object Failed : ExportResult
+}
 
 /** A contact of the list with the image to show for it. */
 data class CardItem(val item: ContactListItem, val image: File?)
@@ -77,7 +91,10 @@ class CardsViewModel @Inject constructor(
     events: EventRepository,
     sectors: SectorRepository,
     private val store: ImageStore,
-    private val preferences: UiPreferences
+    private val preferences: UiPreferences,
+    private val vcf: VcfExporter,
+    private val documents: Documents,
+    @IoDispatcher private val io: CoroutineDispatcher
 ) : ViewModel() {
     /** The filter being edited; a global search opened from an event starts with its text (`q`). */
     private val filter = MutableStateFlow(ContactFilter(text = savedState.get<String>(ARG_QUERY).orEmpty()))
@@ -120,6 +137,26 @@ class CardsViewModel @Inject constructor(
     fun clearFilters() = filter.update { ContactFilter(text = it.text) }
 
     fun setView(view: CardsView) = preferences.setCardsView(view)
+
+    /** Result of the last export: number of contacts written, or null on failure. */
+    private val _exported = MutableStateFlow<ExportResult?>(null)
+    val exported: StateFlow<ExportResult?> = _exported.asStateFlow()
+
+    /** Exports the contacts of the current search and filters as one .vcf (docs/05 §4) to [uri] (SAF). */
+    fun exportVcf(uri: Uri) {
+        val current = filter.value
+        viewModelScope.launch {
+            _exported.value = try {
+                ExportResult.Done(withContext(io) { documents.write(uri) { out -> vcf.export(current, out) } })
+            } catch (e: IOException) {
+                ExportResult.Failed
+            }
+        }
+    }
+
+    fun exportShown() {
+        _exported.value = null
+    }
 
     companion object {
         /** Optional free text to start with (global search opened from an event). */

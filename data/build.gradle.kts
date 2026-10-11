@@ -13,7 +13,10 @@ kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_21 } }
 android {
     namespace = "com.qtekfun.ultimatevisitcards.data"
     compileSdk = 37
-    defaultConfig { minSdk = 29 }
+    defaultConfig {
+        minSdk = 29
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -49,4 +52,10 @@ dependencies {
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.room.testing)
     testImplementation(libs.sqlite.bundled.jvm)
+
+    // Escritura en los contactos del teléfono: test instrumentado (solo corre en dispositivo).
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.core.ktx)
+    androidTestImplementation(libs.androidx.test.rules)
 }

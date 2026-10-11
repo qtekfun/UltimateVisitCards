@@ -53,6 +53,12 @@ interface ContactRepository {
 
     suspend fun update(contact: Contact): DomainResult<Contact>
 
+    /** Inserts a contact exactly as given, id and dates included (undoing a merge; restoring a backup). */
+    suspend fun restore(contact: Contact): DomainResult<Contact>
+
+    /** Records that the contact was just added to the phone's contacts. */
+    suspend fun markExportedToPhone(id: String): DomainResult<Unit>
+
     /** Deletes the contact and, by cascade, its cards and event links. */
     suspend fun delete(id: String): DomainResult<Unit>
 

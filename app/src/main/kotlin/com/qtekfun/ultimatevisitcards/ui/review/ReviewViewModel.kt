@@ -10,9 +10,14 @@ import com.qtekfun.ultimatevisitcards.domain.dedupe.DuplicateDetector
 import com.qtekfun.ultimatevisitcards.domain.extract.CardField
 import com.qtekfun.ultimatevisitcards.domain.extract.ExtractedFields
 import com.qtekfun.ultimatevisitcards.domain.extract.ExtractionDictionaries
+import com.qtekfun.ultimatevisitcards.domain.merge.MergeField
+import com.qtekfun.ultimatevisitcards.domain.merge.MergePlan
+import com.qtekfun.ultimatevisitcards.domain.merge.MergeSide
+import com.qtekfun.ultimatevisitcards.domain.merge.MergeSource
 import com.qtekfun.ultimatevisitcards.domain.model.BusinessCard
 import com.qtekfun.ultimatevisitcards.domain.model.CardSide
 import com.qtekfun.ultimatevisitcards.domain.model.Company
+import com.qtekfun.ultimatevisitcards.domain.model.Contact
 import com.qtekfun.ultimatevisitcards.domain.model.DomainError
 import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import com.qtekfun.ultimatevisitcards.domain.model.EventSummary
@@ -26,6 +31,7 @@ import com.qtekfun.ultimatevisitcards.domain.repository.EventRepository
 import com.qtekfun.ultimatevisitcards.domain.repository.SectorRepository
 import com.qtekfun.ultimatevisitcards.domain.text.CompanyNameNormalizer
 import com.qtekfun.ultimatevisitcards.domain.text.TextNormalizer
+import com.qtekfun.ultimatevisitcards.domain.usecase.AddCardToContactUseCase
 import com.qtekfun.ultimatevisitcards.domain.usecase.ReviewedCard
 import com.qtekfun.ultimatevisitcards.domain.usecase.SaveReviewedCardUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -97,12 +103,17 @@ data class ReviewUiState(
     val duplicates: List<DuplicateCandidate> = emptyList(),
     /** An existing contact opened from the duplicate warning. */
     val preview: DuplicateCandidate? = null,
+    /** «Merge» with an existing contact: the field-by-field comparison (existing ← this card). */
+    val merge: MergeTarget? = null,
     val saving: Boolean = false,
     val error: ReviewError? = null,
     val exit: ReviewExit? = null
 ) {
     fun value(field: CardField): String = values[field].orEmpty()
 }
+
+/** The existing contact this card is being merged into, and the plan of chosen values. */
+data class MergeTarget(val contact: Contact, val plan: MergePlan)
 
 /**
  * Review of one card (docs/03, «Revisión»): the photo, the fields proposed by the OCR (doubtful ones
@@ -119,9 +130,13 @@ class ReviewViewModel @Inject constructor(
     private val sectors: SectorRepository,
     private val store: ImageStore,
     private val detector: DuplicateDetector,
-    private val saveCard: SaveReviewedCardUseCase
+    private val saveCard: SaveReviewedCardUseCase,
+    private val addCard: AddCardToContactUseCase
 ) : ViewModel() {
     val cardId: String = checkNotNull(savedState[ARG_CARD_ID])
+
+    /** A new card for this existing contact («Add new card» in the contact sheet): saving compares and merges. */
+    private val targetContactId: String? = savedState.get<String>(ARG_TARGET_CONTACT)?.takeIf { it.isNotEmpty() }
 
     /** Opened from the review queue: «Save and review next» instead of «Save and scan next». */
     val next: SaveAndNext = if (savedState.get<Boolean>(ARG_FROM_QUEUE) == true) SaveAndNext.REVIEW else SaveAndNext.SCAN
@@ -296,6 +311,11 @@ class ReviewViewModel @Inject constructor(
             _state.update { it.copy(error = ReviewError.EMPTY) }
             return
         }
+        targetContactId?.let { target ->
+            pendingExit = exit
+            viewModelScope.launch { contacts.get(target)?.let { openMerge(it) } }
+            return
+        }
         _state.update { it.copy(saving = true, error = null) }
         viewModelScope.launch {
             if (!duplicatesConfirmed) {
@@ -321,6 +341,68 @@ class ReviewViewModel @Inject constructor(
         duplicatesConfirmed = true
         _state.update { it.copy(duplicates = emptyList(), preview = null) }
         save(pendingExit)
+    }
+
+    /** «Merge» from the warning: compare field by field with [candidate], newest card wins by default. */
+    fun mergeInto(candidate: DuplicateCandidate) {
+        viewModelScope.launch { openMerge(candidate.contact) }
+    }
+
+    /** «Add as new card»: the card joins [candidate]'s history; its data only fills empty fields. */
+    fun addAsNewCard(candidate: DuplicateCandidate) {
+        viewModelScope.launch {
+            val plan = plan(candidate.contact)
+            val keepExisting = plan.conflicts.fold(plan) { p, field -> p.choose(field, MergeSource.EXISTING) }
+            finishMerge(candidate.contact, keepExisting)
+        }
+    }
+
+    fun chooseMerge(field: MergeField, source: MergeSource) = _state.update { it.copy(merge = it.merge?.copy(plan = it.merge.plan.choose(field, source))) }
+
+    fun cancelMerge() = _state.update { it.copy(merge = null) }
+
+    fun confirmMerge() {
+        val target = _state.value.merge ?: return
+        viewModelScope.launch { finishMerge(target.contact, target.plan) }
+    }
+
+    private suspend fun openMerge(contact: Contact) {
+        _state.update { it.copy(duplicates = emptyList(), preview = null, merge = MergeTarget(contact, plan(contact))) }
+    }
+
+    private suspend fun plan(contact: Contact): MergePlan {
+        val existing = MergeSide.of(
+            contact,
+            contact.companyId?.let { companies.get(it)?.name },
+            cards.observeByContact(contact.id).first().maxOfOrNull { it.capturedAt } ?: contact.createdAt
+        )
+        val s = _state.value
+        fun v(field: CardField) = s.value(field).trim().takeIf { it.isNotEmpty() }
+        val incoming = MergeSide(
+            mapOf(
+                MergeField.FIRST_NAME to v(CardField.FIRST_NAME),
+                MergeField.LAST_NAME to v(CardField.LAST_NAME),
+                MergeField.JOB_TITLE to v(CardField.JOB_TITLE),
+                MergeField.COMPANY to v(CardField.COMPANY),
+                MergeField.COUNTRY to v(CardField.COUNTRY),
+                MergeField.PHONE to v(CardField.PHONE),
+                MergeField.MOBILE to v(CardField.MOBILE),
+                MergeField.EMAIL to v(CardField.EMAIL),
+                MergeField.WEBSITE to v(CardField.WEBSITE),
+                MergeField.ADDRESS to v(CardField.ADDRESS)
+            ),
+            notes = v(CardField.NOTES),
+            newestCardAt = cards.get(cardId)?.capturedAt ?: Long.MAX_VALUE
+        )
+        return MergePlan.of(existing, incoming)
+    }
+
+    private suspend fun finishMerge(contact: Contact, plan: MergePlan) {
+        _state.update { it.copy(saving = true) }
+        when (addCard(cardId, contact.id, plan, _state.value.eventId, _state.value.sectorId)) {
+            is DomainResult.Success -> _state.update { it.copy(saving = false, merge = null, duplicates = emptyList(), exit = resolve(pendingExit)) }
+            is DomainResult.Failure -> _state.update { it.copy(saving = false, error = ReviewError.SAVE_FAILED) }
+        }
     }
 
     /** «View existing contact»: opens it without losing the review. */
@@ -362,6 +444,7 @@ class ReviewViewModel @Inject constructor(
     companion object {
         const val ARG_CARD_ID = "cardId"
         const val ARG_FROM_QUEUE = "queue"
+        const val ARG_TARGET_CONTACT = "contactId"
 
         /** Placeholder resolved after saving into [ReviewExit.ReviewNext] or [ReviewExit.Done]. */
         private val NEXT_IN_QUEUE = ReviewExit.ReviewNext("")

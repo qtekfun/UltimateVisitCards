@@ -160,4 +160,55 @@
   <string name="contact_section_card">Tarjeta</string>
   <string name="contact_added_on">Añadido el %1$s</string>
   <string name="contact_cards_count">%1$d tarjetas de este contacto</string>
+  <!-- Ficha completa, fusión y contactos del teléfono -->
+  <string name="contact_edit_title">Editar contacto</string>
+  <string name="contact_edit">Editar</string>
+  <string name="contact_more">Más opciones</string>
+  <string name="contact_merge_with">Fusionar con…</string>
+  <string name="contact_delete">Borrar contacto</string>
+  <string name="contact_delete_confirm">¿Borrar este contacto, sus tarjetas y sus fotos? No se puede deshacer.</string>
+  <string name="contact_call">Llamar</string>
+  <string name="contact_write_email">Email</string>
+  <string name="contact_open_web">Abrir web</string>
+  <string name="contact_copy_email">Copiar email</string>
+  <string name="contact_copy_phone">Copiar teléfono</string>
+  <string name="contact_share">Compartir (vCard)</string>
+  <string name="contact_add_to_phone">Añadir a contactos</string>
+  <string name="contact_copied">Copiado</string>
+  <string name="contact_added_to_phone">Añadido a los contactos del teléfono</string>
+  <string name="contact_phone_failed">No se pudo añadir a los contactos del teléfono.</string>
+  <string name="contact_already_added">Ya lo añadiste el %1$s. ¿Añadir otra vez?</string>
+  <string name="contact_add_again">Añadir otra vez</string>
+  <string name="contact_action_failed">Algo ha fallado. Inténtalo de nuevo.</string>
+  <string name="contact_cards">Tarjetas (%1$d)</string>
+  <string name="contact_primary">Tarjeta principal</string>
+  <string name="contact_make_primary">Marcar como principal</string>
+  <string name="contact_delete_card">Borrar tarjeta</string>
+  <string name="contact_delete_card_confirm">¿Borrar esta tarjeta y sus fotos?</string>
+  <string name="contact_card_deleted">Tarjeta borrada</string>
+  <string name="contact_only_card">No se puede borrar la única tarjeta de un contacto. Borra el contacto.</string>
+  <string name="contact_add_card">Añadir nueva tarjeta</string>
+  <string name="duplicates_merge">Fusionar</string>
+  <string name="duplicates_add_card">Añadir como nueva tarjeta</string>
+  <string name="merge_title">Fusionar contactos</string>
+  <string name="merge_pick">Elige el contacto que se fusionará en %1$s</string>
+  <string name="merge_into">%1$s se fusionará en %2$s.</string>
+  <string name="merge_choose">Elige el valor que se queda</string>
+  <string name="merge_kept">Se conserva</string>
+  <string name="merge_notes_joined">Las notas se unen, no se pierde nada.</string>
+  <string name="merge_cards_events">Se conservan todas las tarjetas y eventos de ambos contactos.</string>
+  <string name="merge_confirm">Fusionar</string>
+  <string name="merge_failed">No se pudieron fusionar los contactos.</string>
+  <string name="merge_done">Contactos fusionados</string>
+  <string name="merge_undo">Deshacer</string>
+  <string name="merge_undone">Fusión deshecha</string>
+  <string name="merge_existing">Contacto guardado</string>
+  <string name="merge_this_card">Esta tarjeta</string>
+  <string name="cards_export_vcf">Exportar .vcf</string>
+  <string name="cards_export_file_name" translatable="false">ultimatevisitcards_contactos.vcf</string>
+  <string name="cards_export_failed">No se pudieron exportar los contactos.</string>
+  <plurals name="cards_exported">
+    <item quantity="one">%1$d contacto exportado</item>
+    <item quantity="other">%1$d contactos exportados</item>
+  </plurals>
 </resources>

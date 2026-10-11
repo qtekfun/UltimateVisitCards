@@ -2,6 +2,7 @@ package com.qtekfun.ultimatevisitcards.ui.cards
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.qtekfun.ultimatevisitcards.data.export.VcfExporter
 import com.qtekfun.ultimatevisitcards.data.repo.RoomCompanyRepository
 import com.qtekfun.ultimatevisitcards.data.repo.RoomContactRepository
 import com.qtekfun.ultimatevisitcards.data.repo.RoomSectorRepository
@@ -15,8 +16,10 @@ import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
 import com.qtekfun.ultimatevisitcards.settings.CardsView
 import com.qtekfun.ultimatevisitcards.settings.UiPreferences
 import com.qtekfun.ultimatevisitcards.testing.AppTestData
+import com.qtekfun.ultimatevisitcards.ui.common.Documents
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -67,7 +70,10 @@ class CardsViewModelTest {
         data.events,
         sectors,
         data.store,
-        UiPreferences(data.app)
+        UiPreferences(data.app),
+        VcfExporter(data.db, dispatcher),
+        Documents(data.app),
+        dispatcher
     )
 
     private fun <T> DomainResult<T>.value() = (this as DomainResult.Success).value
@@ -116,6 +122,26 @@ class CardsViewModelTest {
         val state = assertIs<CardsUiState.Content>(vm.state.value)
         assertEquals("gil", state.filter.text)
         assertEquals(listOf("Gil"), state.items.map { it.item.contact.lastName })
+    }
+
+    @Test
+    fun `the listed contacts are exported as one vcf`() = runTest(dispatcher) {
+        contacts.create(ContactDraft("Ana", "Ruiz", email = "ana@example-demo.es"))
+        contacts.create(ContactDraft("Luis", "Gil"))
+        val vm = viewModel()
+        backgroundScope.launch { vm.state.collect {} }
+        advanceUntilIdle()
+        vm.search("ruiz")
+        advanceUntilIdle()
+        val file = folder.newFile("out.vcf")
+        vm.exportVcf(android.net.Uri.fromFile(file))
+        advanceUntilIdle()
+        assertEquals(ExportResult.Done(1), vm.exported.value)
+        val text = file.readText()
+        assertEquals(1, Regex("BEGIN:VCARD").findAll(text).count())
+        assertTrue(text.contains("FN:Ana Ruiz"))
+        vm.exportShown()
+        assertEquals(null, vm.exported.value)
     }
 
     @Test
