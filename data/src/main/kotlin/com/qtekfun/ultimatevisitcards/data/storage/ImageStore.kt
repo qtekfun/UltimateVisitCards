@@ -73,6 +73,14 @@ class ImageStore(private val filesRoot: File, private val cacheRoot: File, priva
         thumb
     }
 
+    /**
+     * Best existing image to show small, without generating anything (safe for long lists): the thumbnail
+     * if it exists, otherwise the straightened image (the image loader downsamples it).
+     */
+    suspend fun preview(cardId: String, side: CardSide): File? = withContext(io) {
+        thumbnailFile(cardId, side).takeIf { it.isFile } ?: file(processedPath(cardId, side)).takeIf { it.isFile }
+    }
+
     /** Resolves a relative path inside the app's private storage; rejects anything that would escape it. */
     fun file(relativePath: String): File {
         val root = filesRoot.canonicalFile

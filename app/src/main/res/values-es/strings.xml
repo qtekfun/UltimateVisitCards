@@ -121,4 +121,43 @@
   <string name="queue_discard">Descartar</string>
   <string name="queue_discard_confirm">¿Descartar esta tarjeta y sus fotos? No se puede deshacer.</string>
   <string name="review_save_review_next">Guardar y revisar siguiente</string>
+  <!-- Tarjetas: búsqueda y filtros -->
+  <string name="cards_search">Busca nombre, empresa, país, notas…</string>
+  <string name="cards_clear_search">Borrar búsqueda</string>
+  <string name="cards_stats">%1$d contactos · %2$d eventos · %3$d empresas</string>
+  <string name="cards_latest">Últimas añadidas (%1$d)</string>
+  <string name="cards_results">Resultados (%1$d)</string>
+  <string name="cards_view_grid">Tarjetero</string>
+  <string name="cards_view_list">Lista</string>
+  <string name="cards_no_results">Ningún contacto coincide con la búsqueda.</string>
+  <string name="cards_card_image">Tarjeta de %1$s</string>
+  <string name="cards_unnamed">Sin nombre</string>
+  <string name="filters">Filtros</string>
+  <string name="filters_count">Filtros (%1$d)</string>
+  <string name="filters_clear">Quitar filtros</string>
+  <string name="filters_apply">Aplicar</string>
+  <string name="filter_any">Cualquiera</string>
+  <string name="filter_remove">Quitar filtro %1$s</string>
+  <string name="filter_event_value">Evento: %1$s</string>
+  <string name="filter_sector_value">Sector: %1$s</string>
+  <string name="filter_company_value">Empresa: %1$s</string>
+  <string name="filter_country_value">País: %1$s</string>
+  <string name="filter_first_name_value">Nombre: %1$s</string>
+  <string name="filter_last_name_value">Apellidos: %1$s</string>
+  <string name="filter_job_title_value">Cargo: %1$s</string>
+  <string name="filter_dates_value">Añadidos: %1$s – %2$s</string>
+  <string name="filter_added_between">Añadidos entre</string>
+  <string name="filter_from">Desde</string>
+  <string name="filter_to">Hasta</string>
+  <string name="filter_no_date">Sin fecha</string>
+  <!-- Ficha de contacto -->
+  <string name="contact_title">Contacto</string>
+  <string name="contact_missing">Este contacto ya no existe.</string>
+  <string name="contact_error">No se pudo cargar el contacto.</string>
+  <string name="contact_section_company">Empresa</string>
+  <string name="contact_section_contact">Contacto</string>
+  <string name="contact_section_origin">Procedencia</string>
+  <string name="contact_section_card">Tarjeta</string>
+  <string name="contact_added_on">Añadido el %1$s</string>
+  <string name="contact_cards_count">%1$d tarjetas de este contacto</string>
 </resources>
