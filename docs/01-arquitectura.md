@@ -51,7 +51,8 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 
 ## Inyección de dependencias (Hilt)
 
-- `DomainModule`: casos de uso.
+- Casos de uso (`SaveReviewedCardUseCase`…) y `DuplicateDetector` se inyectan por constructor (`@Inject`), sin módulo propio.
+- `TransactionRunner` (`:data`, `RoomTransactionRunner`): varias escrituras de repositorios en una sola transacción.
 - `DataModule`: Room, DAOs, repositorios, `ImageStore`.
 - `OcrModule`: **uno por flavour** (`src/play` y `src/foss`) que enlaza `OcrService`.
 - `DispatchersModule`: `@IoDispatcher`, `@DefaultDispatcher` (las anotaciones viven en `:domain/util`).
@@ -68,7 +69,7 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 | CameraX (core, camera2, lifecycle, view) | captura | ambos |
 | WorkManager | cola OCR | ambos |
 | Hilt (+ hilt-work, navigation-compose) | DI | ambos |
-| Coil | miniaturas/visor | ambos |
+| Coil 3 (`coil-compose`, solo archivos locales: sin `coil-network-*`) | miniaturas/visor | ambos |
 | kotlinx-serialization-json | `database.json` del backup; `CardQuad` (esquinas en JSON) en `:domain` | ambos |
 | zip4j | ZIP con AES-256 (backup cifrado) | ambos |
 | androidx.biometric | bloqueo opcional | ambos |

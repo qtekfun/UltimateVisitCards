@@ -90,6 +90,18 @@ class RoomBusinessCardRepository @Inject constructor(
         Unit.success()
     }
 
+    override suspend fun setEvent(cardId: String, eventId: String?): DomainResult<Unit> = db.writeResult {
+        val card = dao.get(cardId) ?: return@writeResult failure(DomainError.NotFound(cardId))
+        if (eventId != null && db.eventDao().get(eventId) == null) return@writeResult failure(DomainError.NotFound(eventId))
+        dao.setEvent(cardId, eventId)
+        val contactId = card.contactId
+        if (contactId != null && eventId != null) {
+            db.contactDao().addToEvent(ContactEventEntity(contactId, eventId))
+            indexer.reindex(contactId)
+        }
+        Unit.success()
+    }
+
     override suspend fun delete(id: String): DomainResult<Unit> = db.writeResult {
         val card = dao.get(id) ?: return@writeResult failure(DomainError.NotFound(id))
         val contactId = card.contactId

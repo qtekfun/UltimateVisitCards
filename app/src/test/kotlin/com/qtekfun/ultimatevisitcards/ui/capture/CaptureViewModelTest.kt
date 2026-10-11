@@ -119,6 +119,8 @@ class CaptureViewModelTest {
         vm.skipBack()
         advanceUntilIdle()
         assertEquals(CaptureStep.SAVED, vm.state.value.step)
+        // The screen goes on to review this card.
+        assertEquals("11111111-1111-4111-8111-111111111111", vm.state.value.savedCardId)
         val card = assertNotNull(cards.get("11111111-1111-4111-8111-111111111111"))
         assertEquals(OcrStatus.PENDING, card.ocrStatus)
         assertNull(card.contactId)
@@ -208,23 +210,5 @@ class CaptureViewModelTest {
         assertEquals(emptyList(), files("11111111-1111-4111-8111-111111111111"))
         vm.dismissError()
         assertNull(vm.state.value.error)
-    }
-
-    @Test
-    fun `scan another starts a new card and keeps the camera settings`() = runTest(dispatcher) {
-        val vm = viewModel()
-        vm.toggleFlash()
-        vm.onPhoto(cardPhoto())
-        advanceUntilIdle()
-        vm.skipBack()
-        advanceUntilIdle()
-        vm.scanAnother()
-        assertEquals(CaptureStep.FRONT, vm.state.value.step)
-        assertTrue(vm.state.value.flashOn)
-        vm.onPhoto(cardPhoto())
-        advanceUntilIdle()
-        vm.skipBack()
-        advanceUntilIdle()
-        assertNotNull(cards.get("22222222-2222-4222-8222-222222222222"))
     }
 }

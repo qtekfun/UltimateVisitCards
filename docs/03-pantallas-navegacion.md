@@ -52,12 +52,14 @@ Ajustes
 
 ## Revisión
 
+Ruta `review/{cardId}`. En modo normal la captura lleva aquí al guardar la tarjeta; «Guardar y escanear siguiente» vuelve a la cámara; «Guardar» vuelve a donde se estaba. Mientras el OCR lee, el formulario ya se puede rellenar y al terminar solo se completan los campos que el usuario no ha tocado.
+
 - Imagen de la tarjeta fija arriba (tocar para ampliar; alternar Anverso | Reverso).
 - Campos: nombre, apellidos, cargo, empresa, país, teléfono, móvil, email, web, dirección, notas.
 - Campos con confianza baja marcados visualmente; teclados adecuados (email, teléfono, URL).
 - Sugerencias al escribir empresa (autocompletado desde empresas existentes) y país.
 - Selector de **evento** y **sector** (con «crear nuevo» sin salir de la pantalla).
-- Aviso de duplicado («Este contacto podría existir ya») con **Ver existente · Guardar como nuevo · Fusionar · Añadir como nueva tarjeta** (histórico).
+- Aviso de duplicado («Este contacto podría existir ya») con **Ver existente · Guardar como nuevo · Fusionar · Añadir como nueva tarjeta** (histórico). Fase 4: «Ver existente» (sus datos, sin salir de la revisión) y «Guardar como nuevo»; «Fusionar» y «Añadir como nueva tarjeta» llegan con la ficha y el histórico (fase 7).
 - Acciones: **Guardar**, **Guardar y escanear siguiente**, **Guardar y revisar siguiente** (desde la cola).
 - Si el OCR falló: formulario vacío con la foto visible y mensaje claro. No se pierde nada.
 

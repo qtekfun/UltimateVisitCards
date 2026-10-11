@@ -34,7 +34,7 @@ enum class CaptureStep {
     /** Back taken: save it or retake. */
     BACK_TAKEN,
 
-    /** The card is stored as pending review. */
+    /** The card is stored as pending review: the screen moves on to its review. */
     SAVED
 }
 
@@ -53,7 +53,9 @@ data class CaptureUiState(
     val flashOn: Boolean = false,
     val autoCapture: Boolean = false,
     val blurry: Boolean = false,
-    val error: CaptureError? = null
+    val error: CaptureError? = null,
+    /** Set once the card row exists. */
+    val savedCardId: String? = null
 ) {
     val framing: Boolean get() = (step == CaptureStep.FRONT || step == CaptureStep.BACK) && crop == null
     val currentSide: CardSide get() = if (step == CaptureStep.BACK || step == CaptureStep.BACK_TAKEN) CardSide.BACK else CardSide.FRONT
@@ -151,14 +153,6 @@ class CaptureViewModel @Inject constructor(
 
     fun dismissError() = _state.update { it.copy(error = null) }
 
-    /** Starts a new card after one was saved («Scan another»). */
-    fun scanAnother() {
-        if (_state.value.step != CaptureStep.SAVED) return
-        cardId = ids.newId()
-        capturedAt = null
-        _state.update { CaptureUiState(flashOn = it.flashOn, autoCapture = it.autoCapture) }
-    }
-
     /** Leaving the screen: a card that was not saved leaves no files behind. */
     override fun onCleared() {
         if (_state.value.step != CaptureStep.SAVED && (_state.value.front != null || _state.value.back != null)) {
@@ -179,7 +173,7 @@ class CaptureViewModel @Inject constructor(
         val back = _state.value.back
         launchBusy {
             when (saver.commit(cardId, front, back, eventId = null, capturedAt = capturedAt ?: clock.nowMillis())) {
-                is DomainResult.Success -> _state.update { it.copy(step = CaptureStep.SAVED) }
+                is DomainResult.Success -> _state.update { it.copy(step = CaptureStep.SAVED, savedCardId = cardId) }
                 is DomainResult.Failure -> _state.update { it.copy(error = CaptureError.SAVE_FAILED) }
             }
         }
