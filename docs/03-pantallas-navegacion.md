@@ -40,7 +40,8 @@ Ajustes
 - Estadísticas sencillas: **Total contactos · Eventos · Empresas**.
 - «Últimas añadidas» y accesos rápidos a eventos y sectores recientes.
 - Selector de vista: tarjetero (visual) o lista compacta. Se recuerda la elección.
-- Selección múltiple con pulsación larga → **Exportar / Añadir a contactos / Asignar evento**.
+- Selección múltiple con pulsación larga → **Exportar / Añadir a contactos / Asignar evento** (llega con la exportación y los contactos del teléfono, fases 7–8).
+- Fase 6: buscador global (texto en todos los campos), botón «Filtros» con hoja inferior (nombre, apellidos, cargo, empresa, país, sector, evento, fecha de alta) y un chip por filtro activo que se quita con un toque; «N contactos · N eventos · N empresas»; eventos recientes como chips; sin filtros, «Últimas añadidas» (más recientes primero); con filtros, resultados por apellido. Tarjetero (rejilla de miniaturas 85×55) o lista compacta; la elección se recuerda (SharedPreferences).
 
 ## Captura
 
