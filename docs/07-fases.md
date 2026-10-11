@@ -85,10 +85,22 @@ Regla: **cada fase termina con el proyecto compilando en `play` y `foss`, tests 
 - **2026-10-11 · Fase 2 · Detector**: umbral de Otsu + componentes conexas + envolvente convexa en lugar de «bordes → contorno»; ver `docs/04` y `docs/decisions.md`.
 - **2026-10-11 · Fase 2 · Recorte manual en captura**: además de en la revisión (fase 4), se ofrece «Reencuadrar» al confirmar cada cara.
 - **2026-10-11 · Fase 2 · Disparo automático desactivado por defecto** (interruptor «Auto» en la captura).
+- **2026-10-11 · Fase 3 · Corpus en texto compacto**: no en JSON de `OcrResult` (ilegible); `CardCorpus` lo convierte. Los `OcrResult` sí se serializan a JSON (`kotlinx-serialization`).
+- **2026-10-11 · Fase 3 · `OcrEngineInfo` retirado**: sustituido por `OcrService.engineId`, como estaba previsto.
+- **2026-10-11 · Fase 3 · Permisos de WorkManager**: `WAKE_LOCK` y `RECEIVE_BOOT_COMPLETED` se admiten (normales); `FOREGROUND_SERVICE` se elimina. `verifyNoInternetPermission` pasa a ser `verifyPermissions` (lista blanca).
+- **2026-10-11 · Fase 3 · Sin estirado global de contraste** antes de binarizar para Tesseract (ver `docs/04`).
 - **2026-10-11 · Fase 0 · JVM 21**: todos los módulos compilan con target Java/Kotlin 21 (JDK de desarrollo: Temurin 21).
 
 ## Resultados de medición
 *(Fase 2: detector. Fase 3: acierto de OCR por campo `play` vs `foss`. Fase 10: rendimiento.)*
+
+### Fase 3 · Extracción de campos (2026-10-11)
+
+Sobre el corpus sintético (62 tarjetas, es/en/fr/de/it): **100 %** en todos los campos, y ≥ 95 % (patrones) / ≥ 80 % (resto) con los bloques en orden inverso. **Ojo**: las reglas se ajustaron sobre este mismo corpus, así que es una red contra regresiones, no una medida de acierto real.
+
+### Fase 3 · `play` vs `foss` (pendiente)
+
+La comparación de acierto por campo con ML Kit y con Tesseract sobre **fotos reales** del mismo conjunto de tarjetas no se ha podido hacer en esta sesión (sin fotos y sin usar los dispositivos del usuario). Procedimiento previsto: 30+ tarjetas fotografiadas con la app en cada flavour → exportar `rawOcrText` + `extractedJson` → comparar con lo que el usuario corrige en la revisión (fase 4) → tabla de acierto por campo aquí. Los tests instrumentados de humo (`MlKitOcrServiceTest`, `TesseractOcrServiceTest`) están escritos y se compilan en `ci`, pero solo corren en dispositivo/emulador (`./gradlew :ocr:connectedPlayDebugAndroidTest :ocr:connectedFossDebugAndroidTest`).
 
 ### Fase 2 · Detector de tarjeta (2026-10-11)
 

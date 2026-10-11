@@ -14,7 +14,7 @@ Objetivo: reconocer tarjetas con diseños arbitrarios en inglés, español, fran
    - si no encuentra un cuadrilátero fiable, **recorta por la guía rectangular** (la misma que se dibuja, centrada, 85×55, 88 % del encuadre) y avisa para que se reencuadre a mano. El recorte manual (cuatro esquinas arrastrables y «Usar la foto completa») está en la pantalla de captura y reutilizable en la revisión.
    - En vivo, el mismo detector y un medidor de nitidez (varianza del laplaciano, media de 5 fotogramas) se ejecutan sobre el plano Y de `ImageAnalysis`: se dibuja el cuadrilátero, se avisa del desenfoque y, con «Auto» activado, se dispara cuando la tarjeta lleva 0,7 s quieta y nítida.
 4. Se guarda la **imagen enderezada** (≤ 1600 px, JPEG q90) y las esquinas (`quad`) para reencuadrar sin repetir la captura.
-5. `ImagePreprocessor` genera la entrada del OCR: reescalado a ~300 dpi equivalentes, mejora de contraste, binarización adaptativa (solo para Tesseract; ML Kit recibe color/gris).
+5. `ImagePreprocessor` genera la entrada del OCR: reescalado a ~300 dpi equivalentes (1200 px de lado largo) y binarización adaptativa (Bradley, ventana ≈ 1/16 del lado, contraste mínimo), que hace de mejora de contraste local; sin estirado global, que borra el texto en la zona oscura de una tarjeta mal iluminada (solo para Tesseract; ML Kit recibe la imagen en color).
 
 > Punto abierto (fase 2): si el detector propio no es suficientemente robusto, evaluar OpenCV. Se mide con un conjunto de fotos reales (no versionadas) con fondos y luces variados.
 
@@ -36,11 +36,13 @@ data class OcrLine(val text: String, val box: NormRect, val confidence: Float?, 
 - `confidence` puede ser `null` (el extractor lo trata como «desconocida»).
 - El motor se enlaza por flavour en Hilt. **El extractor y los tests de extracción no conocen ningún motor.**
 
+`OcrService.release()` libera los recursos del motor al vaciarse la cola (`OcrWorker` lo llama cuando no queda nada detrás).
+
 ### `play` — ML Kit
-`com.google.mlkit:text-recognition` (reconocedor latino **empaquetado**, no el descargable vía Play Services, para que funcione offline desde la primera ejecución).
+`com.google.mlkit:text-recognition` (reconocedor latino **empaquetado**, no el descargable vía Play Services, para que funcione offline desde la primera ejecución). Recibe la imagen enderezada en color; la confianza por línea de ML Kit pasa al `OcrLine`. Si alguna dependencia de ML Kit declara permisos de red, se eliminan del manifest.
 
 ### `foss` — Tesseract4Android
-- `traineddata` (variante *fast*) de `eng`, `spa`, `fra`, `deu`, `ita` empaquetados en `assets`, copiados al almacenamiento privado en el primer uso.
+- `traineddata` (variante *fast*, `tessdata_fast` con commit y SHA-256 en `ocr/src/foss/assets/tessdata/README.md`) de `eng`, `spa`, `fra`, `deu`, `ita` empaquetados en `assets`, copiados al almacenamiento privado en el primer uso (escritura atómica y marca de versión).
 - Ejecución con `eng+spa+fra+deu+ita` a la vez (ajustable). `PageSegMode` = `SPARSE_TEXT` (las tarjetas no son páginas de texto continuo); reintento con `AUTO` si el resultado es pobre.
 - Una sola instancia reutilizada dentro del `OcrWorker`; se libera al terminar la cola.
 
@@ -52,15 +54,16 @@ Latin: añadir `traineddata` (foss) y, si hace falta, un diccionario en `extract
 Entrada: `OcrResult` de anverso (+ reverso). Salida: `ExtractedFields` con **valor + confianza (0–1) + origen (línea)** por campo.
 
 ### Pasos
-1. **Normalizar**: Unicode NFC, espacios y guiones raros, separar líneas por bloque; unir las dos caras (el reverso suele traer la versión en otro idioma; no duplicar).
+1. **Normalizar**: Unicode NFC, espacios y guiones raros, separar líneas por bloque y por separadores de campo (`|`, `·`, `•`); unir las dos caras (el reverso suele traer la versión en otro idioma; no duplicar líneas iguales).
 2. **Detectores por patrón** (consumen la línea y la marcan como usada):
    - **Email**: regex tolerante a `@` leída como `(at)`/`©` y a espacios espurios; se valida con `lower().trim()`.
    - **Web**: `www.`, `https?://`, dominios sin esquema; se descarta el dominio de email público (gmail, outlook…).
    - **Teléfonos**: secuencias con `+`, paréntesis, espacios, guiones y puntos; etiquetas por idioma (`T`, `Tel`, `Phone`, `Tél`, `Telefon`, `Mobil`, `M`, `Cell`, `Móvil`, `Cellulare`, `Fax`).
-     - **Móvil vs fijo**: primero la etiqueta; si no hay, tabla corta de prefijos móviles (ES 6/7, DE 015/016/017, FR 06/07, IT 3, UK 07).
+     - **Móvil vs fijo**: primero la etiqueta; si no hay, tabla de prefijos móviles **con longitud del número nacional** (`mobile_prefixes.txt`: ES, DE, FR, IT, UK y otros 17 países). Con prefijo internacional se usa la tabla de ese país; sin él, la del país de la tarjeta o la del idioma detectado (`language_markers.txt`), y si no se sabe, las cinco de referencia.
+     - Un número nacional sin etiqueta de menos de 9 dígitos solo cuenta si está solo en su línea (si no, suele ser un código postal o una referencia).
      - **Fax**: se descarta del campo teléfono (queda en `rawOcrText`).
      - Se normaliza a formato internacional si aparece prefijo de país.
-   - **Dirección**: líneas con código postal (patrones por país) o palabras de vía (`Str.`, `Straße`, `Calle`, `Avda.`, `Rue`, `Via`, `Road`, `Ave`, `Plaza`, `Platz`…); se agrupan líneas contiguas.
+   - **Dirección**: líneas con código postal (`postal_patterns.txt`) o palabra de vía con número (`street_words.txt`, compuestos alemanes en `-straße/-weg/-platz…`); un número de portal sin palabra de vía solo cuenta junto a una línea con código postal. Se agrupan hasta 4 líneas contiguas: vía/lugar antes, ciudad o «Ciudad, País» después. Una línea que es solo el país no entra en la dirección (es el campo país).
    - **País**: diccionario de nombres en 5 idiomas + ISO-2/3 → nombre normalizado en inglés (`Korea, Republic of` → `South Korea`); pista adicional por prefijo telefónico y código postal.
 3. **Cargo**: diccionario multilingüe (Director, Manager, Gerente, Geschäftsführer, Directeur, Responsabile, CEO, Sales, Ingeniero, Prokurist…) con coincidencia por palabras; puede ocupar 1–2 líneas.
 4. **Empresa**: puntuación por
@@ -75,7 +78,7 @@ Entrada: `OcrResult` de anverso (+ reverso). Salida: `ExtractedFields` con **val
 ### Principios
 - **No asumir posiciones fijas** de los campos; la posición es solo una señal.
 - **Nunca inventar**: ante la duda, dejar el campo vacío con confianza 0 antes que rellenarlo mal.
-- Diccionarios en recursos de datos (`extract/dictionaries/*.txt`/`.json`), versionados y testeados; no embebidos en código.
+- Diccionarios en recursos de datos (`domain/src/main/resources/dictionaries/*.txt`), versionados y testeados; no embebidos en código: cargos (fuertes, débiles `~`, sufijos `*`), países (5 idiomas + ISO), prefijos telefónicos y de móvil, etiquetas, palabras de vía, formatos postales, dominios de correo públicos, partículas, tratamientos, segundos nombres compuestos, prefijos postales de país, marcadores de idioma y formas jurídicas.
 
 ## 4. Cola y estados (WorkManager)
 
@@ -92,7 +95,7 @@ PENDING ─► PROCESSING ─► PENDING_REVIEW ─► REVIEWED
 
 | Qué | Cómo |
 |---|---|
-| Extractor | Corpus **sintético** de `OcrResult` (JSON) por idioma y por diseño (≥ 60 casos): esperado vs obtenido, con métricas por campo |
+| Extractor | Corpus **sintético** por idioma y por diseño (62 casos en `domain/src/test/resources/corpus/`, formato de texto compacto que se convierte en `OcrResult`): esperado vs obtenido, con métricas por campo; informe en `domain/build/reports/extraction/corpus.md`. Prueba de robustez con los bloques en orden inverso |
 | Móvil/fijo, país, dirección | Tests parametrizados por idioma |
 | `CardDetector` | Imágenes sintéticas generadas en test (rotadas, con fondo) |
 | `OcrService` | Test instrumentado de humo en cada flavour con una imagen generada con texto conocido |
