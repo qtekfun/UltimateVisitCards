@@ -88,8 +88,8 @@ class ReviewViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(id: String = cardId) = ReviewViewModel(
-        SavedStateHandle(mapOf(ReviewViewModel.ARG_CARD_ID to id)),
+    private fun viewModel(id: String = cardId, fromQueue: Boolean = false) = ReviewViewModel(
+        SavedStateHandle(mapOf(ReviewViewModel.ARG_CARD_ID to id, ReviewViewModel.ARG_FROM_QUEUE to fromQueue)),
         cards,
         companies,
         contacts,
@@ -197,9 +197,9 @@ class ReviewViewModelTest {
         card(OcrStatus.PENDING_REVIEW, ana)
         val vm = viewModel()
         advanceUntilIdle()
-        vm.save(ReviewExit.SCAN_NEXT)
+        vm.saveAndNext()
         advanceUntilIdle()
-        assertEquals(ReviewExit.SCAN_NEXT, vm.state.value.exit)
+        assertEquals(ReviewExit.ScanNext, vm.state.value.exit)
         val saved = contacts.observeAll().first().single()
         assertEquals("ana@navaltech-demo.es", saved.email)
         assertEquals(OcrStatus.REVIEWED, cards.get(cardId)!!.ocrStatus)
@@ -210,7 +210,7 @@ class ReviewViewModelTest {
         card(OcrStatus.OCR_ERROR)
         val vm = viewModel()
         advanceUntilIdle()
-        vm.save(ReviewExit.DONE)
+        vm.save()
         advanceUntilIdle()
         assertEquals(ReviewError.EMPTY, vm.state.value.error)
         assertEquals(null, vm.state.value.exit)
@@ -222,7 +222,7 @@ class ReviewViewModelTest {
         card(OcrStatus.PENDING_REVIEW, ana)
         val vm = viewModel()
         advanceUntilIdle()
-        vm.save(ReviewExit.DONE)
+        vm.save()
         advanceUntilIdle()
         val candidate = vm.state.value.duplicates.single()
         assertEquals(MatchReason.EMAIL, candidate.reason)
@@ -234,8 +234,29 @@ class ReviewViewModelTest {
 
         vm.saveAsNew()
         advanceUntilIdle()
-        assertEquals(ReviewExit.DONE, vm.state.value.exit)
+        assertEquals(ReviewExit.Done, vm.state.value.exit)
         assertEquals(2, contacts.observeAll().first().size)
+    }
+
+    @Test
+    fun `from the queue, saving moves on to the next pending card and ends when none is left`() = runTest(dispatcher) {
+        card(OcrStatus.PENDING_REVIEW, ana)
+        val second = "77777777-7777-4777-8777-777777777777"
+        cards.create(BusinessCardDraft("cards/$second/front_original.jpg", "cards/$second/front.jpg", capturedAt = 2), id = second)
+        cards.updateOcr(second, OcrStatus.PENDING_REVIEW, extractedJson = proposal(CardField.FIRST_NAME to ("Luis" to 0.9f)).toJson())
+
+        val first = viewModel(fromQueue = true)
+        advanceUntilIdle()
+        assertEquals(SaveAndNext.REVIEW, first.next)
+        first.saveAndNext()
+        advanceUntilIdle()
+        assertEquals(ReviewExit.ReviewNext(second), first.state.value.exit)
+
+        val last = viewModel(second, fromQueue = true)
+        advanceUntilIdle()
+        last.saveAndNext()
+        advanceUntilIdle()
+        assertEquals(ReviewExit.Done, last.state.value.exit)
     }
 
     private fun <T> DomainResult<T>.value(): T = (this as DomainResult.Success).value

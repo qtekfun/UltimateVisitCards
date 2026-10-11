@@ -145,10 +145,10 @@ private fun Form(state: ReviewUiState, viewModel: ReviewViewModel) {
         }
         Surface(tonalElevation = 3.dp) {
             Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
-                OutlinedButton(onClick = { viewModel.save(ReviewExit.SCAN_NEXT) }, enabled = !state.saving) {
-                    Text(stringResource(R.string.review_save_scan_next))
+                OutlinedButton(onClick = viewModel::saveAndNext, enabled = !state.saving) {
+                    Text(stringResource(if (viewModel.next == SaveAndNext.REVIEW) R.string.review_save_review_next else R.string.review_save_scan_next))
                 }
-                Button(onClick = { viewModel.save(ReviewExit.DONE) }, enabled = !state.saving) { Text(stringResource(R.string.review_save)) }
+                Button(onClick = viewModel::save, enabled = !state.saving) { Text(stringResource(R.string.review_save)) }
             }
         }
     }
