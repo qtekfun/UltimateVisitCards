@@ -42,10 +42,12 @@ fun ContactEditScreen(onDone: () -> Unit, viewModel: ContactEditViewModel = hilt
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.contact_edit_title)) },
-                navigationIcon = { IconButton(onClick = onDone) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.review_back)) } },
-                actions = { TextButton(onClick = viewModel::save, enabled = !state.saving && !state.loading) { Text(stringResource(R.string.review_save)) } },
+                navigationIcon = {
+                    IconButton(onClick = onDone) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.review_back)) }
+                },
+                actions = { TextButton(onClick = viewModel::save, enabled = !state.saving && !state.loading) { Text(stringResource(R.string.review_save)) } }
             )
-        },
+        }
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when {
@@ -53,7 +55,7 @@ fun ContactEditScreen(onDone: () -> Unit, viewModel: ContactEditViewModel = hilt
                 state.missing -> EmptyState(R.string.contact_missing)
                 else -> Column(
                     Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     EDIT_FIELDS.forEach { field ->
                         ContactFieldInput(field, state.value(field)) { viewModel.onChange(field, it) }
@@ -69,7 +71,7 @@ fun ContactEditScreen(onDone: () -> Unit, viewModel: ContactEditViewModel = hilt
         AlertDialog(
             onDismissRequest = viewModel::dismissError,
             confirmButton = { TextButton(onClick = viewModel::dismissError) { Text(stringResource(R.string.review_ok)) } },
-            text = { Text(stringResource(if (error == EditError.EMPTY) R.string.review_error_empty else R.string.review_error_save)) },
+            text = { Text(stringResource(if (error == EditError.EMPTY) R.string.review_error_empty else R.string.review_error_save)) }
         )
     }
 }

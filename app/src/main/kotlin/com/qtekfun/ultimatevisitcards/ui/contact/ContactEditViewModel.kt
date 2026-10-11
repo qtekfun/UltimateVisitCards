@@ -33,7 +33,7 @@ val EDIT_FIELDS = listOf(
     CardField.EMAIL,
     CardField.WEBSITE,
     CardField.ADDRESS,
-    CardField.NOTES,
+    CardField.NOTES
 )
 
 enum class EditError { EMPTY, SAVE_FAILED }
@@ -45,7 +45,7 @@ data class ContactEditUiState(
     val companySuggestions: List<Company> = emptyList(),
     val saving: Boolean = false,
     val error: EditError? = null,
-    val saved: Boolean = false,
+    val saved: Boolean = false
 ) {
     fun value(field: CardField) = values[field].orEmpty()
 }
@@ -56,7 +56,7 @@ class ContactEditViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val contacts: ContactRepository,
     private val companies: CompanyRepository,
-    private val update: UpdateContactUseCase,
+    private val update: UpdateContactUseCase
 ) : ViewModel() {
     val contactId: String = checkNotNull(savedState[ContactDetailViewModel.ARG_CONTACT_ID])
 
@@ -90,8 +90,8 @@ class ContactEditViewModel @Inject constructor(
                         CardField.EMAIL to contact.email.orEmpty(),
                         CardField.WEBSITE to contact.website.orEmpty(),
                         CardField.ADDRESS to contact.address.orEmpty(),
-                        CardField.NOTES to contact.notes.orEmpty(),
-                    ),
+                        CardField.NOTES to contact.notes.orEmpty()
+                    )
                 )
             }
         }
@@ -100,7 +100,13 @@ class ContactEditViewModel @Inject constructor(
     fun onChange(field: CardField, value: String) = _state.update { current ->
         val suggestions = if (field == CardField.COMPANY) {
             val key = TextNormalizer.fold(value)
-            if (key.length < 2) emptyList() else knownCompanies.filter { TextNormalizer.fold(it.name).contains(key) && TextNormalizer.fold(it.name) != key }.take(MAX_SUGGESTIONS)
+            if (key.length <
+                2
+            ) {
+                emptyList()
+            } else {
+                knownCompanies.filter { TextNormalizer.fold(it.name).contains(key) && TextNormalizer.fold(it.name) != key }.take(MAX_SUGGESTIONS)
+            }
         } else {
             current.companySuggestions
         }
@@ -128,7 +134,7 @@ class ContactEditViewModel @Inject constructor(
                 email = v(CardField.EMAIL),
                 website = v(CardField.WEBSITE),
                 address = v(CardField.ADDRESS),
-                notes = v(CardField.NOTES),
+                notes = v(CardField.NOTES)
             )
             when (val result = update(edited, v(CardField.COMPANY))) {
                 is DomainResult.Success -> _state.update { it.copy(saving = false, saved = true) }
