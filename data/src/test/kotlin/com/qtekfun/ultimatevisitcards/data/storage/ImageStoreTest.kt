@@ -120,10 +120,12 @@ class ImageStoreTest {
         store.saveProcessed(orphan, CardSide.FRONT, photo(100, 60))
         store.thumbnail(orphan, CardSide.FRONT)
         File(files, "cards/$keep/.write-123.tmp").writeText("interrupted")
+        val staging = store.newStaging()
 
         assertEquals(setOf(orphan), store.deleteOrphans(setOf(keep)))
         assertTrue(store.file("cards/$keep/front.jpg").isFile)
         assertFalse(File(files, "cards/$keep/.write-123.tmp").exists())
+        assertFalse(staging.exists())
         assertEquals(emptyList(), cache.resolve("thumbs").list()!!.toList())
         assertEquals(listOf("cards/$keep/back.jpg"), store.missing(listOf("cards/$keep/front.jpg", "cards/$keep/back.jpg")))
     }

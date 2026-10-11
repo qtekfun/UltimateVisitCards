@@ -31,7 +31,7 @@ enum class RestoreMode {
     MERGE,
 
     /** Deletes everything first (strong confirmation in the UI). */
-    REPLACE,
+    REPLACE
 }
 
 /** What a backup holds, or why it cannot be restored. */
@@ -60,17 +60,11 @@ data class RestoreCounts(
     val events: Int = 0,
     val contacts: Int = 0,
     val contactEvents: Int = 0,
-    val cards: Int = 0,
+    val cards: Int = 0
 )
 
 /** The final summary (docs/05 §3.7: added, updated, skipped), the images copied and the backed-up settings. */
-data class RestoreReport(
-    val added: RestoreCounts,
-    val updated: RestoreCounts,
-    val skipped: RestoreCounts,
-    val images: Int,
-    val settings: BackupSettings?,
-)
+data class RestoreReport(val added: RestoreCounts, val updated: RestoreCounts, val skipped: RestoreCounts, val images: Int, val settings: BackupSettings?)
 
 sealed interface RestoreOutcome {
     data class Done(val report: RestoreReport) : RestoreOutcome
@@ -97,7 +91,7 @@ class BackupRestorer @Inject constructor(
     private val db: AppDatabase,
     private val store: ImageStore,
     private val indexer: SearchIndexer,
-    @IoDispatcher private val io: CoroutineDispatcher,
+    @IoDispatcher private val io: CoroutineDispatcher
 ) {
     private val companyNames by lazy { CompanyNameNormalizer.fromBundledDictionary() }
 
@@ -109,12 +103,7 @@ class BackupRestorer @Inject constructor(
         }
     }
 
-    suspend fun restore(
-        open: () -> InputStream,
-        password: CharArray?,
-        mode: RestoreMode,
-        onProgress: (Float) -> Unit = {},
-    ): RestoreOutcome = withContext(io) {
+    suspend fun restore(open: () -> InputStream, password: CharArray?, mode: RestoreMode, onProgress: (Float) -> Unit = {}): RestoreOutcome = withContext(io) {
         val archive = when (val read = read(open, password)) {
             is Read.Ok -> read.archive
             is Read.Rejected -> return@withContext RestoreOutcome.Rejected(read.reason)
@@ -158,7 +147,7 @@ class BackupRestorer @Inject constructor(
             events = database.events.size,
             contactEvents = database.contactEvents.size,
             businessCards = database.businessCards.size,
-            images = images.size,
+            images = images.size
         )
     }
 
@@ -245,7 +234,10 @@ class BackupRestorer @Inject constructor(
 
     private fun drain(input: InputStream) {
         val buffer = ByteArray(BUFFER)
-        while (input.read(buffer) != -1) Unit
+        @Suppress("ControlFlowWithEmptyBody")
+        while (input.read(buffer) != -1) {
+            // Only the bytes going through matter: CRC and decryption are checked as they are read.
+        }
     }
 
     private fun classify(e: ZipException, password: CharArray?, entries: Int): InspectResult = when {
@@ -376,7 +368,7 @@ class BackupRestorer @Inject constructor(
         for (c in d.contacts) {
             val entity = ContactEntity(
                 c.id, c.firstName, c.lastName, c.jobTitle, c.companyId?.let { companyIds[it] }, c.country, c.phone, c.mobile, c.email,
-                c.website, c.address, c.notes, c.exportedToPhoneAt, c.createdAt, c.updatedAt,
+                c.website, c.address, c.notes, c.exportedToPhoneAt, c.createdAt, c.updatedAt
             )
             val existing = db.contactDao().get(c.id)
             when {
@@ -413,8 +405,8 @@ class BackupRestorer @Inject constructor(
             db.businessCardDao().insert(
                 BusinessCardEntity(
                     k.id, k.contactId, k.eventId, k.frontOriginal, k.frontProcessed, k.backOriginal, k.backProcessed, k.frontQuad, k.backQuad,
-                    k.rawOcrText, k.extractedJson, k.ocrEngine, k.ocrStatus, k.isPrimary, k.capturedAt, k.createdAt,
-                ),
+                    k.rawOcrText, k.extractedJson, k.ocrEngine, k.ocrStatus, k.isPrimary, k.capturedAt, k.createdAt
+                )
             )
             added.cards++
             images += listOfNotNull(k.frontOriginal, k.frontProcessed, k.backOriginal, k.backProcessed)
@@ -462,7 +454,7 @@ class BackupRestorer @Inject constructor(
 
         /** The files a backup may contain (docs/05 §2). */
         val ALLOWED_ENTRY = Regex(
-            "manifest\\.json|database\\.json|settings\\.json|images/([A-Za-z0-9-]{1,64}/((front|back)(_original)?\\.jpg)?)?",
+            "manifest\\.json|database\\.json|settings\\.json|images/([A-Za-z0-9-]{1,64}/((front|back)(_original)?\\.jpg)?)?"
         )
     }
 }

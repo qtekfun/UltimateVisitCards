@@ -67,19 +67,31 @@ class BackupRestorerTest {
         ocrStatus = if (contactId != null) "REVIEWED" else "PENDING_REVIEW",
         isPrimary = primary,
         capturedAt = capturedAt,
-        createdAt = capturedAt,
+        createdAt = capturedAt
     )
 
     private fun world() = BackupDatabase(
         sectors = listOf(BackupSector("s1", "Astillero", 0, 1)),
-        companies = listOf(BackupCompany("co1", "ABC Marine GmbH", sectorId = "s1", country = "Germany", website = "abc-demo.de", createdAt = 1, updatedAt = 10)),
+        companies = listOf(
+            BackupCompany("co1", "ABC Marine GmbH", sectorId = "s1", country = "Germany", website = "abc-demo.de", createdAt = 1, updatedAt = 10)
+        ),
         events = listOf(BackupEvent("e1", "SMM 2026", location = "Hamburg", startDate = 100, endDate = 200, createdAt = 1)),
         contacts = listOf(
-            BackupContact("p1", "José", "Muñoz", jobTitle = "Director", companyId = "co1", email = "jose@abc-demo.de", notes = "Met at SMM", createdAt = 1, updatedAt = 10),
-            BackupContact("p2", "Ana", "Ruiz", country = "Spain", createdAt = 2, updatedAt = 20),
+            BackupContact(
+                "p1",
+                "José",
+                "Muñoz",
+                jobTitle = "Director",
+                companyId = "co1",
+                email = "jose@abc-demo.de",
+                notes = "Met at SMM",
+                createdAt = 1,
+                updatedAt = 10
+            ),
+            BackupContact("p2", "Ana", "Ruiz", country = "Spain", createdAt = 2, updatedAt = 20)
         ),
         contactEvents = listOf(BackupContactEvent("p1", "e1")),
-        businessCards = listOf(card("k1", "p1", back = true), card("k2", null)),
+        businessCards = listOf(card("k1", "p1", back = true), card("k2", null))
     )
 
     private fun images(d: BackupDatabase): Map<String, ByteArray> = d.businessCards
@@ -92,18 +104,18 @@ class BackupRestorerTest {
         createdAt = 1,
         counts = BackupCounts(d.contacts.size, d.companies.size, d.sectors.size, d.events.size, d.contactEvents.size, d.businessCards.size, images(d).size),
         includesOriginals = originals,
-        encrypted = encrypted,
+        encrypted = encrypted
     )
 
     private fun entries(
         d: BackupDatabase = world(),
         images: Map<String, ByteArray> = images(d),
         version: Int = BackupFormat.VERSION,
-        databaseJson: String = json.encodeToString(BackupDatabase.serializer(), d),
+        databaseJson: String = json.encodeToString(BackupDatabase.serializer(), d)
     ): List<Pair<String, ByteArray>> = listOf(
         BackupFormat.MANIFEST to json.encodeToString(BackupManifest.serializer(), manifest(d, version)).toByteArray(),
         BackupFormat.DATABASE to databaseJson.toByteArray(),
-        BackupFormat.SETTINGS to json.encodeToString(BackupSettings.serializer(), BackupSettings(cardsView = "LIST")).toByteArray(),
+        BackupFormat.SETTINGS to json.encodeToString(BackupSettings.serializer(), BackupSettings(cardsView = "LIST")).toByteArray()
     ) + images.map { (path, bytes) -> BackupFormat.entryFor(path) to bytes }
 
     /** A plain ZIP written with java.util.zip (keeps entry names exactly as given). */
@@ -165,7 +177,27 @@ class BackupRestorerTest {
         assertEquals("Met at SMM", data.db.contactDao().get("p1")!!.notes)
         assertEquals(listOf("e1"), data.db.contactDao().eventIds("p1"))
         val k1 = data.db.businessCardDao().get("k1")!!
-        assertEquals(BusinessCardEntity("k1", "p1", "e1", "cards/k1/front_original.jpg", "cards/k1/front.jpg", "cards/k1/back_original.jpg", "cards/k1/back.jpg", """{"q":1}""", null, "JOSE MUNOZ ABC MARINE", "{}", "mlkit", "REVIEWED", true, 5, 5), k1)
+        assertEquals(
+            BusinessCardEntity(
+                "k1",
+                "p1",
+                "e1",
+                "cards/k1/front_original.jpg",
+                "cards/k1/front.jpg",
+                "cards/k1/back_original.jpg",
+                "cards/k1/back.jpg",
+                """{"q":1}""",
+                null,
+                "JOSE MUNOZ ABC MARINE",
+                "{}",
+                "mlkit",
+                "REVIEWED",
+                true,
+                5,
+                5
+            ),
+            k1
+        )
         // Images byte-identical.
         images(d).forEach { (path, bytes) -> assertEquals(sha(bytes), sha(store.file(path).readBytes()), path) }
         // The search index was rebuilt.
@@ -225,7 +257,26 @@ class BackupRestorerTest {
     @Test
     fun `replace deletes what was there, rows and images`() = runTest(dispatcher) {
         data.db.contactDao().insert(ContactEntity("old", "Old", "Contact", null, null, null, null, null, null, null, null, null, null, 1, 1))
-        data.db.businessCardDao().insert(BusinessCardEntity("oldcard", "old", null, "cards/oldcard/front_original.jpg", "cards/oldcard/front.jpg", null, null, null, null, "", null, null, "REVIEWED", true, 1, 1))
+        data.db.businessCardDao().insert(
+            BusinessCardEntity(
+                "oldcard",
+                "old",
+                null,
+                "cards/oldcard/front_original.jpg",
+                "cards/oldcard/front.jpg",
+                null,
+                null,
+                null,
+                null,
+                "",
+                null,
+                null,
+                "REVIEWED",
+                true,
+                1,
+                1
+            )
+        )
         File(files, "cards/oldcard").mkdirs()
         File(files, "cards/oldcard/front.jpg").writeText("old")
 
@@ -288,12 +339,31 @@ class BackupRestorerTest {
 
     @Test
     fun `entries trying to escape the archive are refused (zip slip)`() = runTest(dispatcher) {
-        for (evil in listOf("../evil.jpg", "/abs/evil.jpg", "images/../../evil.jpg", "images\\k1\\front.jpg", "images/k1/../../../evil.jpg", "other/file.txt")) {
+        for (evil in listOf(
+            "../evil.jpg",
+            "/abs/evil.jpg",
+            "images/../../evil.jpg",
+            "images\\k1\\front.jpg",
+            "images/k1/../../../evil.jpg",
+            "other/file.txt"
+        )) {
             val result = restorer.restore(open(plainZip(entries() + (evil to "x".toByteArray()))), null, RestoreMode.MERGE)
             assertIs<InspectResult.Corrupt>(assertIs<RestoreOutcome.Rejected>(result).reason, evil)
         }
         // A card pointing at another card's folder is refused too.
-        val crossed = world().let { d -> d.copy(businessCards = d.businessCards.map { if (it.id == "k2") it.copy(frontProcessed = "cards/k1/front.jpg") else it }) }
+        val crossed = world().let { d ->
+            d.copy(
+                businessCards = d.businessCards.map {
+                    if (it.id ==
+                        "k2"
+                    ) {
+                        it.copy(frontProcessed = "cards/k1/front.jpg")
+                    } else {
+                        it
+                    }
+                }
+            )
+        }
         assertIs<InspectResult.Corrupt>(restorer.inspect(open(plainZip(entries(crossed))), null))
         assertTrue(data.db.contactDao().all().isEmpty())
         assertFalse(folder.root.walkTopDown().any { it.name == "evil.jpg" })
@@ -340,7 +410,9 @@ class BackupRestorerTest {
 
     @Test
     fun `two thousand contacts`() = runTest(dispatcher) {
-        val contacts = (0 until 2_000).map { BackupContact("c$it", "Name$it", "Surname$it", companyId = "co1", createdAt = it.toLong(), updatedAt = it.toLong()) }
+        val contacts = (0 until 2_000).map {
+            BackupContact("c$it", "Name$it", "Surname$it", companyId = "co1", createdAt = it.toLong(), updatedAt = it.toLong())
+        }
         val d = world().copy(contacts = contacts, contactEvents = contacts.map { BackupContactEvent(it.id, "e1") }, businessCards = emptyList())
         val report = restore(plainZip(entries(d)))
         assertEquals(2_000, report.added.contacts)

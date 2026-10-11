@@ -114,6 +114,8 @@ class ImageStore(private val filesRoot: File, private val cacheRoot: File, priva
      */
     suspend fun deleteOrphans(existingCardIds: Set<String>): Set<String> = withContext(io) {
         val deleted = mutableSetOf<String>()
+        // Staging folders of a restore interrupted by a process kill.
+        filesRoot.listFiles { f -> f.isDirectory && f.name.startsWith(STAGING_PREFIX) }.orEmpty().forEach { it.deleteRecursively() }
         File(filesRoot, CARDS).listFiles().orEmpty().forEach { dir ->
             if (dir.name !in existingCardIds) {
                 if (dir.deleteRecursively()) deleted += dir.name
