@@ -38,4 +38,5 @@ La documentación manda: si el código y `docs/` se contradicen, se arregla uno 
 ./gradlew testPlayDebugUnitTest testFossDebugUnitTest
 ./gradlew connectedPlayDebugAndroidTest   # tests de Room y backup en dispositivo/emulador
 ./gradlew lint ktlintCheck
+./gradlew ci                              # todo lo anterior (sin dispositivo) + verificación de que no hay permiso INTERNET
 ```
