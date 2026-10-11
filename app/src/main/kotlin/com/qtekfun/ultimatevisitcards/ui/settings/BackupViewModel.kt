@@ -50,7 +50,7 @@ class BackupViewModel @Inject constructor(
     private val exporter: BackupExporter,
     private val documents: Documents,
     private val preferences: UiPreferences,
-    private val appInfo: AppInfo,
+    private val appInfo: AppInfo
 ) : ViewModel() {
     private val _export = MutableStateFlow<ExportStep>(ExportStep.Idle)
     val export: StateFlow<ExportStep> = _export.asStateFlow()
@@ -79,9 +79,9 @@ class BackupViewModel @Inject constructor(
                             appVersion = appInfo.versionName,
                             includeOriginals = options.includeOriginals,
                             password = options.password,
-                            settings = BackupSettings(cardsView = preferences.cardsView.value.name),
+                            settings = BackupSettings(cardsView = preferences.cardsView.value.name)
                         ),
-                        onProgress = { p -> _export.value = ExportStep.Running(p) },
+                        onProgress = { p -> _export.value = ExportStep.Running(p) }
                     )
                 }
             } catch (e: IOException) {

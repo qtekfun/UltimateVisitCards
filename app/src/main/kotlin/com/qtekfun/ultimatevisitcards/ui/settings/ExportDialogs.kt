@@ -58,7 +58,7 @@ fun ExportOptionsDialog(onConfirm: (ExportChoice) -> Unit, onDismiss: () -> Unit
                 Text(stringResource(R.string.backup_choose_file))
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_cancel)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_cancel)) } }
     )
 }
 
@@ -68,9 +68,15 @@ fun ProgressDialog(title: String, progress: Float?, onCancel: (() -> Unit)?) {
         onDismissRequest = {},
         title = { Text(title) },
         text = {
-            if (progress == null) LinearProgressIndicator(Modifier.fillMaxWidth()) else LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+            if (progress ==
+                null
+            ) {
+                LinearProgressIndicator(Modifier.fillMaxWidth())
+            } else {
+                LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+            }
         },
-        confirmButton = { onCancel?.let { TextButton(onClick = it) { Text(stringResource(R.string.review_cancel)) } } },
+        confirmButton = { onCancel?.let { TextButton(onClick = it) { Text(stringResource(R.string.review_cancel)) } } }
     )
 }
 
@@ -79,7 +85,7 @@ fun MessageDialog(text: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         text = { Text(text) },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_ok)) } },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_ok)) } }
     )
 }
 
@@ -100,7 +106,7 @@ fun PasswordField(label: String, value: String, onChange: (String) -> Unit) {
         singleLine = true,
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
     )
 }
 

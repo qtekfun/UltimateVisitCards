@@ -12,7 +12,6 @@
   <string name="events_empty">Aún no hay eventos. Crea uno para agrupar las tarjetas de una feria.</string>
   <string name="companies_empty">Aún no hay empresas. Se crean al guardar una tarjeta.</string>
   <string name="sectors_empty">Aún no hay sectores.</string>
-  <string name="settings_empty">Aquí aparecerán la copia de seguridad, la exportación y la seguridad.</string>
   <!-- Tarjetas -->
   <string name="cards_add">Añadir tarjeta</string>
   <string name="cards_pending">Pendientes de revisar: %1$d</string>
@@ -217,4 +216,43 @@
   <string name="export_col_sector">Sector</string>
   <string name="export_col_event">Evento</string>
   <string name="export_col_date">Fecha</string>
+  <!-- Ajustes: copia de seguridad y restauración -->
+  <string name="settings_backup">Copia de seguridad</string>
+  <string name="settings_backup_hint">Un único .zip con todos los contactos, empresas, eventos, sectores y fotos de tarjetas. Guárdalo en un lugar seguro para cambiar de teléfono.</string>
+  <string name="settings_backup_export">Exportar copia completa</string>
+  <string name="backup_export_title">Exportar copia</string>
+  <string name="backup_include_originals">Incluir originales sin recortar</string>
+  <string name="backup_include_originals_hint">Permite reencuadrar las tarjetas tras restaurar; el archivo ocupa más.</string>
+  <string name="backup_encrypt">Cifrar con contraseña</string>
+  <string name="backup_password">Contraseña</string>
+  <string name="backup_password_repeat">Repite la contraseña</string>
+  <string name="backup_password_short">Al menos %1$d caracteres.</string>
+  <string name="backup_password_mismatch">Las contraseñas no coinciden.</string>
+  <string name="backup_password_warning">Si la pierdes, la copia no se puede recuperar. No se guarda en ningún sitio.</string>
+  <string name="backup_choose_file">Elegir dónde guardar</string>
+  <string name="backup_running">Creando la copia…</string>
+  <string name="backup_counts">%1$d contactos · %2$d empresas · %3$d eventos · %4$d sectores · %5$d imágenes</string>
+  <string name="backup_done">Copia creada y comprobada: %1$s</string>
+  <string name="backup_failed">No se pudo escribir la copia. No se ha guardado nada.</string>
+  <string name="backup_verification_failed">La copia no se leyó bien al comprobarla y se ha borrado. Inténtalo de nuevo, quizá en otro sitio.</string>
+  <string name="backup_cancelled">Copia cancelada.</string>
+  <string name="settings_restore">Restaurar copia</string>
+  <string name="settings_restore_hint">Recupera los contactos de una copia. Al combinar nunca se duplican contactos: el mismo contacto solo se actualiza si la copia es más reciente.</string>
+  <string name="settings_restore_open">Elegir copia</string>
+  <string name="restore_checking">Comprobando la copia…</string>
+  <string name="restore_password_title">Copia cifrada</string>
+  <string name="restore_wrong_password">Contraseña incorrecta.</string>
+  <string name="restore_summary_title">Esta copia contiene</string>
+  <string name="restore_mode_merge">Combinar con lo que tengo (recomendado)</string>
+  <string name="restore_mode_replace">Reemplazar todo</string>
+  <string name="restore_start">Restaurar</string>
+  <string name="restore_replace_title">¿Reemplazar todo?</string>
+  <string name="restore_replace_warning">Se borrarán todos los contactos, tarjetas y fotos que hay ahora en este teléfono y se sustituirán por la copia. No se puede deshacer.</string>
+  <string name="restore_replace_confirm">Borrar y reemplazar</string>
+  <string name="restore_running">Restaurando…</string>
+  <string name="restore_done">Restaurado. Contactos añadidos: %1$d · actualizados: %2$d · sin cambios: %3$d · imágenes: %4$d</string>
+  <string name="restore_not_a_backup">Este archivo no es una copia de UltimateVisitCards.</string>
+  <string name="restore_corrupt">La copia está dañada y no se puede restaurar. No se ha cambiado nada.</string>
+  <string name="restore_too_new">Esta copia se hizo con una versión más nueva de la app. Actualiza la app y vuelve a intentarlo.</string>
+  <string name="restore_failed">La restauración ha fallado. No se ha cambiado nada.</string>
 </resources>

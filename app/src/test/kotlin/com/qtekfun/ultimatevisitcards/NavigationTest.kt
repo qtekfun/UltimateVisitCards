@@ -50,7 +50,7 @@ class NavigationTest {
         val sections = listOf(
             R.string.nav_events to R.string.events_empty,
             R.string.nav_companies to R.string.companies_empty,
-            R.string.nav_settings to R.string.settings_empty,
+            R.string.nav_settings to R.string.settings_backup_export,
             R.string.nav_cards to R.string.cards_empty
         )
         // The sectors tab lists the sectors seeded on first launch.
