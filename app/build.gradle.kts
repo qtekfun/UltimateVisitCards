@@ -14,6 +14,25 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+/**
+ * La versión vive en un único sitio: `appVersion` en gradle.properties (SemVer, opcionalmente `-rc.N`).
+ * El versionCode se deriva de ella, sin fechas ni datos de la máquina (builds reproducibles):
+ * X.Y.Z-rc.N -> (X*10000 + Y*100 + Z) * 100 + N, y 99 para la versión final (va después de sus rc).
+ */
+val appVersion = providers.gradleProperty("appVersion").get()
+
+fun versionCodeOf(version: String): Int {
+    val match = Regex("""(\d+)\.(\d+)\.(\d+)(?:-rc\.(\d+))?""").matchEntire(version)
+        ?: error("appVersion debe ser X.Y.Z o X.Y.Z-rc.N: $version")
+    val (major, minor, patch, rc) = match.destructured
+    require(minor.toInt() < 100 && patch.toInt() < 100 && (rc.isEmpty() || rc.toInt() in 1..98))
+    val base = major.toInt() * 10_000 + minor.toInt() * 100 + patch.toInt()
+    return base * 100 + (rc.toIntOrNull() ?: 99)
+}
+
+/** Firma de release desde el entorno (secretos de CI). Sin ella el APK de release queda sin firmar. */
+val releaseKeystore: String? = System.getenv("UVC_KEYSTORE_FILE")
+
 android {
     namespace = "com.qtekfun.ultimatevisitcards"
     compileSdk = 37
@@ -22,8 +41,8 @@ android {
         applicationId = "com.qtekfun.ultimatevisitcards"
         minSdk = 29
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.0.1"
+        versionCode = versionCodeOf(appVersion)
+        versionName = appVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -40,8 +59,22 @@ android {
         includeInBundle = false
     }
 
+    signingConfigs {
+        if (releaseKeystore != null) {
+            create("release") {
+                storeFile = file(releaseKeystore)
+                storePassword = System.getenv("UVC_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("UVC_KEY_ALIAS")
+                keyPassword = System.getenv("UVC_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
+            // El commit de git no entra en el APK: un build desde el código fuente debe coincidir (F-Droid).
+            vcsInfo.include = false
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
