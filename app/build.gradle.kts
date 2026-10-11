@@ -1,6 +1,8 @@
 import com.android.build.api.artifact.SingleArtifact
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.SetProperty
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -108,33 +110,49 @@ android {
 
 kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_21 } }
 
-/** Falla si el manifest fusionado de una variante declara el permiso INTERNET (regla dura de CLAUDE.md). */
-abstract class VerifyNoInternetPermission : DefaultTask() {
+/**
+ * Falla si el manifest fusionado de una variante pide un permiso fuera de la lista permitida (CLAUDE.md):
+ * así ninguna dependencia puede colar INTERNET ni ningún otro sin que se note.
+ */
+abstract class VerifyPermissions : DefaultTask() {
     @get:InputFile
     @get:PathSensitive(PathSensitivity.NONE)
     abstract val mergedManifest: RegularFileProperty
 
+    @get:Input
+    abstract val allowed: SetProperty<String>
+
     @TaskAction
     fun verify() {
         val manifest = mergedManifest.get().asFile.readText()
-        val forbidden = listOf("android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE")
-            .filter { Regex("uses-permission[^>]*\"$it\"").containsMatchIn(manifest) }
-        check(forbidden.isEmpty()) { "Permisos de red prohibidos en el manifest fusionado: $forbidden" }
+        val requested = Regex("<uses-permission[^>]*android:name=\"([^\"]+)\"").findAll(manifest).map { it.groupValues[1] }.toSet()
+        val unexpected = requested.filterNot { it in allowed.get() || it.endsWith(".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION") }
+        check(unexpected.isEmpty()) { "Permisos no permitidos en el manifest fusionado: $unexpected" }
     }
 }
 
-val verifyNoInternetPermission = tasks.register("verifyNoInternetPermission") {
+/** Permisos permitidos (docs/01-arquitectura.md, «Permisos»). */
+val allowedPermissions = setOf(
+    "android.permission.CAMERA",
+    "android.permission.WRITE_CONTACTS",
+    // WorkManager (cola de OCR): normales, se conceden al instalar y no dan acceso a datos.
+    "android.permission.WAKE_LOCK",
+    "android.permission.RECEIVE_BOOT_COMPLETED"
+)
+
+val verifyPermissions = tasks.register("verifyPermissions") {
     group = "verification"
-    description = "Comprueba que ninguna variante declara permisos de red."
+    description = "Comprueba que ninguna variante pide permisos fuera de la lista permitida (ni INTERNET)."
 }
 
 androidComponents {
     onVariants { variant ->
         val cap = variant.name.replaceFirstChar { it.uppercase() }
-        val task = tasks.register<VerifyNoInternetPermission>("verifyNoInternetPermission$cap") {
+        val task = tasks.register<VerifyPermissions>("verifyPermissions$cap") {
             mergedManifest.set(variant.artifacts.get(SingleArtifact.MERGED_MANIFEST))
+            allowed.set(allowedPermissions)
         }
-        verifyNoInternetPermission.configure { dependsOn(task) }
+        verifyPermissions.configure { dependsOn(task) }
     }
 }
 
@@ -166,6 +184,9 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
 
     testImplementation(libs.junit)
     testImplementation(kotlin("test"))
@@ -177,6 +198,7 @@ dependencies {
     testImplementation(libs.sqlite.bundled.jvm)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
+    testImplementation(libs.androidx.work.testing)
     kspTest(libs.hilt.compiler)
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.ui.test.junit4)
