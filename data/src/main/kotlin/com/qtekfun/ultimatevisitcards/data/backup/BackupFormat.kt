@@ -44,7 +44,7 @@ data class BackupManifest(
     @SerialName("created_at") val createdAt: Long,
     val counts: BackupCounts,
     @SerialName("includes_originals") val includesOriginals: Boolean,
-    val encrypted: Boolean,
+    val encrypted: Boolean
 )
 
 @Serializable
@@ -55,7 +55,7 @@ data class BackupCounts(
     val events: Int,
     val contactEvents: Int,
     val businessCards: Int,
-    val images: Int,
+    val images: Int
 )
 
 @Serializable
@@ -65,7 +65,7 @@ data class BackupDatabase(
     val events: List<BackupEvent> = emptyList(),
     val contacts: List<BackupContact> = emptyList(),
     val contactEvents: List<BackupContactEvent> = emptyList(),
-    val businessCards: List<BackupCard> = emptyList(),
+    val businessCards: List<BackupCard> = emptyList()
 )
 
 @Serializable
@@ -80,7 +80,7 @@ data class BackupCompany(
     val website: String? = null,
     val notes: String? = null,
     val createdAt: Long,
-    val updatedAt: Long,
+    val updatedAt: Long
 )
 
 @Serializable
@@ -91,7 +91,7 @@ data class BackupEvent(
     val startDate: Long? = null,
     val endDate: Long? = null,
     val notes: String? = null,
-    val createdAt: Long,
+    val createdAt: Long
 )
 
 @Serializable
@@ -110,7 +110,7 @@ data class BackupContact(
     val notes: String? = null,
     val exportedToPhoneAt: Long? = null,
     val createdAt: Long,
-    val updatedAt: Long,
+    val updatedAt: Long
 )
 
 @Serializable
@@ -133,7 +133,7 @@ data class BackupCard(
     val ocrStatus: String,
     val isPrimary: Boolean,
     val capturedAt: Long,
-    val createdAt: Long,
+    val createdAt: Long
 )
 
 /** Non-sensitive preferences carried by the backup (no passwords, no lock settings). */

@@ -6,6 +6,7 @@ import com.qtekfun.ultimatevisitcards.data.db.dao.BusinessCardDao
 import com.qtekfun.ultimatevisitcards.data.db.dao.CompanyDao
 import com.qtekfun.ultimatevisitcards.data.db.dao.ContactDao
 import com.qtekfun.ultimatevisitcards.data.db.dao.EventDao
+import com.qtekfun.ultimatevisitcards.data.db.dao.ExportDao
 import com.qtekfun.ultimatevisitcards.data.db.dao.SearchDao
 import com.qtekfun.ultimatevisitcards.data.db.dao.SectorDao
 import com.qtekfun.ultimatevisitcards.data.db.entity.BusinessCardEntity
@@ -41,6 +42,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun businessCardDao(): BusinessCardDao
 
     abstract fun searchDao(): SearchDao
+
+    abstract fun exportDao(): ExportDao
 
     companion object {
         const val VERSION = 2
