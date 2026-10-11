@@ -3,6 +3,8 @@ package com.qtekfun.ultimatevisitcards.di
 import com.qtekfun.ultimatevisitcards.domain.util.Clock
 import com.qtekfun.ultimatevisitcards.domain.util.DefaultDispatcher
 import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
+import com.qtekfun.ultimatevisitcards.work.OcrQueue
+import com.qtekfun.ultimatevisitcards.work.OcrScheduler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +24,9 @@ annotation class ApplicationScope
 @Module
 @InstallIn(SingletonComponent::class)
 object CoreModule {
+    @Provides
+    fun ocrScheduler(queue: OcrQueue): OcrScheduler = queue
+
     @Provides
     fun clock(): Clock = Clock.System
 

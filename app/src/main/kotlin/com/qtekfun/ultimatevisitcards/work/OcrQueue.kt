@@ -16,10 +16,10 @@ import kotlinx.coroutines.flow.first
  * parallel (Tesseract is memory hungry). `APPEND_OR_REPLACE` keeps the chain going even after a failed card.
  */
 @Singleton
-class OcrQueue @Inject constructor(@ApplicationContext private val context: Context) {
+class OcrQueue @Inject constructor(@ApplicationContext private val context: Context) : OcrScheduler {
     private val workManager get() = WorkManager.getInstance(context)
 
-    fun enqueue(cardId: String) {
+    override fun enqueue(cardId: String) {
         val request = OneTimeWorkRequestBuilder<OcrWorker>()
             .setInputData(workDataOf(OcrWorker.KEY_CARD_ID to cardId))
             .addTag(TAG)
