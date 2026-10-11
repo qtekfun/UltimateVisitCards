@@ -1,0 +1,66 @@
+# País normalizado en inglés | idioma principal (para dividir nombres) | alias en en, es, fr, de, it y códigos ISO-2/ISO-3.
+# Los códigos ISO solo cuentan cuando la línea es únicamente el código.
+Spain|es|Spain;España;Espana;Espagne;Spanien;Spagna;ES;ESP
+Portugal|pt|Portugal;Portogallo;PT;PRT
+France|fr|France;Francia;Frankreich;FR;FRA
+Germany|de|Germany;Alemania;Allemagne;Deutschland;Germania;DE;DEU
+Italy|it|Italy;Italia;Italie;Italien;IT;ITA
+United Kingdom|en|United Kingdom;UK;U.K.;Great Britain;England;Scotland;Wales;Reino Unido;Royaume-Uni;Vereinigtes Königreich;Großbritannien;Regno Unito;GB;GBR
+Ireland|en|Ireland;Irlanda;Irlande;Irland;IE;IRL
+Netherlands|nl|Netherlands;The Netherlands;Holland;Países Bajos;Paises Bajos;Holanda;Pays-Bas;Niederlande;Paesi Bassi;NL;NLD
+Belgium|nl|Belgium;Bélgica;Belgica;Belgique;Belgien;Belgio;BE;BEL
+Luxembourg|fr|Luxembourg;Luxemburgo;Luxemburg;Lussemburgo;LU;LUX
+Switzerland|de|Switzerland;Suiza;Suisse;Schweiz;Svizzera;CH;CHE
+Austria|de|Austria;Autriche;Österreich;Osterreich;AT;AUT
+Denmark|da|Denmark;Dinamarca;Danemark;Dänemark;Danimarca;DK;DNK
+Norway|no|Norway;Noruega;Norvège;Norvege;Norwegen;Norvegia;Norge;NO;NOR
+Sweden|sv|Sweden;Suecia;Suède;Suede;Schweden;Svezia;Sverige;SE;SWE
+Finland|fi|Finland;Finlandia;Finlande;Finnland;Suomi;FI;FIN
+Iceland|is|Iceland;Islandia;Islande;Island;IS;ISL
+Poland|pl|Poland;Polonia;Pologne;Polen;Polska;PL;POL
+Czech Republic|cs|Czech Republic;Czechia;República Checa;Republica Checa;Chequia;République tchèque;Tschechien;Repubblica Ceca;CZ;CZE
+Greece|el|Greece;Grecia;Grèce;Grece;Griechenland;GR;GRC
+Turkey|tr|Turkey;Türkiye;Turkiye;Turquía;Turquia;Turquie;Türkei;Turchia;TR;TUR
+Croatia|hr|Croatia;Croacia;Croatie;Kroatien;Croazia;HR;HRV
+Slovenia|sl|Slovenia;Eslovenia;Slovénie;Slowenien;SI;SVN
+Romania|ro|Romania;Rumanía;Rumania;Roumanie;Rumänien;RO;ROU
+Bulgaria|bg|Bulgaria;Bulgarie;Bulgarien;BG;BGR
+Estonia|et|Estonia;Estonie;Estland;EE;EST
+Latvia|lv|Latvia;Letonia;Lettonie;Lettland;Lettonia;LV;LVA
+Lithuania|lt|Lithuania;Lituania;Lituanie;Litauen;LT;LTU
+Malta|en|Malta;Malte;MT;MLT
+Cyprus|el|Cyprus;Chipre;Chypre;Zypern;Cipro;CY;CYP
+Russia|ru|Russia;Rusia;Russie;Russland;Russian Federation;RU;RUS
+Ukraine|uk|Ukraine;Ucrania;Ucraina;UA;UKR
+United States|en|United States;USA;U.S.A.;US;United States of America;Estados Unidos;EE.UU.;EEUU;États-Unis;Etats-Unis;Vereinigte Staaten;Stati Uniti;USA
+Canada|en|Canada;Canadá;Kanada;CA;CAN
+Mexico|es|Mexico;México;Mexique;Mexiko;Messico;MX;MEX
+Brazil|pt|Brazil;Brasil;Brésil;Bresil;Brasilien;Brasile;BR;BRA
+Argentina|es|Argentina;Argentine;Argentinien;AR;ARG
+Chile|es|Chile;Chili;Cile;CL;CHL
+Peru|es|Peru;Perú;Pérou;PE;PER
+Colombia|es|Colombia;Colombie;Kolumbien;CO;COL
+Panama|es|Panama;Panamá;PA;PAN
+Uruguay|es|Uruguay;UY;URY
+China|zh|China;Chine;Cina;People's Republic of China;PRC;CN;CHN
+Hong Kong|zh|Hong Kong;HK;HKG
+Taiwan|zh|Taiwan;Taiwán;Taïwan;TW;TWN
+Japan|ja|Japan;Japón;Japon;Giappone;JP;JPN
+South Korea|ko|South Korea;Korea;Republic of Korea;Korea, Republic of;Korea (South);Corea del Sur;Corea;Corée du Sud;Corée;Südkorea;Korea, Süd;Corea del Sud;KR;KOR
+Singapore|en|Singapore;Singapur;Singapour;SG;SGP
+India|en|India;Inde;Indien;IN;IND
+Indonesia|id|Indonesia;Indonésie;Indonesien;ID;IDN
+Malaysia|ms|Malaysia;Malasia;Malaisie;Malesia;MY;MYS
+Vietnam|vi|Vietnam;Viet Nam;Viêt Nam;VN;VNM
+Philippines|en|Philippines;Filipinas;Philippinen;Filippine;PH;PHL
+Thailand|th|Thailand;Tailandia;Thaïlande;Thailande;Tailandia;TH;THA
+Australia|en|Australia;Australie;Australien;AU;AUS
+New Zealand|en|New Zealand;Nueva Zelanda;Nouvelle-Zélande;Neuseeland;Nuova Zelanda;NZ;NZL
+United Arab Emirates|ar|United Arab Emirates;UAE;U.A.E.;Emiratos Árabes Unidos;Emiratos Arabes Unidos;Émirats arabes unis;Vereinigte Arabische Emirate;Emirati Arabi Uniti;AE;ARE
+Saudi Arabia|ar|Saudi Arabia;Arabia Saudí;Arabia Saudita;Arabie saoudite;Saudi-Arabien;SA;SAU
+Qatar|ar|Qatar;Katar;QA;QAT
+Egypt|ar|Egypt;Egipto;Égypte;Egypte;Ägypten;Egitto;EG;EGY
+Morocco|ar|Morocco;Marruecos;Maroc;Marokko;Marocco;MA;MAR
+Israel|he|Israel;Israël;Israele;IL;ISR
+South Africa|en|South Africa;Sudáfrica;Sudafrica;Afrique du Sud;Südafrika;Sudafrica;ZA;ZAF
+Nigeria|en|Nigeria;Nigéria;NG;NGA

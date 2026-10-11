@@ -1,0 +1,24 @@
+# País | 0 troncal al marcar dentro del país (vacío si no hay) | prefijos nacionales de móvil | longitudes del número nacional
+# Ejemplos: +34 612 345 678 → nacional 612345678 (9); +49 151 2345678 → 01512345678 (11).
+Spain||6,7|9
+France|0|06,07|10
+Germany|0|015,016,017|10,11,12
+Italy||3|9,10
+United Kingdom|0|07|11
+Netherlands|0|06|10
+Belgium|0|04|10
+Portugal||9|9
+Switzerland|0|07|10
+Austria|0|06|10,11,12,13
+Ireland|0|08|10
+Norway||4,9|8
+Sweden|0|07|10
+Poland||50,51,53,57,60,66,69,72,73,78,79,88|9
+Greece||69|10
+Australia|0|04|10
+South Korea|0|010|11
+China||13,14,15,16,17,18,19|11
+Japan|0|070,080,090|11
+Singapore||8,9|8
+United Arab Emirates|0|05|10
+India||6,7,8,9|10

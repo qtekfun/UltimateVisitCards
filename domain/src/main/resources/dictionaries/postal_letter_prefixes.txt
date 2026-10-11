@@ -1,0 +1,22 @@
+# Prefijo de país antes del código postal (estilo «D-20457 Hamburg») | país.
+D|Germany
+F|France
+I|Italy
+E|Spain
+P|Portugal
+NL|Netherlands
+B|Belgium
+L|Luxembourg
+CH|Switzerland
+A|Austria
+DK|Denmark
+N|Norway
+S|Sweden
+FI|Finland
+FIN|Finland
+SF|Finland
+PL|Poland
+GR|Greece
+HR|Croatia
+SLO|Slovenia
+CZ|Czech Republic

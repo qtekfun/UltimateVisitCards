@@ -1,0 +1,6 @@
+# Palabras que delatan el idioma de la tarjeta cuando no consta el país (solo para dividir nombres).
+es: calle, avda, avenida, paseo, muelle, poligono, nave, planta, piso, movil, tfno, tlf, telefono, jefe, jefa, gerente, directora, ventas, compras, consultora, ingeniero, ingeniera, delegado, delegada, sl, slu, sau, espana, operaciones, logistica, calidad, proyectos
+fr: rue, quai, boulevard, cedex, portable, directeur, directrice, ingenieur, chef, achats, ventes, sarl, sas, france, technicien
+de: strasse, platz, weg, telefon, mobil, handy, fon, geschaftsfuhrer, leiter, leiterin, vertrieb, einkauf, gmbh, kg, deutschland
+it: via, viale, piazza, corso, cell, cellulare, direttore, responsabile, ingegnere, commerciale, acquisti, vendite, srl, spa, italia
+en: street, road, suite, office, mobile, manager, head, sales, ltd, inc, llc
