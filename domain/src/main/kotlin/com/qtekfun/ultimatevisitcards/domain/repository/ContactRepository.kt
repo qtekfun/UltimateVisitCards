@@ -1,6 +1,8 @@
 package com.qtekfun.ultimatevisitcards.domain.repository
 
 import com.qtekfun.ultimatevisitcards.domain.model.Contact
+import com.qtekfun.ultimatevisitcards.domain.model.ContactFilter
+import com.qtekfun.ultimatevisitcards.domain.model.ContactListItem
 import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import kotlinx.coroutines.flow.Flow
 
@@ -35,6 +37,17 @@ interface ContactRepository {
 
     /** Full-text search over every searchable field (docs/02-modelo-datos.md); a blank query returns nothing. */
     fun search(query: String): Flow<List<Contact>>
+
+    /**
+     * The contact list for [filter]: all contacts (newest first) when it is empty, otherwise the matches
+     * sorted by surname and name.
+     */
+    fun observeList(filter: ContactFilter): Flow<List<ContactListItem>>
+
+    /** Countries in use (contact or company), for the country filter. */
+    fun observeCountries(): Flow<List<String>>
+
+    fun observeCount(): Flow<Int>
 
     suspend fun create(draft: ContactDraft): DomainResult<Contact>
 

@@ -21,8 +21,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.qtekfun.ultimatevisitcards.ui.capture.CaptureScreen
+import com.qtekfun.ultimatevisitcards.ui.cards.CardsActions
 import com.qtekfun.ultimatevisitcards.ui.cards.CardsScreen
+import com.qtekfun.ultimatevisitcards.ui.cards.CardsViewModel
 import com.qtekfun.ultimatevisitcards.ui.companies.CompaniesScreen
+import com.qtekfun.ultimatevisitcards.ui.companies.CompanyDetailScreen
+import com.qtekfun.ultimatevisitcards.ui.companies.CompanyDetailViewModel
+import com.qtekfun.ultimatevisitcards.ui.contact.ContactDetailScreen
+import com.qtekfun.ultimatevisitcards.ui.contact.ContactDetailViewModel
+import com.qtekfun.ultimatevisitcards.ui.events.EventDetailScreen
+import com.qtekfun.ultimatevisitcards.ui.events.EventDetailViewModel
 import com.qtekfun.ultimatevisitcards.ui.events.EventsScreen
 import com.qtekfun.ultimatevisitcards.ui.queue.ReviewQueueScreen
 import com.qtekfun.ultimatevisitcards.ui.quickscan.QuickScanScreen
@@ -40,6 +48,23 @@ object Routes {
     const val REVIEW = "review/{${ReviewViewModel.ARG_CARD_ID}}?${ReviewViewModel.ARG_FROM_QUEUE}={${ReviewViewModel.ARG_FROM_QUEUE}}"
 
     fun review(cardId: String, fromQueue: Boolean = false) = "review/$cardId?${ReviewViewModel.ARG_FROM_QUEUE}=$fromQueue"
+
+    const val CONTACT = "contact/{${ContactDetailViewModel.ARG_CONTACT_ID}}"
+
+    fun contact(contactId: String) = "contact/$contactId"
+
+    /** The Cards tab with an optional starting search (global search from an event). */
+    const val CARDS_WITH_QUERY = "cards?${CardsViewModel.ARG_QUERY}={${CardsViewModel.ARG_QUERY}}"
+
+    const val EVENT = "event/{${EventDetailViewModel.ARG_EVENT_ID}}"
+
+    fun event(eventId: String) = "event/$eventId"
+
+    const val COMPANY = "company/{${CompanyDetailViewModel.ARG_COMPANY_ID}}"
+
+    fun company(companyId: String) = "company/$companyId"
+
+    fun cards(query: String) = "cards?${CardsViewModel.ARG_QUERY}=${android.net.Uri.encode(query)}"
 }
 
 /** Root scaffold: bottom navigation over the five top-level sections. */
@@ -56,18 +81,47 @@ fun UvcApp(navController: NavHostController = rememberNavController()) {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = TopLevelDestination.CARDS.route,
+            startDestination = Routes.CARDS_WITH_QUERY,
             modifier = Modifier.padding(padding)
         ) {
-            composable(TopLevelDestination.CARDS.route) {
+            composable(
+                Routes.CARDS_WITH_QUERY,
+                arguments = listOf(
+                    navArgument(CardsViewModel.ARG_QUERY) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    }
+                )
+            ) {
                 CardsScreen(
-                    onAddCard = { navController.navigate(Routes.CAPTURE) },
-                    onQuickScan = { navController.navigate(Routes.QUICK_SCAN) },
-                    onPending = { navController.navigate(Routes.QUEUE) }
+                    CardsActions(
+                        onAddCard = { navController.navigate(Routes.CAPTURE) },
+                        onQuickScan = { navController.navigate(Routes.QUICK_SCAN) },
+                        onPending = { navController.navigate(Routes.QUEUE) },
+                        onOpenContact = { navController.navigate(Routes.contact(it)) }
+                    )
                 )
             }
-            composable(TopLevelDestination.EVENTS.route) { EventsScreen() }
-            composable(TopLevelDestination.COMPANIES.route) { CompaniesScreen() }
+            composable(Routes.CONTACT, arguments = listOf(navArgument(ContactDetailViewModel.ARG_CONTACT_ID) { type = NavType.StringType })) {
+                ContactDetailScreen(onBack = { navController.popBackStack() }, onOpenCompany = { navController.navigate(Routes.company(it)) })
+            }
+            composable(TopLevelDestination.EVENTS.route) { EventsScreen(onOpenEvent = { navController.navigate(Routes.event(it)) }) }
+            composable(TopLevelDestination.COMPANIES.route) { CompaniesScreen(onOpenCompany = { navController.navigate(Routes.company(it)) }) }
+            composable(Routes.EVENT, arguments = listOf(navArgument(EventDetailViewModel.ARG_EVENT_ID) { type = NavType.StringType })) {
+                EventDetailScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenContact = { navController.navigate(Routes.contact(it)) },
+                    // «Only in this event» removed: the same text as a global search in Cards.
+                    onGlobalSearch = { text ->
+                        navController.navigate(Routes.cards(text)) {
+                            popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                        }
+                    }
+                )
+            }
+            composable(Routes.COMPANY, arguments = listOf(navArgument(CompanyDetailViewModel.ARG_COMPANY_ID) { type = NavType.StringType })) {
+                CompanyDetailScreen(onBack = { navController.popBackStack() }, onOpenContact = { navController.navigate(Routes.contact(it)) })
+            }
             composable(TopLevelDestination.SECTORS.route) { SectorsScreen() }
             composable(TopLevelDestination.SETTINGS.route) { SettingsScreen() }
             composable(Routes.CAPTURE) {
@@ -133,4 +187,6 @@ private fun BottomBar(navController: NavHostController, currentDestination: NavD
     }
 }
 
-private fun NavDestination?.isOn(destination: TopLevelDestination): Boolean = this?.hierarchy?.any { it.route == destination.route } == true
+// Routes may carry optional arguments («cards?q={q}»): compare the path only.
+private fun NavDestination?.isOn(destination: TopLevelDestination): Boolean =
+    this?.hierarchy?.any { it.route?.substringBefore('?') == destination.route } == true

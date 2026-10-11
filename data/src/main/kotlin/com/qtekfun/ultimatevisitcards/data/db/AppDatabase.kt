@@ -43,10 +43,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun searchDao(): SearchDao
 
     companion object {
-        const val VERSION = 1
+        const val VERSION = 2
         const val NAME = "ultimatevisitcards.db"
 
         /** Every migration, in order. Each one has its test (docs/02-modelo-datos.md). */
-        val MIGRATIONS: Array<androidx.room3.migration.Migration> = emptyArray()
+        val MIGRATIONS: Array<androidx.room3.migration.Migration> = arrayOf(Migration1To2)
     }
 }

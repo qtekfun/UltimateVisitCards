@@ -35,7 +35,13 @@ class AppTestData(context: CoroutineDispatcher, root: File) {
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(context)
         .build()
-    val clock = Clock { 1_767_225_600_000L }
+
+    /** Ticks one second per read, so creation order is visible in «newest first» lists. */
+    val clock = object : Clock {
+        private var now = 1_767_225_600_000L
+
+        override fun nowMillis(): Long = now.also { now += 1_000 }
+    }
     val indexer = SearchIndexer(db)
     val cards = RoomBusinessCardRepository(db, indexer, clock, IdGenerator.Uuid)
     val events = RoomEventRepository(db, indexer, clock, IdGenerator.Uuid)

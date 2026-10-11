@@ -69,3 +69,14 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
 - **2026-10-11 · `OcrScheduler` como interfaz.** La captura, el escaneo rápido y la recuperación solo necesitan «encolar esta tarjeta»; `OcrQueue` lo implementa con WorkManager y los tests usan un registrador. La semántica de la cadena (una a una, el resto `BLOCKED`) se prueba aparte con WorkManager real.
 - **2026-10-11 · La cola de revisión incluye las que aún se leen.** Se pueden revisar ya (el formulario se completa cuando termina el OCR); el orden es por fecha de captura.
 - **2026-10-11 · Límite de tiempo en los tests (10 min).** Un test colgado hace fallar la build en lugar de bloquear la máquina.
+
+## Fase 6
+
+- **2026-10-11 · Filtros de nombre y apellidos con columnas FTS propias (esquema v2).** `docs/02` pide filtrar por nombre y por apellidos por separado; el índice solo tenía `name` (ambos juntos). Se añaden `firstName`/`lastName` a `contact_fts` con su migración y su test. Como una tabla FTS4 no se puede alterar, la migración la recrea vacía y `SearchIndexHealth` la reconstruye al arrancar. *Descartado*: un único filtro «nombre o apellidos» (se aparta de la doc) o `LIKE` sobre las columnas (no pliega acentos en SQLite).
+- **2026-10-11 · Un único `MATCH` para texto libre y filtros de campo.** Los filtros de nombre, apellidos y cargo son filtros de columna FTS sumados al texto libre; los demás (evento, sector, país, empresa, fechas) son condiciones SQL. El orden: sin filtros, más recientes primero; con filtros, por apellido y nombre.
+- **2026-10-11 · Un texto sin nada buscable no devuelve todo.** «*» o comillas sueltas dan cero resultados en lugar de ignorar el filtro.
+- **2026-10-11 · Imagen de la rejilla sin generar nada.** `ImageStore.preview` devuelve la miniatura si existe o la enderezada (Coil la reduce); generar miniaturas al pintar una lista de miles bloquearía.
+- **2026-10-11 · Preferencias de UI en SharedPreferences.** Solo la vista tarjetero/lista por ahora; sin dependencia nueva (DataStore no está en la lista aprobada). Irán al `settings.json` del backup (fase 9).
+- **2026-10-11 · Búsqueda global desde un evento.** Quitar el chip «Solo en este evento» abre Tarjetas con el mismo texto (`cards?q=`).
+- **2026-10-11 · Ficha de contacto básica ya en la fase 6** (solo lectura) para que la lista lleve a algún sitio; la fase 7 añade edición, acciones, histórico y fusión.
+- **2026-10-11 · Paralelización con un subagente.** Las pantallas de Eventos, Empresas y Sectores las escribió un subagente en un worktree sin compilar (solo quedaban ~2,5 GB de RAM libres y dos builds de Gradle a la vez no caben); se integraron y compilaron después en una sola build.

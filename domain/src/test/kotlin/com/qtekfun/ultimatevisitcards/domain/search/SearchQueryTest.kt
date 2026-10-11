@@ -27,6 +27,13 @@ class SearchQueryTest {
     }
 
     @Test
+    fun `column filters are added as column prefixes`() {
+        val columns = linkedMapOf("jobTitle" to "Sales Dir.", "lastName" to "García")
+        assertEquals("korea* jobTitle:sales* jobTitle:dir* lastName:garcia*", SearchQuery.toFtsMatch("Korea", columns))
+        assertEquals("firstName:ana*", SearchQuery.toFtsMatch(" ", mapOf("firstName" to "Ana")))
+    }
+
+    @Test
     fun `nothing searchable gives null`() {
         assertNull(SearchQuery.toFtsMatch("   "))
         assertNull(SearchQuery.toFtsMatch("*\"()"))

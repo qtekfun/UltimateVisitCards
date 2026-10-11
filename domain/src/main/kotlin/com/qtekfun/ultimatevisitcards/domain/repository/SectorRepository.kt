@@ -2,11 +2,15 @@ package com.qtekfun.ultimatevisitcards.domain.repository
 
 import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import com.qtekfun.ultimatevisitcards.domain.model.Sector
+import com.qtekfun.ultimatevisitcards.domain.model.SectorSummary
 import kotlinx.coroutines.flow.Flow
 
 interface SectorRepository {
     /** All sectors in display order. */
     fun observeAll(): Flow<List<Sector>>
+
+    /** Sectors with their number of companies, in display order. */
+    fun observeSummaries(): Flow<List<SectorSummary>>
 
     suspend fun get(id: String): Sector?
 

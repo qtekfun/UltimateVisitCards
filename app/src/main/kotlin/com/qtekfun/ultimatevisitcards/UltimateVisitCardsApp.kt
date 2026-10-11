@@ -3,6 +3,7 @@ package com.qtekfun.ultimatevisitcards
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.qtekfun.ultimatevisitcards.data.repo.SearchIndexHealth
 import com.qtekfun.ultimatevisitcards.di.ApplicationScope
 import com.qtekfun.ultimatevisitcards.work.OcrRecovery
 import dagger.hilt.android.HiltAndroidApp
@@ -22,13 +23,20 @@ class UltimateVisitCardsApp :
     lateinit var ocrRecovery: OcrRecovery
 
     @Inject
+    lateinit var searchIndexHealth: SearchIndexHealth
+
+    @Inject
     @ApplicationScope
     lateinit var appScope: CoroutineScope
 
     override fun onCreate() {
         super.onCreate()
-        // Cards interrupted by a forced close go back to the OCR queue.
-        appScope.launch { ocrRecovery.resume() }
+        appScope.launch {
+            // The search index is derived data: rebuilt if it does not match the contacts (e.g. after a migration).
+            searchIndexHealth.ensure()
+            // Cards interrupted by a forced close go back to the OCR queue.
+            ocrRecovery.resume()
+        }
     }
 
     override val workManagerConfiguration: Configuration

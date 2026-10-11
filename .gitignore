@@ -21,3 +21,6 @@ captures/
 
 # SO
 .DS_Store
+
+# Worktrees temporales de Claude Code
+.claude/worktrees/

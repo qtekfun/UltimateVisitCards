@@ -2,10 +2,13 @@ package com.qtekfun.ultimatevisitcards.data.repo
 
 import androidx.room3.withWriteTransaction
 import com.qtekfun.ultimatevisitcards.data.db.AppDatabase
+import com.qtekfun.ultimatevisitcards.data.db.ContactQueryBuilder
 import com.qtekfun.ultimatevisitcards.data.db.entity.ContactEventEntity
 import com.qtekfun.ultimatevisitcards.data.db.toDomain
 import com.qtekfun.ultimatevisitcards.data.db.toEntity
 import com.qtekfun.ultimatevisitcards.domain.model.Contact
+import com.qtekfun.ultimatevisitcards.domain.model.ContactFilter
+import com.qtekfun.ultimatevisitcards.domain.model.ContactListItem
 import com.qtekfun.ultimatevisitcards.domain.model.DomainError
 import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import com.qtekfun.ultimatevisitcards.domain.repository.ContactDraft
@@ -107,6 +110,14 @@ class RoomContactRepository @Inject constructor(
         indexer.reindex(contactId)
         Unit.success()
     }
+
+    override fun observeList(filter: ContactFilter): Flow<List<ContactListItem>> = dao.observeList(ContactQueryBuilder.build(filter)).map { rows ->
+        rows.map { ContactListItem(it.contact.toDomain(), it.companyName, it.effectiveCountry, it.primaryCardId) }
+    }
+
+    override fun observeCountries(): Flow<List<String>> = dao.observeCountries()
+
+    override fun observeCount(): Flow<Int> = dao.observeCount()
 
     override suspend fun allWithCompany(): List<ContactWithCompany> = dao.allWithCompany().map { ContactWithCompany(it.contact.toDomain(), it.companyName) }
 

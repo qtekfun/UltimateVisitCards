@@ -50,10 +50,12 @@ class NavigationTest {
         val sections = listOf(
             R.string.nav_events to R.string.events_empty,
             R.string.nav_companies to R.string.companies_empty,
-            R.string.nav_sectors to R.string.sectors_empty,
             R.string.nav_settings to R.string.settings_empty,
             R.string.nav_cards to R.string.cards_empty
         )
+        // The sectors tab lists the sectors seeded on first launch.
+        compose.onNodeWithText(string(R.string.nav_sectors)).performClick()
+        waitForText("Shipyard")
         sections.forEach { (label, content) ->
             compose.onNodeWithText(string(label)).performClick()
             compose.onNodeWithText(string(label)).assertIsSelected()

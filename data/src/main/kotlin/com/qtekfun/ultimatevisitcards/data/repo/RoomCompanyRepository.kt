@@ -4,6 +4,7 @@ import com.qtekfun.ultimatevisitcards.data.db.AppDatabase
 import com.qtekfun.ultimatevisitcards.data.db.toDomain
 import com.qtekfun.ultimatevisitcards.data.db.toEntity
 import com.qtekfun.ultimatevisitcards.domain.model.Company
+import com.qtekfun.ultimatevisitcards.domain.model.CompanySummary
 import com.qtekfun.ultimatevisitcards.domain.model.DomainError
 import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import com.qtekfun.ultimatevisitcards.domain.repository.CompanyDraft
@@ -27,6 +28,11 @@ class RoomCompanyRepository @Inject constructor(
     override fun observeAll(): Flow<List<Company>> = dao.observeAll().map { list -> list.map { it.toDomain() } }
 
     override fun observe(id: String): Flow<Company?> = dao.observe(id).map { it?.toDomain() }
+
+    override fun observeSummaries(): Flow<List<CompanySummary>> =
+        dao.observeSummaries().map { rows -> rows.map { CompanySummary(it.company.toDomain(), it.sectorName, it.contactCount) } }
+
+    override fun observeCount(): Flow<Int> = dao.observeCount()
 
     override suspend fun get(id: String): Company? = dao.get(id)?.toDomain()
 

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Común a eventos, empresas y sectores -->
+  <string name="catalog_edit">Editar</string>
+  <string name="catalog_delete">Borrar</string>
+  <string name="catalog_save">Guardar</string>
+  <string name="catalog_name_required">El nombre es obligatorio.</string>
+  <string name="catalog_save_failed">No se pudo guardar el cambio. Inténtalo de nuevo.</string>
+  <string name="catalog_no_date">Sin fecha</string>
+  <string name="catalog_clear_date">Quitar</string>
+  <string name="catalog_contact_count">Contactos: %1$d</string>
+  <string name="catalog_no_results">Nada coincide.</string>
+
+  <!-- Eventos -->
+  <string name="events_new">Nuevo evento</string>
+  <string name="events_error">No se pudieron cargar los eventos.</string>
+  <string name="event_dates">%1$s – %2$s</string>
+  <string name="event_edit_title">Editar evento</string>
+  <string name="event_location">Lugar</string>
+  <string name="event_start">Fecha de inicio</string>
+  <string name="event_end">Fecha de fin</string>
+  <string name="event_delete_confirm">¿Borrar este evento? Sus contactos y tarjetas se conservan.</string>
+  <string name="event_search">Buscar en este evento</string>
+  <string name="event_only_this">Solo en este evento</string>
+  <string name="event_search_everywhere">Buscar en todo</string>
+  <string name="event_no_contacts">Aún no hay contactos en este evento.</string>
+  <string name="event_missing">Este evento ya no existe.</string>
+
+  <!-- Empresas -->
+  <string name="companies_error">No se pudieron cargar las empresas.</string>
+  <string name="companies_filter">Filtrar empresas</string>
+  <string name="company_edit_title">Editar empresa</string>
+  <string name="company_sector">Sector</string>
+  <string name="company_name_conflict">Ya existe otra empresa con este nombre.</string>
+  <string name="company_delete_confirm">¿Borrar esta empresa? Sus contactos se conservan sin empresa.</string>
+  <string name="company_no_contacts">No hay contactos de esta empresa.</string>
+  <string name="company_missing">Esta empresa ya no existe.</string>
+
+  <!-- Sectores -->
+  <string name="sectors_new">Nuevo sector</string>
+  <string name="sectors_error">No se pudieron cargar los sectores.</string>
+  <string name="sectors_rename">Renombrar</string>
+  <string name="sectors_rename_title">Renombrar sector</string>
+  <string name="sectors_company_count">Empresas: %1$d</string>
+  <string name="sectors_conflict">Ya existe un sector con ese nombre.</string>
+  <string name="sectors_delete_confirm">¿Borrar este sector? Sus empresas se conservan sin sector.</string>
+</resources>

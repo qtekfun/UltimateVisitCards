@@ -96,7 +96,7 @@ Regla clave: una tarjeta existe **antes** que su contacto. «Pendientes de revis
 Tabla virtual **independiente** `contact_fts` (no `contentEntity`, porque mezcla datos de varias tablas):
 
 ```
-contact_fts(contactId UNINDEXED, name, company, jobTitle, country, sector,
+contact_fts(contactId UNINDEXED, name, firstName, lastName, company, jobTitle, country, sector,
             email, phone, notes, ocrText, events,
             tokenize=unicode61)
 ```
@@ -110,7 +110,7 @@ contact_fts(contactId UNINDEXED, name, company, jobTitle, country, sector,
 - Reconstrucción completa tras un restore y desde Ajustes («Reindexar»).
 
 ### Búsqueda dentro de un grupo y filtros combinables
-Consulta construida dinámicamente (`@RawQuery`, parámetros siempre enlazados):
+Consulta construida dinámicamente (`ContactQueryBuilder` → `@RawQuery` con `observedEntities`, parámetros siempre enlazados). Nombre, apellidos y cargo se filtran con filtros de columna FTS (`firstName:ana* lastName:garcia*`), combinados con el texto libre en una sola expresión `MATCH`:
 
 ```
 SELECT c.* FROM Contact c
@@ -128,3 +128,10 @@ Filtros: nombre, apellidos, empresa, cargo, país, sector, evento, fecha. Se com
 
 ## Migraciones
 Toda migración tiene test (`MigrationTestHelper`). El backup lleva su propia `backup_version`, independiente de la versión de Room.
+
+| Versión | Cambio |
+|---|---|
+| 1 | Esquema inicial |
+| 2 | `contact_fts` añade `firstName` y `lastName` (filtros de nombre). La tabla FTS se recrea vacía y `SearchIndexHealth` la reconstruye al arrancar (el índice es derivado; no se pierde nada). |
+
+Al arrancar, `SearchIndexHealth` comprueba que el índice tiene una fila por contacto y, si no, lo reconstruye.
