@@ -104,3 +104,11 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
 
 - **2026-10-11 · Público, con GitGuardian, Dependabot y *secret scanning*.** Por petición del usuario el repositorio pasa a público (se revisó antes que la historia no tuviera claves ni secretos). GitGuardian revisa cada PR; Dependabot propone actualizaciones semanales agrupadas (Gradle y Actions) que pasan por el CI como cualquier cambio; *secret scanning* y *push protection* de GitHub activados.
 - **2026-10-11 · Cambios que no tocan la app no generan versión.** La configuración del repositorio (p. ej. Dependabot) se fusiona tras el CI sin nueva etiqueta; cada fase y cada cambio de la app sí sube versión.
+
+## Fase 8
+
+- **2026-10-11 · Escritores propios de CSV y XLSX en `:domain`.** Kotlin puro con `java.util.zip`; el XLSX tiene el mínimo de partes OOXML (tipos, relaciones, libro, estilos con negrita, hoja con celdas `inlineStr`, fila congelada y anchos). *Descartado*: Apache POI (prohibido por la doc, decenas de MB).
+- **2026-10-11 · Validación independiente sin dependencias.** Los tests leen el CSV con un lector RFC 4180 propio del test y el XLSX con el parser DOM del JDK (`javax.xml`), ajenos al código que escribe. No hay librería de hojas de cálculo aprobada para tests.
+- **2026-10-11 · Protección contra fórmulas en CSV y XLSX.** Prefijo `'` si la celda empieza por `=`, `+`, `-`, `@`, tabulador o retorno de carro. Implica que un teléfono «+34…» se exporta como «'+34…»: es la contrapartida conocida de esta protección y la recomendada por OWASP.
+- **2026-10-11 · Una consulta para eventos y otra para sectores.** La exportación carga los nombres de eventos por contacto y el sector de cada empresa en dos consultas, no una por contacto.
+- **2026-10-11 · BOM escrito como `Char(0xFEFF)`.** Un literal con el carácter (o su escape en una cadena) desaparecía al formatear el código.
