@@ -15,7 +15,7 @@ data class VCardContact(
     val website: String? = null,
     val address: String? = null,
     val country: String? = null,
-    val notes: String? = null,
+    val notes: String? = null
 )
 
 /**

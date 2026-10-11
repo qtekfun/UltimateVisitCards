@@ -95,7 +95,7 @@ class VCardWriterTest {
         website = "www.navaltech-demo.es",
         address = "C/ Ficticia 12\n28001 Madrid",
         country = "Spain",
-        notes = "Back\\slash, semicolon; and\nnew line",
+        notes = "Back\\slash, semicolon; and\nnew line"
     )
 
     @Test

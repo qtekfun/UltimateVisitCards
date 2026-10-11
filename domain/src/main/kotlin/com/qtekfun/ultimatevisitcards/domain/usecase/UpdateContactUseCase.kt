@@ -13,7 +13,7 @@ import javax.inject.Inject
 class UpdateContactUseCase @Inject constructor(
     private val contacts: ContactRepository,
     private val companies: CompanyRepository,
-    private val transactions: TransactionRunner,
+    private val transactions: TransactionRunner
 ) {
     suspend operator fun invoke(contact: Contact, companyName: String?): DomainResult<Contact> {
         val reachable = listOf(contact.firstName, contact.lastName, companyName, contact.email, contact.phone, contact.mobile).any { !it.isNullOrBlank() }
