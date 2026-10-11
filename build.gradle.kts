@@ -25,6 +25,8 @@ subprojects {
     tasks.withType<Test>().configureEach {
         maxParallelForks = 1
         maxHeapSize = "1g"
+        // A hung test (e.g. a deadlock) fails the build instead of blocking the machine.
+        timeout.set(java.time.Duration.ofMinutes(10))
         // Robolectric toca internals del JDK (FileDescriptor, etc.) que Java 17+ cierra por defecto.
         jvmArgs(
             "--add-opens=java.base/java.io=ALL-UNNAMED",
