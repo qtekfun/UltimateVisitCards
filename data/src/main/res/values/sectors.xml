@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Initial sectors, seeded once on first launch in the device language; the user can edit them. -->
+  <string-array name="default_sectors">
+    <item>Shipyard</item>
+    <item>Shipowner</item>
+    <item>Ship Management</item>
+    <item>Engine Manufacturer</item>
+    <item>Marine Equipment</item>
+    <item>Electronics</item>
+    <item>Automation</item>
+    <item>Engineering</item>
+    <item>Classification Society</item>
+    <item>Maritime Services</item>
+    <item>Logistics</item>
+    <item>Distributor</item>
+    <item>Supplier</item>
+    <item>Other</item>
+  </string-array>
+</resources>

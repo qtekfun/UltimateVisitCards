@@ -79,6 +79,9 @@ Regla: **cada fase termina con el proyecto compilando en `play` y `foss`, tests 
 - **2026-10-11 · Fase 0 · `OcrEngineInfo`**: marcador provisional en `:domain` (`engineId` = `mlkit`/`tesseract`) que el `OcrModule` de cada flavour enlaza en Hilt, para probar el cableado por flavour antes de que exista `OcrService`. En la fase 3 se sustituye por `OcrService.engineId`.
 - **2026-10-11 · Fase 0 · Permisos de red**: además de no declarar `INTERNET`, el manifest de `:app` los elimina con `tools:node="remove"` (por si una dependencia futura, p. ej. ML Kit, los arrastra) y la tarea `verifyNoInternetPermission` falla si aparecen en el manifest fusionado de cualquier variante.
 - **2026-10-11 · Fase 0 · Memoria del build**: `gradle.properties` limita el daemon a 2 GB, compila Kotlin dentro del daemon y los tests corren en un único fork de 1 GB, para poder compilar en máquinas con poca RAM libre.
+- **2026-10-11 · Fase 1 · Room 3**: se usa `androidx.room3` (API KMP con drivers) en lugar de Room 2; ver `docs/decisions.md`.
+- **2026-10-11 · Fase 1 · `Sector.normalizedName`**: columna nueva con índice único para la unicidad sin mayúsculas ni acentos.
+- **2026-10-11 · Fase 1 · Tokenizer FTS**: `unicode61` sin `remove_diacritics=2`; el plegado lo hace la app (`TextNormalizer`).
 - **2026-10-11 · Fase 0 · JVM 21**: todos los módulos compilan con target Java/Kotlin 21 (JDK de desarrollo: Temurin 21).
 
 ## Resultados de medición

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Sectores iniciales: se siembran una vez en el primer arranque, en el idioma del dispositivo; son editables. -->
+  <string-array name="default_sectors">
+    <item>Astillero</item>
+    <item>Armador</item>
+    <item>Ship Management</item>
+    <item>Fabricante de motores</item>
+    <item>Equipamiento naval</item>
+    <item>Electrónica</item>
+    <item>Automatización</item>
+    <item>Ingeniería</item>
+    <item>Clasificación</item>
+    <item>Servicios marítimos</item>
+    <item>Logística</item>
+    <item>Distribuidor</item>
+    <item>Proveedor</item>
+    <item>Otro</item>
+  </string-array>
+</resources>

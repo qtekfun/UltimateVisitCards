@@ -1,0 +1,78 @@
+# Formas jurídicas que se eliminan al normalizar el nombre de una empresa (Company.normalizedName).
+# Una por línea; la puntuación y las mayúsculas no importan (se pliegan igual que el nombre).
+# Alemania / Austria / Suiza
+GmbH & Co. KG
+GmbH & Co KG
+Co. KG
+GmbH
+gGmbH
+AG
+KG
+OHG
+UG
+e.K.
+SE
+# España / Latinoamérica
+S.L.
+SL
+S.L.U.
+SLU
+S.A.
+SA
+S.A.U.
+SAU
+S.C.
+S.Coop.
+S.A. de C.V.
+Ltda.
+# Francia / Bélgica
+SAS
+S.A.S.
+SASU
+SARL
+S.A.R.L.
+EURL
+SCA
+# Italia
+S.p.A.
+SpA
+S.r.l.
+Srl
+S.n.c.
+S.a.s.
+# Países Bajos / Bélgica
+B.V.
+BV
+N.V.
+NV
+# Nórdicos
+A/S
+AS
+ASA
+ApS
+AB
+Oy
+Oyj
+# Reino Unido / EE. UU. / Asia
+Ltd.
+Ltd
+Limited
+Co. Ltd.
+Co., Ltd.
+Pte. Ltd.
+Pty Ltd
+PLC
+LLC
+L.L.C.
+LLP
+Inc.
+Inc
+Incorporated
+Corp.
+Co.
+Co
+K.K.
+# Portugal / Grecia / Polonia
+Lda.
+S.A.
+Sp. z o.o.
