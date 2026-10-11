@@ -61,6 +61,7 @@ import com.qtekfun.ultimatevisitcards.domain.extract.CardField
 import com.qtekfun.ultimatevisitcards.domain.model.CardSide
 import com.qtekfun.ultimatevisitcards.ui.common.ContactFieldInput
 import com.qtekfun.ultimatevisitcards.ui.common.EmptyState
+import com.qtekfun.ultimatevisitcards.ui.merge.MergeComparison
 
 @Composable
 fun ReviewScreen(onExit: (ReviewExit) -> Unit, onBack: () -> Unit, viewModel: ReviewViewModel = hiltViewModel()) {
@@ -92,7 +93,8 @@ private fun ReviewContent(state: ReviewUiState, viewModel: ReviewViewModel, onBa
             }
         }
     }
-    if (state.duplicates.isNotEmpty() && state.preview == null) DuplicatesDialog(state.duplicates, viewModel)
+    if (state.duplicates.isNotEmpty() && state.preview == null && state.merge == null) DuplicatesDialog(state.duplicates, viewModel)
+    state.merge?.let { MergeDialog(it, state.saving, viewModel) }
     state.preview?.let { ExistingContactDialog(it, onClose = viewModel::closePreview) }
     state.error?.let { error ->
         AlertDialog(
@@ -276,11 +278,36 @@ private fun DuplicatesDialog(candidates: List<DuplicateCandidate>, viewModel: Re
                         }
                         TextButton(onClick = { viewModel.viewExisting(candidate) }) { Text(stringResource(R.string.duplicates_view)) }
                     }
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        TextButton(onClick = { viewModel.mergeInto(candidate) }) { Text(stringResource(R.string.duplicates_merge)) }
+                        TextButton(onClick = { viewModel.addAsNewCard(candidate) }) { Text(stringResource(R.string.duplicates_add_card)) }
+                    }
                 }
             }
         },
         confirmButton = { TextButton(onClick = viewModel::saveAsNew) { Text(stringResource(R.string.duplicates_save_new)) } },
         dismissButton = { TextButton(onClick = viewModel::dismissDuplicates) { Text(stringResource(R.string.review_cancel)) } }
+    )
+}
+
+/** «Merge»: the existing contact on the left, this card on the right; the newest card wins by default. */
+@Composable
+private fun MergeDialog(target: MergeTarget, saving: Boolean, viewModel: ReviewViewModel) {
+    AlertDialog(
+        onDismissRequest = viewModel::cancelMerge,
+        title = { Text(stringResource(R.string.merge_title)) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                MergeComparison(
+                    target.plan,
+                    existingLabel = stringResource(R.string.merge_existing),
+                    incomingLabel = stringResource(R.string.merge_this_card),
+                    onChoose = viewModel::chooseMerge
+                )
+            }
+        },
+        confirmButton = { TextButton(onClick = viewModel::confirmMerge, enabled = !saving) { Text(stringResource(R.string.merge_confirm)) } },
+        dismissButton = { TextButton(onClick = viewModel::cancelMerge) { Text(stringResource(R.string.review_cancel)) } }
     )
 }
 

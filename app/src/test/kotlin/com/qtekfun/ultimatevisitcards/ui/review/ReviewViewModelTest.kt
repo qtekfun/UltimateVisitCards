@@ -20,12 +20,15 @@ import com.qtekfun.ultimatevisitcards.domain.dedupe.MatchReason
 import com.qtekfun.ultimatevisitcards.domain.extract.CardField
 import com.qtekfun.ultimatevisitcards.domain.extract.ExtractedFields
 import com.qtekfun.ultimatevisitcards.domain.extract.ExtractedValue
+import com.qtekfun.ultimatevisitcards.domain.merge.MergeField
+import com.qtekfun.ultimatevisitcards.domain.merge.MergeSource
 import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import com.qtekfun.ultimatevisitcards.domain.model.OcrStatus
 import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardDraft
 import com.qtekfun.ultimatevisitcards.domain.repository.CompanyDraft
 import com.qtekfun.ultimatevisitcards.domain.repository.ContactDraft
 import com.qtekfun.ultimatevisitcards.domain.text.CompanyNameNormalizer
+import com.qtekfun.ultimatevisitcards.domain.usecase.AddCardToContactUseCase
 import com.qtekfun.ultimatevisitcards.domain.usecase.SaveReviewedCardUseCase
 import com.qtekfun.ultimatevisitcards.domain.util.Clock
 import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
@@ -88,8 +91,17 @@ class ReviewViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(id: String = cardId, fromQueue: Boolean = false) = ReviewViewModel(
-        SavedStateHandle(mapOf(ReviewViewModel.ARG_CARD_ID to id, ReviewViewModel.ARG_FROM_QUEUE to fromQueue)),
+    private fun viewModel(id: String = cardId, fromQueue: Boolean = false, target: String? = null) = ReviewViewModel(
+        SavedStateHandle(
+            listOfNotNull(
+                ReviewViewModel.ARG_CARD_ID to id,
+                ReviewViewModel.ARG_FROM_QUEUE to fromQueue,
+                target?.let {
+                    ReviewViewModel.ARG_TARGET_CONTACT to
+                        it
+                }
+            ).toMap()
+        ),
         cards,
         companies,
         contacts,
@@ -97,7 +109,8 @@ class ReviewViewModelTest {
         sectors,
         store,
         DuplicateDetector(),
-        SaveReviewedCardUseCase(companies, contacts, cards, RoomTransactionRunner(db))
+        SaveReviewedCardUseCase(companies, contacts, cards, RoomTransactionRunner(db)),
+        AddCardToContactUseCase(contacts, companies, cards, RoomTransactionRunner(db), Clock { 1L })
     )
 
     private suspend fun card(status: OcrStatus = OcrStatus.PENDING, fields: ExtractedFields? = null) {
@@ -257,6 +270,63 @@ class ReviewViewModelTest {
         last.saveAndNext()
         advanceUntilIdle()
         assertEquals(ReviewExit.Done, last.state.value.exit)
+    }
+
+    @Test
+    fun `merge from the warning - the card joins the existing contact with the chosen values`() = runTest(dispatcher) {
+        val existing = contacts.create(ContactDraft("Ana", "Ruiz", jobTitle = "Manager", email = "ana@navaltech-demo.es")).value()
+        card(OcrStatus.PENDING_REVIEW, ana)
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.save()
+        advanceUntilIdle()
+        vm.mergeInto(vm.state.value.duplicates.single())
+        advanceUntilIdle()
+        val merge = assertNotNull(vm.state.value.merge)
+        // The card is newer: its job title wins by default; keep the old one instead.
+        assertEquals("Directora", merge.plan.chosen(MergeField.JOB_TITLE))
+        vm.chooseMerge(MergeField.JOB_TITLE, MergeSource.EXISTING)
+        vm.confirmMerge()
+        advanceUntilIdle()
+
+        assertEquals(ReviewExit.Done, vm.state.value.exit)
+        assertEquals(listOf(existing.id), contacts.observeAll().first().map { it.id })
+        val updated = contacts.get(existing.id)!!
+        assertEquals("Manager", updated.jobTitle)
+        assertEquals("Navaltech S.L.", companies.get(updated.companyId!!)!!.name)
+        assertEquals(existing.id, cards.get(cardId)!!.contactId)
+        assertEquals(OcrStatus.REVIEWED, cards.get(cardId)!!.ocrStatus)
+    }
+
+    @Test
+    fun `add as new card keeps the existing data and only fills the gaps`() = runTest(dispatcher) {
+        val existing = contacts.create(ContactDraft("Ana", "Ruiz", jobTitle = "Manager", email = "ana@navaltech-demo.es")).value()
+        card(OcrStatus.PENDING_REVIEW, ana)
+        val vm = viewModel()
+        advanceUntilIdle()
+        vm.save()
+        advanceUntilIdle()
+        vm.addAsNewCard(vm.state.value.duplicates.single())
+        advanceUntilIdle()
+        val updated = contacts.get(existing.id)!!
+        assertEquals("Manager", updated.jobTitle)
+        assertNotNull(updated.companyId)
+        assertEquals(existing.id, cards.get(cardId)!!.contactId)
+    }
+
+    @Test
+    fun `a card taken for a contact is compared with that contact on save`() = runTest(dispatcher) {
+        val target = contacts.create(ContactDraft("Ana", "Ruiz", jobTitle = "Manager")).value()
+        card(OcrStatus.PENDING_REVIEW, ana)
+        val vm = viewModel(target = target.id)
+        advanceUntilIdle()
+        vm.save()
+        advanceUntilIdle()
+        assertEquals(target.id, vm.state.value.merge?.contact?.id)
+        vm.confirmMerge()
+        advanceUntilIdle()
+        assertEquals(target.id, cards.get(cardId)!!.contactId)
+        assertEquals(1, contacts.observeAll().first().size)
     }
 
     private fun <T> DomainResult<T>.value(): T = (this as DomainResult.Success).value
