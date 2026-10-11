@@ -10,6 +10,7 @@ import com.qtekfun.ultimatevisitcards.domain.model.DomainError
 import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import com.qtekfun.ultimatevisitcards.domain.repository.ContactDraft
 import com.qtekfun.ultimatevisitcards.domain.repository.ContactRepository
+import com.qtekfun.ultimatevisitcards.domain.repository.ContactWithCompany
 import com.qtekfun.ultimatevisitcards.domain.search.SearchQuery
 import com.qtekfun.ultimatevisitcards.domain.util.Clock
 import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
@@ -106,6 +107,8 @@ class RoomContactRepository @Inject constructor(
         indexer.reindex(contactId)
         Unit.success()
     }
+
+    override suspend fun allWithCompany(): List<ContactWithCompany> = dao.allWithCompany().map { ContactWithCompany(it.contact.toDomain(), it.companyName) }
 
     override suspend fun rebuildSearchIndex() {
         db.withWriteTransaction { indexer.rebuild() }

@@ -1,6 +1,7 @@
 package com.qtekfun.ultimatevisitcards.data.db.dao
 
 import androidx.room3.Dao
+import androidx.room3.Embedded
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
@@ -8,6 +9,8 @@ import androidx.room3.Update
 import com.qtekfun.ultimatevisitcards.data.db.entity.ContactEntity
 import com.qtekfun.ultimatevisitcards.data.db.entity.ContactEventEntity
 import kotlinx.coroutines.flow.Flow
+
+data class ContactWithCompanyRow(@Embedded val contact: ContactEntity, val companyName: String?)
 
 @Dao
 interface ContactDao {
@@ -38,6 +41,9 @@ interface ContactDao {
 
     @Query("SELECT id FROM Contact")
     suspend fun allIds(): List<String>
+
+    @Query("SELECT c.*, co.name AS companyName FROM Contact c LEFT JOIN Company co ON co.id = c.companyId")
+    suspend fun allWithCompany(): List<ContactWithCompanyRow>
 
     @Insert
     suspend fun insert(contact: ContactEntity)

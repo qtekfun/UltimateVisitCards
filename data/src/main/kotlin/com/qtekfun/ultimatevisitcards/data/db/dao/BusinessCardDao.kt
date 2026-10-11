@@ -39,6 +39,9 @@ interface BusinessCardDao {
     )
     suspend fun updateOcr(id: String, status: String, rawOcrText: String?, extractedJson: String?, ocrEngine: String?): Int
 
+    @Query("UPDATE BusinessCard SET eventId = :eventId WHERE id = :id")
+    suspend fun setEvent(id: String, eventId: String?): Int
+
     @Query("UPDATE BusinessCard SET contactId = :contactId WHERE id = :id")
     suspend fun setContact(id: String, contactId: String): Int
 

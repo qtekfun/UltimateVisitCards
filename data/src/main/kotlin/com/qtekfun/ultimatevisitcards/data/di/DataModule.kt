@@ -11,12 +11,14 @@ import com.qtekfun.ultimatevisitcards.data.repo.RoomCompanyRepository
 import com.qtekfun.ultimatevisitcards.data.repo.RoomContactRepository
 import com.qtekfun.ultimatevisitcards.data.repo.RoomEventRepository
 import com.qtekfun.ultimatevisitcards.data.repo.RoomSectorRepository
+import com.qtekfun.ultimatevisitcards.data.repo.RoomTransactionRunner
 import com.qtekfun.ultimatevisitcards.data.repo.SearchIndexer
 import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardRepository
 import com.qtekfun.ultimatevisitcards.domain.repository.CompanyRepository
 import com.qtekfun.ultimatevisitcards.domain.repository.ContactRepository
 import com.qtekfun.ultimatevisitcards.domain.repository.EventRepository
 import com.qtekfun.ultimatevisitcards.domain.repository.SectorRepository
+import com.qtekfun.ultimatevisitcards.domain.repository.TransactionRunner
 import com.qtekfun.ultimatevisitcards.domain.text.CompanyNameNormalizer
 import com.qtekfun.ultimatevisitcards.domain.util.Clock
 import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
@@ -48,6 +50,9 @@ abstract class DataModule {
 
     @Binds
     abstract fun businessCardRepository(impl: RoomBusinessCardRepository): BusinessCardRepository
+
+    @Binds
+    abstract fun transactionRunner(impl: RoomTransactionRunner): TransactionRunner
 
     companion object {
         // The spread copies a small array once, when the database is built.
