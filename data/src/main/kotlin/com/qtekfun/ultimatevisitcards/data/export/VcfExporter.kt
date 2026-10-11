@@ -46,7 +46,7 @@ class VcfExporter @Inject constructor(private val db: AppDatabase, @IoDispatcher
             website = contact.website,
             address = contact.address,
             country = effectiveCountry,
-            notes = contact.notes,
+            notes = contact.notes
         )
     }
 }

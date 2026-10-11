@@ -40,7 +40,7 @@ class PhoneContactsWriterTest {
                 ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, it).buildUpon()
                     .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(),
                 null,
-                null,
+                null
             )
         }
     }
@@ -58,7 +58,7 @@ class PhoneContactsWriterTest {
             website = "www.navaltech-demo.es",
             address = "C/ Ficticia 12, 28001 Madrid",
             country = "Spain",
-            notes = "Conocida en SMM 2026",
+            notes = "Conocida en SMM 2026"
         )
         val result = PhoneContactsWriter(context).add(contact)
         assertTrue("$result", result is PhoneContactResult.Added)
@@ -71,7 +71,7 @@ class PhoneContactsWriterTest {
             null,
             "${ContactsContract.Data.RAW_CONTACT_ID} = ?",
             arrayOf(id.toString()),
-            null,
+            null
         )!!.use { cursor ->
             while (cursor.moveToNext()) {
                 val mime = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE))

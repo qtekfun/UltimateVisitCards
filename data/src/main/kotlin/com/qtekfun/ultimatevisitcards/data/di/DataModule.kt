@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room3.Room
 import androidx.sqlite.driver.AndroidSQLiteDriver
 import com.qtekfun.ultimatevisitcards.data.R
+import com.qtekfun.ultimatevisitcards.data.contacts.PhoneContacts
+import com.qtekfun.ultimatevisitcards.data.contacts.PhoneContactsWriter
 import com.qtekfun.ultimatevisitcards.data.db.AppDatabase
 import com.qtekfun.ultimatevisitcards.data.db.SectorSeedCallback
 import com.qtekfun.ultimatevisitcards.data.repo.RoomBusinessCardRepository
@@ -53,6 +55,9 @@ abstract class DataModule {
 
     @Binds
     abstract fun transactionRunner(impl: RoomTransactionRunner): TransactionRunner
+
+    @Binds
+    abstract fun phoneContacts(impl: PhoneContactsWriter): PhoneContacts
 
     companion object {
         // The spread copies a small array once, when the database is built.

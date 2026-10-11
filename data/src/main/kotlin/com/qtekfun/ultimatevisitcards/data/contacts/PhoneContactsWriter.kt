@@ -29,8 +29,13 @@ sealed interface PhoneContactResult {
         PERMISSION,
 
         /** The contacts provider refused or failed. */
-        PROVIDER,
+        PROVIDER
     }
+}
+
+/** Adds contacts to the phone's address book. [PhoneContactsWriter] in the app; a fake in tests. */
+fun interface PhoneContacts {
+    fun add(contact: VCardContact): PhoneContactResult
 }
 
 /**
@@ -41,8 +46,9 @@ sealed interface PhoneContactResult {
  * Needs `WRITE_CONTACTS`, requested on demand by the UI when the user taps «Add to contacts». It never
  * reads the address book (no `READ_CONTACTS`); duplicates are avoided with `Contact.exportedToPhoneAt`.
  */
-class PhoneContactsWriter @Inject constructor(@ApplicationContext private val context: Context) {
-    fun add(contact: VCardContact): PhoneContactResult {
+
+class PhoneContactsWriter @Inject constructor(@ApplicationContext private val context: Context) : PhoneContacts {
+    override fun add(contact: VCardContact): PhoneContactResult {
         val ops = operations(contact)
         return try {
             val results = context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
@@ -62,7 +68,7 @@ class PhoneContactsWriter @Inject constructor(@ApplicationContext private val co
             ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
-                .build(),
+                .build()
         )
 
         /** A data row of [mimeType] linked to the raw contact inserted first (back reference 0). */
@@ -80,7 +86,7 @@ class PhoneContactsWriter @Inject constructor(@ApplicationContext private val co
             StructuredName.CONTENT_ITEM_TYPE,
             StructuredName.GIVEN_NAME to contact.firstName.clean(),
             StructuredName.FAMILY_NAME to contact.lastName.clean(),
-            StructuredName.DISPLAY_NAME to VCardWriter.displayName(contact).clean(),
+            StructuredName.DISPLAY_NAME to VCardWriter.displayName(contact).clean()
         )
         contact.phone.clean()?.let { data(Phone.CONTENT_ITEM_TYPE, Phone.NUMBER to it, Phone.TYPE to Phone.TYPE_WORK) }
         contact.mobile.clean()?.let { data(Phone.CONTENT_ITEM_TYPE, Phone.NUMBER to it, Phone.TYPE to Phone.TYPE_MOBILE) }
@@ -90,7 +96,7 @@ class PhoneContactsWriter @Inject constructor(@ApplicationContext private val co
                 Organization.CONTENT_ITEM_TYPE,
                 Organization.COMPANY to contact.companyName.clean(),
                 Organization.TITLE to contact.jobTitle.clean(),
-                Organization.TYPE to Organization.TYPE_WORK,
+                Organization.TYPE to Organization.TYPE_WORK
             )
         }
         contact.website.clean()?.let { data(Website.CONTENT_ITEM_TYPE, Website.URL to it, Website.TYPE to Website.TYPE_WORK) }
@@ -99,7 +105,7 @@ class PhoneContactsWriter @Inject constructor(@ApplicationContext private val co
                 StructuredPostal.CONTENT_ITEM_TYPE,
                 StructuredPostal.STREET to contact.address.clean(),
                 StructuredPostal.COUNTRY to contact.country.clean(),
-                StructuredPostal.TYPE to StructuredPostal.TYPE_WORK,
+                StructuredPostal.TYPE to StructuredPostal.TYPE_WORK
             )
         }
         contact.notes.clean()?.let { data(Note.CONTENT_ITEM_TYPE, Note.NOTE to it) }
