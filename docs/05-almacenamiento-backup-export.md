@@ -35,7 +35,8 @@ Nombre: `ultimatevisitcards_backup_YYYY-MM-DD.zip`
 - Las rutas en `database.json` son las mismas relativas del almacenamiento.
 - Opción **«Incluir originales sin recortar»** (por defecto sí) para controlar el tamaño.
 - **Cifrado opcional**: contraseña → ZIP con **AES-256** (zip4j), abrible con 7-Zip. La contraseña nunca se guarda. Aviso claro: «Si la pierdes, la copia no se puede recuperar».
-- Escritura en streaming (no cargar todo en memoria), con barra de progreso y cancelación.
+- Escritura en streaming (no cargar todo en memoria), con barra de progreso y cancelación. Todas las entradas van con DEFLATE (las JPEG al nivel más rápido): las entradas STORE de zip4j llevan descriptor de datos y los lectores en streaming las rechazan.
+- Si hay contraseña, **todas** las entradas (también `manifest.json`) van cifradas con AES-256.
 - Se verifica al terminar: el ZIP se vuelve a abrir y se comprueban recuento y tamaños.
 
 ## 3. Restauración
@@ -51,6 +52,8 @@ Ajustes → Restaurar copia (`OpenDocument`).
 5. **Importar** en una transacción por lotes: sectores → empresas → eventos → contactos → relaciones → tarjetas; después copiar imágenes y regenerar miniaturas.
 6. **Reconstruir** el índice FTS y recontar.
 7. Si algo falla a medias: **rollback** de la BD y limpieza de archivos copiados. Informe final con resumen (añadidos, actualizados, omitidos).
+
+Implementación (fase 9): las imágenes se copian a una carpeta de *staging* dentro de la transacción y solo se mueven a su sitio tras el *commit*; un fallo o una cancelación descartan el *staging*. Los restos de un proceso matado a mitad los borra el mantenimiento al arrancar (`StorageMaintenance`). Entradas permitidas: `manifest.json`, `database.json`, `settings.json` e `images/<id>/(front|back)[_original].jpg`; cualquier otra, o con `..`, `\` o ruta absoluta (*zip slip*), invalida la copia.
 
 Evitar duplicados accidentales: además del UUID, empresas por `normalizedName` y sectores por nombre (sin distinguir mayúsculas) se **enlazan** en lugar de duplicarse (se remapea el ID).
 

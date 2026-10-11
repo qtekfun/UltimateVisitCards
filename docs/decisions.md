@@ -127,3 +127,13 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
   - Una contraseña incorrecta (`WRONG_PASSWORD` de zip4j) se distingue de un archivo dañado.
 - **2026-10-11 · Migraciones de formato.** `BackupMigrations.upgrade` encadena pasos vN→vN+1 sobre el JSON antes de decodificarlo. La v1 es la actual y todavía no tiene pasos. Una versión mayor que la soportada se rechaza.
 - **2026-10-11 · Ajustes.** `settings.json` se devuelve en el informe para que la app los aplique. Si no se puede leer, se ignora: los datos se restauran igualmente.
+
+## Fase 9 · Copia de seguridad
+
+- **2026-10-11 · Instantánea en una transacción de lectura.** La copia lee todas las tablas dentro de `withReadTransaction`: es coherente aunque se esté escribiendo (p. ej. la cola de OCR).
+- **2026-10-11 · Verificación leyendo todo el archivo.** Tras escribir, se reabre el documento SAF y se descomprime (y descifra) entera, comparando entradas y tamaños. Si no coincide, se borra el archivo y se avisa: una copia que no se puede leer es peor que ninguna.
+- **2026-10-11 · Una copia cancelada o fallida se borra** (`DocumentsContract.deleteDocument`).
+- **2026-10-11 · Contraseña solo en memoria.** `CharArray` que se sobrescribe al terminar; mínimo 8 caracteres y repetida.
+- **2026-10-11 · Mantenimiento de imágenes al arrancar.** `StorageMaintenance` borra carpetas sin tarjeta, escrituras interrumpidas y *staging* de restauraciones a medias; se ejecuta al iniciar el proceso, cuando no puede haber una captura en curso.
+- **2026-10-11 · Restauración escrita en paralelo por un subagente** sobre el formato común (`BackupFormat`); el test de ida y vuelta une el exportador y el restaurador reales (sin y con cifrado, hash de imágenes, idempotencia).
+- **2026-10-11 · Pendiente**: «cambiar de teléfono sin perder nada (probado entre dos emuladores)» no se ha ejecutado en emuladores en esta sesión; lo cubre el test de ida y vuelta entre dos bases de datos y almacenes independientes.
