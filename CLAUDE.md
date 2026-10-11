@@ -14,7 +14,7 @@ La documentación manda: si el código y `docs/` se contradicen, se arregla uno 
 ## Reglas duras
 
 - **Nunca** añadas el permiso `INTERNET`, SDKs de analítica/crash, ni dependencias que lo requieran. Los datos no salen del dispositivo.
-- Permisos permitidos: `CAMERA` y `WRITE_CONTACTS` (esta última solo se pide al usar «Añadir a contactos»). Sin permisos de almacenamiento: se usa SAF para exportar e importar.
+- Permisos permitidos: `CAMERA` y `WRITE_CONTACTS` (esta última solo se pide al usar «Añadir a contactos»), más los normales que necesita WorkManager para la cola de OCR (`WAKE_LOCK`, `RECEIVE_BOOT_COMPLETED`; se conceden al instalar y no dan acceso a datos). La tarea `verifyPermissions` falla ante cualquier otro. Sin permisos de almacenamiento: se usa SAF para exportar e importar.
 - `android:allowBackup="false"` y `dataExtractionRules` que excluyan todo.
 - Las imágenes viven en el almacenamiento privado de la app. Se comparten fuera solo con `FileProvider` y por acción explícita del usuario.
 - No metas en el código sectores ni textos fijos: los sectores se siembran en BD en el primer arranque y son editables.

@@ -1,0 +1,295 @@
+# Synthetic corpus (English). Fictitious data.
+=== en-01 | classic UK layout
+[front]
+24 Harbourline Shipping Ltd
+--
+18 Oliver Bennett
+12 Head of Chartering
+--
+10 12 Dockside Road, Southampton SO14 3AB
+10 United Kingdom
+10 T: +44 23 8000 1234
+10 M: +44 7700 900123
+10 oliver.bennett@harbourline-demo.co.uk
+10 www.harbourline-demo.co.uk
+[expected]
+firstName = Oliver
+lastName = Bennett
+jobTitle = Head of Chartering
+company = Harbourline Shipping Ltd
+country = United Kingdom
+phone = +44 23 8000 1234
+mobile = +44 7700 900123
+email = oliver.bennett@harbourline-demo.co.uk
+website = www.harbourline-demo.co.uk
+address = 12 Dockside Road, Southampton SO14 3AB
+
+=== en-02 | Korean shipyard, name first
+[front]
+18 Min-jun Park
+12 Senior Sales Manager
+--
+24 DAEHAN HEAVY INDUSTRIES CO., LTD.
+--
+10 1000 Bangeojinsunhwan-doro, Dong-gu, Ulsan, Korea
+10 Tel +82 52 202 0000
+10 Mobile +82 10 1234 5678
+10 mj.park@daehan-hi-demo.co.kr
+[expected]
+firstName = Min-jun
+lastName = Park
+jobTitle = Senior Sales Manager
+company = DAEHAN HEAVY INDUSTRIES CO., LTD.
+country = South Korea
+phone = +82 52 202 0000
+mobile = +82 10 1234 5678
+email = mj.park@daehan-hi-demo.co.kr
+address = 1000 Bangeojinsunhwan-doro, Dong-gu, Ulsan, Korea
+
+=== en-03 | US with ambiguous +1, no country hint
+[front]
+22 Gulfstream Marine Services, Inc.
+--
+16 Emily Carter
+11 Vice President, Operations
+--
+10 2200 Harbor Blvd, Suite 400
+10 Houston, TX 77002, USA
+10 Office: +1 713 555 0100
+10 Cell: +1 713 555 0199
+10 ecarter@gulfstream-demo.com
+[expected]
+firstName = Emily
+lastName = Carter
+jobTitle = Vice President, Operations
+company = Gulfstream Marine Services, Inc.
+country = United States
+phone = +1 713 555 0100
+mobile = +1 713 555 0199
+email = ecarter@gulfstream-demo.com
+address = 2200 Harbor Blvd, Suite 400, Houston, TX 77002, USA
+
+=== en-04 | Singapore, logo text, all caps name
+[front]
+26 ORIONTEK
+11 Marine Automation Systems
+--
+16 RAJESH KUMAR
+11 Regional Service Engineer
+--
+10 8 Pioneer Walk, Singapore 627818
+10 +65 6800 1234
+10 +65 9123 4567
+10 rajesh.kumar@oriontek-demo.sg
+10 www.oriontek-demo.sg
+[expected]
+firstName = RAJESH
+lastName = KUMAR
+jobTitle = Regional Service Engineer
+company = ORIONTEK
+country = Singapore
+phone = +65 6800 1234
+mobile = +65 9123 4567
+email = rajesh.kumar@oriontek-demo.sg
+website = www.oriontek-demo.sg
+address = 8 Pioneer Walk, Singapore 627818
+
+=== en-05 | Norwegian owner, plain lines
+[front]
+22 Nordfjord Tankers AS
+--
+16 Ingrid Halvorsen
+11 Technical Superintendent
+--
+10 Strandkaien 14, 5013 Bergen, Norway
+10 Phone +47 55 00 11 22
+10 Mobile +47 900 11 222
+10 ingrid.halvorsen@nordfjord-demo.no
+[expected]
+firstName = Ingrid
+lastName = Halvorsen
+jobTitle = Technical Superintendent
+company = Nordfjord Tankers AS
+country = Norway
+phone = +47 55 00 11 22
+mobile = +47 900 11 222
+email = ingrid.halvorsen@nordfjord-demo.no
+address = Strandkaien 14, 5013 Bergen, Norway
+
+=== en-06 | Greek owner, website with https
+[front]
+24 Aegean Bulk Carriers S.A.
+--
+17 Nikos Papadopoulos
+12 Fleet Manager
+--
+10 Akti Miaouli 85, 185 38 Piraeus, Greece
+10 T +30 210 400 0000
+10 nikos.p@aegeanbulk-demo.gr
+10 https://aegeanbulk-demo.gr
+[expected]
+firstName = Nikos
+lastName = Papadopoulos
+jobTitle = Fleet Manager
+company = Aegean Bulk Carriers S.A.
+country = Greece
+phone = +30 210 400 0000
+email = nikos.p@aegeanbulk-demo.gr
+website = https://aegeanbulk-demo.gr
+address = Akti Miaouli 85, 185 38 Piraeus, Greece
+
+=== en-07 | Dutch with particle
+[front]
+22 Rijnmond Port Logistics B.V.
+--
+16 Pieter van der Berg
+11 Business Development Director
+--
+10 Maasvlakteweg 2, 3199 LA Rotterdam
+10 The Netherlands
+10 +31 10 252 0000
+10 +31 6 1234 5678
+10 p.vanderberg@rijnmond-demo.nl
+[expected]
+firstName = Pieter
+lastName = van der Berg
+jobTitle = Business Development Director
+company = Rijnmond Port Logistics B.V.
+country = Netherlands
+phone = +31 10 252 0000
+mobile = +31 6 1234 5678
+email = p.vanderberg@rijnmond-demo.nl
+address = Maasvlakteweg 2, 3199 LA Rotterdam
+
+=== en-08 | Danish, email with spaces from OCR
+[front]
+24 Skagen Propulsion A/S
+--
+16 Lars Mikkelsen
+11 Key Account Manager
+--
+10 Havnevej 30, 9990 Skagen, Denmark
+10 +45 98 44 00 00
+10 lm @ skagenprop-demo.dk
+10 skagenprop-demo.dk
+[expected]
+firstName = Lars
+lastName = Mikkelsen
+jobTitle = Key Account Manager
+company = Skagen Propulsion A/S
+country = Denmark
+phone = +45 98 44 00 00
+email = lm@skagenprop-demo.dk
+website = skagenprop-demo.dk
+address = Havnevej 30, 9990 Skagen, Denmark
+
+=== en-09 | Chinese yard, names in Western order
+[front]
+24 Jiangnan Offshore Equipment Co., Ltd.
+--
+16 Wei Zhang
+11 Export Manager
+--
+10 No. 88 Changxing Road, Shanghai 201913, China
+10 Tel: +86 21 6000 0000
+10 Mob: +86 138 0000 0000
+10 zhang.wei@jiangnan-oe-demo.cn
+[expected]
+firstName = Wei
+lastName = Zhang
+jobTitle = Export Manager
+company = Jiangnan Offshore Equipment Co., Ltd.
+country = China
+phone = +86 21 6000 0000
+mobile = +86 138 0000 0000
+email = zhang.wei@jiangnan-oe-demo.cn
+address = No. 88 Changxing Road, Shanghai 201913, China
+
+=== en-10 | Japanese company, back side only repeats
+[front]
+24 Seto Marine Coatings K.K.
+--
+16 Hiroshi Tanaka
+11 Overseas Sales Manager
+--
+10 3-1-1 Minato, Imabari, Ehime 794-0000, Japan
+10 Phone: +81 898 00 0000
+10 h.tanaka@seto-mc-demo.jp
+[back]
+24 Seto Marine Coatings K.K.
+--
+16 Hiroshi Tanaka
+[expected]
+firstName = Hiroshi
+lastName = Tanaka
+jobTitle = Overseas Sales Manager
+company = Seto Marine Coatings K.K.
+country = Japan
+phone = +81 898 00 0000
+email = h.tanaka@seto-mc-demo.jp
+address = 3-1-1 Minato, Imabari, Ehime 794-0000, Japan
+
+=== en-11 | UAE agent, separators on one line
+[front]
+24 Gulf Maritime Agencies LLC
+--
+16 Omar Haddad | Port Captain
+--
+10 Jebel Ali Free Zone, Dubai, UAE
+10 T +971 4 880 0000 · M +971 50 123 4567
+10 omar.haddad@gma-demo.ae
+[expected]
+firstName = Omar
+lastName = Haddad
+jobTitle = Port Captain
+company = Gulf Maritime Agencies LLC
+country = United Arab Emirates
+phone = +971 4 880 0000
+mobile = +971 50 123 4567
+email = omar.haddad@gma-demo.ae
+address = Jebel Ali Free Zone, Dubai, UAE
+
+=== en-12 | Irish surveyor, initials in email
+[front]
+18 Sean O'Brien
+12 Marine Surveyor
+--
+22 Atlantic Survey Partners
+--
+10 Unit 4, Ringaskiddy Port, Cork, Ireland
+10 +353 21 400 0000
+10 sobrien@asp-demo.ie
+10 www.asp-demo.ie
+[expected]
+firstName = Sean
+lastName = O'Brien
+jobTitle = Marine Surveyor
+company = Atlantic Survey Partners
+country = Ireland
+phone = +353 21 400 0000
+email = sobrien@asp-demo.ie
+website = www.asp-demo.ie
+address = Unit 4, Ringaskiddy Port, Cork, Ireland
+
+=== en-13 | Australian, title and name on separate blocks
+[front]
+22 Southern Cross Hydraulics Pty Ltd
+--
+12 Engineering Manager
+--
+18 Jack Thompson
+--
+10 45 Wharf Street, Fremantle WA 6160, Australia
+10 +61 8 9400 0000
+10 0412 345 678
+10 jack.thompson@sch-demo.com.au
+[expected]
+firstName = Jack
+lastName = Thompson
+jobTitle = Engineering Manager
+company = Southern Cross Hydraulics Pty Ltd
+country = Australia
+phone = +61 8 9400 0000
+mobile = 0412 345 678
+email = jack.thompson@sch-demo.com.au
+address = 45 Wharf Street, Fremantle WA 6160, Australia

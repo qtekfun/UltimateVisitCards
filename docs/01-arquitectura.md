@@ -72,10 +72,11 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 | kotlinx-serialization-json | `database.json` del backup; `CardQuad` (esquinas en JSON) en `:domain` | ambos |
 | zip4j | ZIP con AES-256 (backup cifrado) | ambos |
 | androidx.biometric | bloqueo opcional | ambos |
-| `com.google.mlkit:text-recognition` (modelo **empaquetado**, no el de Play Services) | OCR | `play` |
-| Tesseract4Android | OCR | `foss` |
+| `com.google.mlkit:text-recognition` 16.0.1 (modelo **empaquetado**, no el de Play Services) | OCR | `play` |
+| Tesseract4Android 4.9.0 (`cz.adaptech.tesseract4android`, solo en JitPack: el repositorio está limitado a ese grupo en `settings.gradle.kts`) + `traineddata` *fast* en assets | OCR | `foss` |
 | JUnit, Truth/Kotest, Turbine, MockK, Robolectric, AndroidX Test | tests | ambos |
 | `hilt-android-testing`, Compose `ui-test-junit4`/`ui-test-manifest` | tests (smoke de Hilt, navegación con Robolectric) | ambos |
+| `work-testing` | tests de `OcrWorker` | ambos |
 | `room3-testing`, `sqlite-bundled-jvm` | tests de BD en JVM (`MigrationTestHelper`, SQLite empaquetado con FTS4) — solo `testImplementation` | ambos |
 | `androidx.hilt:hilt-lifecycle-viewmodel-compose`, `lifecycle-viewmodel-compose` | `hiltViewModel()` en Compose (parte de Hilt/Lifecycle) | ambos |
 | `compose.material:material-icons-core` | iconos de la barra inferior (solo el set pequeño; no `-extended`) | ambos |
@@ -89,6 +90,10 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 | `org.jlleitschuh.gradle.ktlint` (ktlint) | estilo (`./gradlew ktlintCheck`), pedido por la fase 0 |
 
 Cualquier otra requiere justificación aquí antes de añadirla. Excluidas por diseño: Firebase, Retrofit/OkHttp, Apache POI, OpenCV (salvo decisión en fase 2), libphonenumber (salvo decisión en fase 3).
+
+## Permisos
+
+`CAMERA`; `WRITE_CONTACTS` (fase 7, bajo demanda); `WAKE_LOCK` y `RECEIVE_BOOT_COMPLETED` (los declara WorkManager; normales). `INTERNET`, `ACCESS_NETWORK_STATE` y `FOREGROUND_SERVICE` se eliminan del manifest fusionado. `./gradlew verifyPermissions` (parte de `ci`) falla ante cualquier otro.
 
 ## Hilos y rendimiento
 

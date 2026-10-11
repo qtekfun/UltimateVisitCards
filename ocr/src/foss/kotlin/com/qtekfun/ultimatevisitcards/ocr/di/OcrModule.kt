@@ -1,15 +1,16 @@
 package com.qtekfun.ultimatevisitcards.ocr.di
 
-import com.qtekfun.ultimatevisitcards.domain.ocr.OcrEngineInfo
+import com.qtekfun.ultimatevisitcards.domain.ocr.OcrService
+import com.qtekfun.ultimatevisitcards.ocr.foss.TesseractOcrService
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
-/** `foss` flavour: Tesseract4Android with bundled traineddata (wired in phase 3). */
+/** `foss` flavour: Tesseract4Android with bundled traineddata. */
 @Module
 @InstallIn(SingletonComponent::class)
-object OcrModule {
-    @Provides
-    fun provideOcrEngineInfo(): OcrEngineInfo = OcrEngineInfo(OcrEngineInfo.TESSERACT)
+abstract class OcrModule {
+    @Binds
+    abstract fun ocrService(impl: TesseractOcrService): OcrService
 }

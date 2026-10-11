@@ -1,7 +1,7 @@
 package com.qtekfun.ultimatevisitcards
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.qtekfun.ultimatevisitcards.domain.ocr.OcrEngineInfo
+import com.qtekfun.ultimatevisitcards.domain.ocr.OcrService
 import com.qtekfun.ultimatevisitcards.domain.util.DefaultDispatcher
 import com.qtekfun.ultimatevisitcards.domain.util.IoDispatcher
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -24,7 +24,7 @@ class HiltSmokeTest {
     val hilt = HiltAndroidRule(this)
 
     @Inject
-    lateinit var ocrEngine: OcrEngineInfo
+    lateinit var ocr: OcrService
 
     @Inject
     @IoDispatcher
@@ -41,7 +41,7 @@ class HiltSmokeTest {
 
     @Test
     fun bindsTheFlavourOcrEngine() {
-        assertEquals(ExpectedFlavour.OCR_ENGINE, ocrEngine.engineId)
+        assertEquals(ExpectedFlavour.OCR_ENGINE, ocr.engineId)
     }
 
     @Test

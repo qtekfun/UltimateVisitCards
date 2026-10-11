@@ -1,0 +1,276 @@
+# Corpus sintético (español). Datos ficticios. Formato: ver CardCorpus.kt.
+=== es-01 | empresa arriba, nombre grande, contacto con etiquetas
+[front]
+26 NAVALTECH SOLUTIONS S.L.
+--
+20 María José García López
+13 Directora Comercial
+--
+11 C/ Ficticia 12, 3º B
+11 28001 Madrid
+11 Tel. +34 910 123 456
+11 Móvil 612 345 678
+11 maria.garcia@navaltech-demo.es
+11 www.navaltech-demo.es
+[expected]
+firstName = María José
+lastName = García López
+jobTitle = Directora Comercial
+company = NAVALTECH SOLUTIONS S.L.
+country = Spain
+phone = +34 910 123 456
+mobile = 612 345 678
+email = maria.garcia@navaltech-demo.es
+website = www.navaltech-demo.es
+address = C/ Ficticia 12, 3º B, 28001 Madrid
+
+=== es-02 | nombre arriba, sin etiquetas, móvil internacional
+[front]
+18 Javier Martín Ruiz
+12 Jefe de Compras
+--
+22 Astilleros del Cantábrico S.A.
+--
+10 Avda. del Puerto 45
+10 39009 Santander, España
+10 +34 942 555 010
+10 +34 655 444 333
+10 jmartin@astilleros-cantabrico-demo.com
+[expected]
+firstName = Javier
+lastName = Martín Ruiz
+jobTitle = Jefe de Compras
+company = Astilleros del Cantábrico S.A.
+country = Spain
+phone = +34 942 555 010
+mobile = +34 655 444 333
+email = jmartin@astilleros-cantabrico-demo.com
+address = Avda. del Puerto 45, 39009 Santander, España
+
+=== es-03 | tratamiento y arroba leída como (at)
+[front]
+24 OCEANIA MARINE ENGINEERING
+--
+16 Dr. Luis Fernández Soto
+11 Ingeniero Naval Senior
+--
+10 Pol. Ind. Las Arenas, Nave 7
+10 15142 Arteixo (A Coruña)
+10 T. 981 600 700
+10 luis.fernandez (at) oceania-marine-demo.es
+10 oceania-marine-demo.es
+[expected]
+firstName = Luis
+lastName = Fernández Soto
+jobTitle = Ingeniero Naval Senior
+company = OCEANIA MARINE ENGINEERING
+phone = 981 600 700
+email = luis.fernandez@oceania-marine-demo.es
+website = oceania-marine-demo.es
+address = Pol. Ind. Las Arenas, Nave 7, 15142 Arteixo (A Coruña)
+notes = Dr.
+
+=== es-04 | fax que no debe ir al teléfono
+[front]
+22 Suministros Navales Levante, S.L.U.
+--
+16 Carmen Ortega Vidal
+11 Responsable de Logística
+--
+10 Muelle de Poniente s/n
+10 46024 Valencia
+10 Tel: 963 123 456 Fax: 963 123 457
+10 Móv: 699 111 222
+10 cortega@sumnavales-demo.com
+[expected]
+firstName = Carmen
+lastName = Ortega Vidal
+jobTitle = Responsable de Logística
+company = Suministros Navales Levante, S.L.U.
+phone = 963 123 456
+mobile = 699 111 222
+email = cortega@sumnavales-demo.com
+address = Muelle de Poniente s/n, 46024 Valencia
+
+=== es-05 | apellido en mayúsculas
+[front]
+20 Pedro SÁNCHEZ
+12 Director Técnico
+--
+24 HIDRAULICA DEL SUR SA
+--
+10 Calle Sevilla 8, 41010 Sevilla
+10 +34 954 222 333
+10 psanchez@hidrasur-demo.es
+10 www.hidrasur-demo.es
+[expected]
+firstName = Pedro
+lastName = SÁNCHEZ
+jobTitle = Director Técnico
+company = HIDRAULICA DEL SUR SA
+country = Spain
+phone = +34 954 222 333
+email = psanchez@hidrasur-demo.es
+website = www.hidrasur-demo.es
+address = Calle Sevilla 8, 41010 Sevilla
+
+=== es-06 | reverso en inglés que repite
+[front]
+24 Grupo Ficticio Marítimo
+--
+17 Ana Belén Torres Prieto
+12 Gerente de Operaciones
+--
+10 Paseo Marítimo 101
+10 11001 Cádiz
+10 M +34 600 700 800
+10 abtorres@grupofm-demo.es
+[back]
+24 Grupo Ficticio Marítimo
+--
+17 Ana Belén Torres Prieto
+12 Operations Manager
+[expected]
+firstName = Ana Belén
+lastName = Torres Prieto
+jobTitle = Gerente de Operaciones
+company = Grupo Ficticio Marítimo
+country = Spain
+mobile = +34 600 700 800
+email = abtorres@grupofm-demo.es
+address = Paseo Marítimo 101, 11001 Cádiz
+
+=== es-07 | cargo junto al nombre con coma
+[front]
+16 Raúl Gómez Núñez, Director General
+--
+24 Remolcadores Atlánticos S.L.
+--
+10 Puerto de Vigo, Muelle 3
+10 36202 Vigo
+10 Tlf. 986 400 500
+10 raul.gomez@remolcadores-demo.es
+[expected]
+firstName = Raúl
+lastName = Gómez Núñez
+jobTitle = Director General
+company = Remolcadores Atlánticos S.L.
+phone = 986 400 500
+email = raul.gomez@remolcadores-demo.es
+address = Puerto de Vigo, Muelle 3, 36202 Vigo
+
+=== es-08 | solo nombre y móvil
+[front]
+18 Lucía Herrera Campos
+12 Consultora de Seguridad Marítima
+--
+10 666 777 888
+10 lucia.herrera@gmail.com
+[expected]
+firstName = Lucía
+lastName = Herrera Campos
+jobTitle = Consultora de Seguridad Marítima
+mobile = 666 777 888
+email = lucia.herrera@gmail.com
+
+=== es-09 | partícula «de la»
+[front]
+22 ELECTRONICA NAVAL DEL NORTE S.L.
+--
+16 José Manuel de la Fuente
+11 Jefe de Proyectos
+--
+10 C/ Industria 22, 48950 Erandio, Bizkaia
+10 T 944 100 200
+10 M 677 888 999
+10 jm.delafuente@enn-demo.es
+10 www.enn-demo.es
+[expected]
+firstName = José Manuel
+lastName = de la Fuente
+jobTitle = Jefe de Proyectos
+company = ELECTRONICA NAVAL DEL NORTE S.L.
+phone = 944 100 200
+mobile = 677 888 999
+email = jm.delafuente@enn-demo.es
+website = www.enn-demo.es
+address = C/ Industria 22, 48950 Erandio, Bizkaia
+
+=== es-10 | empresa reconocida por el dominio
+[front]
+26 FRIGOMAR
+13 Refrigeración industrial y naval
+--
+17 Sergio Blanco Iglesias
+11 Delegado Comercial Zona Norte
+--
+10 +34 985 300 400 | +34 610 222 444
+10 sblanco@frigomar-demo.com
+10 frigomar-demo.com
+[expected]
+firstName = Sergio
+lastName = Blanco Iglesias
+jobTitle = Delegado Comercial Zona Norte
+company = FRIGOMAR
+country = Spain
+phone = +34 985 300 400
+mobile = +34 610 222 444
+email = sblanco@frigomar-demo.com
+website = frigomar-demo.com
+
+=== es-11 | dos líneas de cargo
+[front]
+24 Clasificadora Ibérica S.A.
+--
+17 Elena Vázquez Mora
+12 Directora de Certificación
+12 y Calidad
+--
+10 Calle Princesa 3, 28008 Madrid
+10 Tel. +34 914 000 111
+10 elena.vazquez@clasiberica-demo.es
+[expected]
+firstName = Elena
+lastName = Vázquez Mora
+jobTitle = Directora de Certificación y Calidad
+company = Clasificadora Ibérica S.A.
+country = Spain
+phone = +34 914 000 111
+email = elena.vazquez@clasiberica-demo.es
+address = Calle Princesa 3, 28008 Madrid
+
+=== es-12 | México, teléfono +52
+[front]
+24 Logística Portuaria del Golfo
+--
+16 Fernando Ríos Delgado
+11 Gerente de Ventas
+--
+10 Av. Marina Nacional 300
+10 Veracruz, México
+10 +52 229 123 4567
+10 frios@lpgolfo-demo.mx
+[expected]
+firstName = Fernando
+lastName = Ríos Delgado
+jobTitle = Gerente de Ventas
+company = Logística Portuaria del Golfo
+country = Mexico
+phone = +52 229 123 4567
+email = frios@lpgolfo-demo.mx
+address = Av. Marina Nacional 300, Veracruz, México
+
+=== es-13 | sin empresa reconocible
+[front]
+18 Marta Gil Serrano
+12 Inspectora de Buques
+--
+10 +34 699 000 111
+10 marta.gil@outlook.es
+[expected]
+firstName = Marta
+lastName = Gil Serrano
+jobTitle = Inspectora de Buques
+country = Spain
+mobile = +34 699 000 111
+email = marta.gil@outlook.es

@@ -16,6 +16,14 @@ object Bitmaps {
 
     fun toBitmap(image: ArgbImage): Bitmap = Bitmap.createBitmap(image.pixels, image.width, image.height, Bitmap.Config.ARGB_8888)
 
+    /** Grey image as an opaque ARGB_8888 bitmap (the format Tesseract expects). */
+    fun toBitmap(image: LumaImage): Bitmap = Bitmap.createBitmap(
+        IntArray(image.data.size) { i -> image.data[i].let { (0xFF shl 24) or (it shl 16) or (it shl 8) or it } },
+        image.width,
+        image.height,
+        Bitmap.Config.ARGB_8888
+    )
+
     /** The bitmap scaled down (never up) so its long side is at most [maxSide]. */
     fun downscale(bitmap: Bitmap, maxSide: Int): Bitmap {
         val factor = max(bitmap.width, bitmap.height).toDouble() / maxSide

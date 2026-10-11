@@ -1,0 +1,253 @@
+# Corpus sintetico (italiano). Dati fittizi.
+=== it-01 | classico Genova
+[front]
+24 Cantieri Liguri S.p.A.
+--
+17 Marco Rossi
+12 Direttore Commerciale
+--
+10 Via del Porto 15, 16126 Genova
+10 Tel. +39 010 000 0000
+10 Cell. +39 347 000 0000
+10 marco.rossi@cantieriliguri-demo.it
+10 www.cantieriliguri-demo.it
+[expected]
+firstName = Marco
+lastName = Rossi
+jobTitle = Direttore Commerciale
+company = Cantieri Liguri S.p.A.
+country = Italy
+phone = +39 010 000 0000
+mobile = +39 347 000 0000
+email = marco.rossi@cantieriliguri-demo.it
+website = www.cantieriliguri-demo.it
+address = Via del Porto 15, 16126 Genova
+
+=== it-02 | Dott. e particella «di»
+[front]
+24 Adriatica Impianti Navali S.r.l.
+--
+16 Dott. Giulia Di Stefano
+11 Responsabile Acquisti
+--
+10 Viale della Marina 3, 34100 Trieste
+10 040 000 0000
+10 333 000 0000
+10 g.distefano@ain-demo.it
+[expected]
+firstName = Giulia
+lastName = Di Stefano
+jobTitle = Responsabile Acquisti
+company = Adriatica Impianti Navali S.r.l.
+phone = 040 000 0000
+mobile = 333 000 0000
+email = g.distefano@ain-demo.it
+address = Viale della Marina 3, 34100 Trieste
+notes = Dott.
+
+=== it-03 | nome per primo
+[front]
+17 Alessandro Bianchi
+12 Amministratore Delegato
+--
+24 Tirreno Yachts Srl
+--
+10 Piazza del Mare 1, 55049 Viareggio (LU)
+10 T +39 0584 000 000
+10 a.bianchi@tirrenoyachts-demo.it
+10 tirrenoyachts-demo.it
+[expected]
+firstName = Alessandro
+lastName = Bianchi
+jobTitle = Amministratore Delegato
+company = Tirreno Yachts Srl
+country = Italy
+phone = +39 0584 000 000
+email = a.bianchi@tirrenoyachts-demo.it
+website = tirrenoyachts-demo.it
+address = Piazza del Mare 1, 55049 Viareggio (LU)
+
+=== it-04 | ingegnere
+[front]
+22 Napoli Propulsione
+--
+16 Ing. Francesco Esposito
+11 Responsabile Tecnico
+--
+10 Corso Umberto I 120, 80138 Napoli, Italia
+10 +39 081 000 0000
+10 f.esposito@napoliprop-demo.it
+[expected]
+firstName = Francesco
+lastName = Esposito
+jobTitle = Responsabile Tecnico
+company = Napoli Propulsione
+country = Italy
+phone = +39 081 000 0000
+email = f.esposito@napoliprop-demo.it
+address = Corso Umberto I 120, 80138 Napoli, Italia
+notes = Ing.
+
+=== it-05 | fax e cellulare
+[front]
+24 Sicilia Shipping Agency S.r.l.
+--
+16 Salvatore Russo
+11 Agente Marittimo
+--
+10 Via Francesco Crispi 200, 90139 Palermo
+10 Tel. 091 000 0000 - Fax 091 000 0001
+10 Cellulare 320 000 0000
+10 s.russo@ssa-demo.it
+[expected]
+firstName = Salvatore
+lastName = Russo
+jobTitle = Agente Marittimo
+company = Sicilia Shipping Agency S.r.l.
+phone = 091 000 0000
+mobile = 320 000 0000
+email = s.russo@ssa-demo.it
+address = Via Francesco Crispi 200, 90139 Palermo
+
+=== it-06 | retro in inglese
+[front]
+24 Venezia Marine Design
+--
+16 Chiara Ferrari
+11 Progettista Navale
+--
+10 Fondamenta Zattere 1400, 30123 Venezia
+10 +39 041 000 0000
+10 chiara.ferrari@vmd-demo.it
+[back]
+24 Venezia Marine Design
+--
+16 Chiara Ferrari
+11 Naval Architect
+[expected]
+firstName = Chiara
+lastName = Ferrari
+jobTitle = Naval Architect
+company = Venezia Marine Design
+country = Italy
+phone = +39 041 000 0000
+email = chiara.ferrari@vmd-demo.it
+address = Fondamenta Zattere 1400, 30123 Venezia
+
+=== it-07 | cognome maiuscolo
+[front]
+16 Luca ROMANO
+11 Responsabile Vendite Estero
+--
+24 ROMAGNA POMPE S.R.L.
+--
+10 Via Emilia 400, 47921 Rimini
+10 +39 0541 000 000
+10 +39 335 000 0000
+10 export@romagnapompe-demo.it
+[expected]
+firstName = Luca
+lastName = ROMANO
+jobTitle = Responsabile Vendite Estero
+company = ROMAGNA POMPE S.R.L.
+country = Italy
+phone = +39 0541 000 000
+mobile = +39 335 000 0000
+email = export@romagnapompe-demo.it
+address = Via Emilia 400, 47921 Rimini
+
+=== it-08 | carta minima
+[front]
+17 Giorgio Conti
+12 Consulente Navale
+--
+10 349 000 0000
+10 giorgio.conti@libero.it
+[expected]
+firstName = Giorgio
+lastName = Conti
+jobTitle = Consulente Navale
+mobile = 349 000 0000
+email = giorgio.conti@libero.it
+
+=== it-09 | particella «De»
+[front]
+24 Puglia Offshore Services
+--
+16 Paolo De Luca
+11 Direttore Operativo
+--
+10 Molo San Cataldo, 70122 Bari
+10 +39 080 000 0000
+10 p.deluca@pos-demo.it
+[expected]
+firstName = Paolo
+lastName = De Luca
+jobTitle = Direttore Operativo
+company = Puglia Offshore Services
+country = Italy
+phone = +39 080 000 0000
+email = p.deluca@pos-demo.it
+address = Molo San Cataldo, 70122 Bari
+
+=== it-10 | Livorno, due titoli
+[front]
+24 Labronica Rimorchiatori S.p.A.
+--
+16 Elisa Marino
+11 Responsabile Qualità
+11 e Sicurezza
+--
+10 Scali Rosciano 10, 57123 Livorno
+10 Tel 0586 000 000
+10 elisa.marino@labrim-demo.it
+[expected]
+firstName = Elisa
+lastName = Marino
+jobTitle = Responsabile Qualità e Sicurezza
+company = Labronica Rimorchiatori S.p.A.
+phone = 0586 000 000
+email = elisa.marino@labrim-demo.it
+address = Scali Rosciano 10, 57123 Livorno
+
+=== it-11 | Malta, inglese/italiano
+[front]
+24 Valletta Bunkering Ltd
+--
+16 Matteo Grech
+11 Operations Manager
+--
+10 Grand Harbour Marina, Birgu BRG 1721, Malta
+10 +356 2100 0000
+10 matteo.grech@vbunkering-demo.com.mt
+[expected]
+firstName = Matteo
+lastName = Grech
+jobTitle = Operations Manager
+company = Valletta Bunkering Ltd
+country = Malta
+phone = +356 2100 0000
+email = matteo.grech@vbunkering-demo.com.mt
+address = Grand Harbour Marina, Birgu BRG 1721, Malta
+
+=== it-12 | indirizzo su tre righe
+[front]
+24 Ancona Motori Marini
+--
+16 Simone Gallo
+11 Tecnico Assistenza
+--
+10 Zona Portuale
+10 Banchina Nazario Sauro 5
+10 60121 Ancona
+10 +39 071 000 0000
+10 simone.gallo@amm-demo.it
+[expected]
+firstName = Simone
+lastName = Gallo
+jobTitle = Tecnico Assistenza
+company = Ancona Motori Marini
+country = Italy
+phone = +39 071 000 0000
+email = simone.gallo@amm-demo.it
+address = Zona Portuale, Banchina Nazario Sauro 5, 60121 Ancona

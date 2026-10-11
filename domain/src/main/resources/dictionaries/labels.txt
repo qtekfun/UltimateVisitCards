@@ -1,0 +1,6 @@
+# Etiquetas que preceden a un dato, por tipo. Coincidencia por palabra plegada, sin puntuación final.
+phone: t, tel, tlf, tfno, telf, telefono, telephone, telefon, phone, ph, office, oficina, direct, directo, dir, fon, tel/fax, centralita, switchboard, standard, ufficio
+mobile: m, mob, mobile, mobil, movil, cell, cellular, cellulare, cel, celular, portable, port, handy, gsm, whatsapp
+fax: f, fax, telefax
+email: e, email, e-mail, mail, correo, courriel
+web: w, web, www, internet, site, website

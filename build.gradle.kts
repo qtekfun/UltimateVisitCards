@@ -40,7 +40,7 @@ subprojects {
 // CI local en un único comando: ./gradlew ci
 tasks.register("ci") {
     group = "verification"
-    description = "Compila ambos flavours, pasa tests, lint, ktlint y comprueba que no hay permiso INTERNET."
+    description = "Compila ambos flavours, pasa tests, lint, ktlint y comprueba los permisos (sin INTERNET)."
     dependsOn(
         ":app:assemblePlayDebug",
         ":app:assembleFossDebug",
@@ -52,7 +52,10 @@ tasks.register("ci") {
         ":domain:test",
         ":app:lintPlayDebug",
         ":app:lintFossDebug",
-        ":app:verifyNoInternetPermission",
+        ":app:verifyPermissions",
+        // Los tests instrumentados (OCR por flavour) se compilan siempre aunque solo corran en dispositivo.
+        ":ocr:assemblePlayDebugAndroidTest",
+        ":ocr:assembleFossDebugAndroidTest",
     )
     subprojects.forEach { dependsOn("${it.path}:ktlintCheck") }
 }

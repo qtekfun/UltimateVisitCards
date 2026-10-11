@@ -10,6 +10,7 @@ import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardDraft
 import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardRepository
 import com.qtekfun.ultimatevisitcards.domain.util.DefaultDispatcher
 import com.qtekfun.ultimatevisitcards.ocr.processing.CardImageProcessor
+import com.qtekfun.ultimatevisitcards.work.OcrQueue
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -35,6 +36,7 @@ class CardCaptureSaver @Inject constructor(
     private val store: ImageStore,
     private val processor: CardImageProcessor,
     private val cards: BusinessCardRepository,
+    private val ocrQueue: OcrQueue,
     @DefaultDispatcher private val default: CoroutineDispatcher
 ) {
     /** Saves the original, straightens it and saves the result. [photo] must be upright. */
@@ -56,7 +58,7 @@ class CardCaptureSaver @Inject constructor(
     /** Loads a side's original photo for manual cropping. */
     suspend fun original(captured: CapturedSide): Bitmap? = store.load(captured.originalPath, MANUAL_CROP_MAX_SIDE)
 
-    /** Writes the card row in `PENDING`. On failure the card's images are deleted. */
+    /** Writes the card row in `PENDING` and queues its OCR. On failure the card's images are deleted. */
     suspend fun commit(cardId: String, front: CapturedSide, back: CapturedSide?, eventId: String?, capturedAt: Long): DomainResult<BusinessCard> {
         val draft = BusinessCardDraft(
             frontOriginal = front.originalPath,
@@ -69,7 +71,10 @@ class CardCaptureSaver @Inject constructor(
             capturedAt = capturedAt
         )
         val result = cards.create(draft, id = cardId)
-        if (result is DomainResult.Failure) store.deleteCard(cardId)
+        when (result) {
+            is DomainResult.Success -> ocrQueue.enqueue(cardId)
+            is DomainResult.Failure -> store.deleteCard(cardId)
+        }
         return result
     }
 
