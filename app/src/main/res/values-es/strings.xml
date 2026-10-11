@@ -204,11 +204,17 @@
   <string name="merge_undone">Fusión deshecha</string>
   <string name="merge_existing">Contacto guardado</string>
   <string name="merge_this_card">Esta tarjeta</string>
-  <string name="cards_export_vcf">Exportar .vcf</string>
-  <string name="cards_export_file_name" translatable="false">ultimatevisitcards_contactos.vcf</string>
+  <string name="cards_export_file_name" translatable="false">ultimatevisitcards_contactos</string>
   <string name="cards_export_failed">No se pudieron exportar los contactos.</string>
   <plurals name="cards_exported">
     <item quantity="one">%1$d contacto exportado</item>
     <item quantity="other">%1$d contactos exportados</item>
   </plurals>
+  <string name="cards_export">Exportar</string>
+  <string name="export_vcf">Contactos (.vcf)</string>
+  <string name="export_csv">Tabla (.csv)</string>
+  <string name="export_xlsx">Hoja de cálculo (.xlsx)</string>
+  <string name="export_col_sector">Sector</string>
+  <string name="export_col_event">Evento</string>
+  <string name="export_col_date">Fecha</string>
 </resources>

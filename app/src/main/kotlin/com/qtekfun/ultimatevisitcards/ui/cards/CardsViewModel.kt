@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.qtekfun.ultimatevisitcards.data.export.SpreadsheetExporter
+import com.qtekfun.ultimatevisitcards.data.export.SpreadsheetFormat
 import com.qtekfun.ultimatevisitcards.data.export.VcfExporter
 import com.qtekfun.ultimatevisitcards.data.storage.ImageStore
 import com.qtekfun.ultimatevisitcards.domain.model.CardSide
@@ -41,6 +43,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+enum class ExportFormat(val mimeType: String, val extension: String) {
+    VCF("text/x-vcard", "vcf"),
+    CSV("text/csv", "csv"),
+    XLSX("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx")
+}
 
 sealed interface ExportResult {
     data class Done(val count: Int) : ExportResult
@@ -93,6 +101,7 @@ class CardsViewModel @Inject constructor(
     private val store: ImageStore,
     private val preferences: UiPreferences,
     private val vcf: VcfExporter,
+    private val spreadsheets: SpreadsheetExporter,
     private val documents: Documents,
     @IoDispatcher private val io: CoroutineDispatcher
 ) : ViewModel() {
@@ -142,12 +151,24 @@ class CardsViewModel @Inject constructor(
     private val _exported = MutableStateFlow<ExportResult?>(null)
     val exported: StateFlow<ExportResult?> = _exported.asStateFlow()
 
-    /** Exports the contacts of the current search and filters as one .vcf (docs/05 §4) to [uri] (SAF). */
-    fun exportVcf(uri: Uri) {
+    /**
+     * Exports the contacts of the current search and filters to [uri] (SAF): one .vcf (docs/05 §4) or a
+     * CSV/XLSX table (§6) with the localised [header] and dates formatted by [formatDate].
+     */
+    fun export(format: ExportFormat, uri: Uri, header: List<String>, formatDate: (Long) -> String) {
         val current = filter.value
         viewModelScope.launch {
             _exported.value = try {
-                ExportResult.Done(withContext(io) { documents.write(uri) { out -> vcf.export(current, out) } })
+                val count = withContext(io) {
+                    documents.write(uri) { out ->
+                        when (format) {
+                            ExportFormat.VCF -> vcf.export(current, out)
+                            ExportFormat.CSV -> spreadsheets.export(current, SpreadsheetFormat.CSV, header, formatDate, out)
+                            ExportFormat.XLSX -> spreadsheets.export(current, SpreadsheetFormat.XLSX, header, formatDate, out)
+                        }
+                    }
+                }
+                ExportResult.Done(count)
             } catch (e: IOException) {
                 ExportResult.Failed
             }

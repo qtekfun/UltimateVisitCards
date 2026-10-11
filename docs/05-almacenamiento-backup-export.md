@@ -79,6 +79,7 @@ Columnas (en este orden, cabecera localizada): `Nombre, Apellidos, Cargo, Empres
 - **CSV**: UTF-8 **con BOM** (para que Excel abra bien los acentos), separador `,`, comillas RFC 4180; protección frente a inyección de fórmulas (celdas que empiezan por `=`, `+`, `-`, `@` se prefijan con `'`).
 - **XLSX**: escritor mínimo propio (ZIP con `[Content_Types].xml`, `_rels`, `xl/workbook.xml`, `xl/worksheets/sheet1.xml`, `xl/styles.xml`). Cadenas como `inlineStr`, cabecera en negrita, fila congelada, anchos de columna razonables. Mismas protecciones. Validado abriéndolo con una librería independiente en tests.
 - Si un contacto está en varios eventos, `Evento` los une con `; `.
+- Fase 8: desde Tarjetas, «Exportar» → `.vcf`, `.csv` o `.xlsx` de lo que se ve (todo o con búsqueda/filtros), por SAF. Cabecera en el idioma de la app; `Fecha` es la fecha de alta del contacto en el formato del dispositivo; `País` es el del contacto o, si falta, el de su empresa. La protección contra fórmulas también prefija tabulador y retorno de carro (OWASP).
 
 ## 6 bis. Pruebas obligatorias
 
