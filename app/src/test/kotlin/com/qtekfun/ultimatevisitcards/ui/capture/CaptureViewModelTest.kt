@@ -13,9 +13,6 @@ import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.work.Configuration
-import androidx.work.WorkManager
-import androidx.work.testing.WorkManagerTestInitHelper
 import com.qtekfun.ultimatevisitcards.data.db.AppDatabase
 import com.qtekfun.ultimatevisitcards.data.repo.RoomBusinessCardRepository
 import com.qtekfun.ultimatevisitcards.data.repo.SearchIndexer
@@ -28,7 +25,6 @@ import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardDraft
 import com.qtekfun.ultimatevisitcards.domain.util.Clock
 import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
 import com.qtekfun.ultimatevisitcards.ocr.processing.CardImageProcessor
-import com.qtekfun.ultimatevisitcards.work.OcrQueue
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -67,12 +63,11 @@ class CaptureViewModelTest {
     private val ids = ArrayDeque(listOf("11111111-1111-4111-8111-111111111111", "22222222-2222-4222-8222-222222222222"))
     private val clock = Clock { 1_767_225_600_000L }
 
-    private val context: Context get() = ApplicationProvider.getApplicationContext()
+    private val scheduled = com.qtekfun.ultimatevisitcards.testing.RecordingScheduler()
 
     @Before
     fun setUp() {
         Dispatchers.setMain(dispatcher)
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, Configuration.Builder().build())
         db = Room.inMemoryDatabaseBuilder<AppDatabase>(ApplicationProvider.getApplicationContext<Context>())
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(dispatcher)
@@ -88,7 +83,7 @@ class CaptureViewModelTest {
     }
 
     private fun viewModel() = CaptureViewModel(
-        CardCaptureSaver(store, CardImageProcessor(), cards, OcrQueue(context), dispatcher),
+        CardCaptureSaver(store, CardImageProcessor(), cards, scheduled, dispatcher),
         IdGenerator { ids.removeFirst() },
         clock,
         appScope
@@ -130,10 +125,8 @@ class CaptureViewModelTest {
         assertNotNull(CardQuad.fromJson(card.frontQuad))
         assertEquals(clock.nowMillis(), card.capturedAt)
         assertEquals(listOf("front.jpg", "front_original.jpg"), files(card.id))
-        // Its OCR is queued right away (the worker itself is tested in OcrWorkerTest).
-        val queued = WorkManager.getInstance(context).getWorkInfosForUniqueWork(OcrQueue.NAME).get()
-        assertEquals(1, queued.size)
-        assertTrue(OcrQueue.TAG in queued.single().tags)
+        // Its OCR is queued right away (the queue itself is tested in OcrQueueTest).
+        assertEquals(listOf(card.id), scheduled.enqueued)
     }
 
     @Test

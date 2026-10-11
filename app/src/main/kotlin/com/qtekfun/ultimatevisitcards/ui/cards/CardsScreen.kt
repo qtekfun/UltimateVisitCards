@@ -1,5 +1,6 @@
 package com.qtekfun.ultimatevisitcards.ui.cards
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,20 +27,28 @@ import com.qtekfun.ultimatevisitcards.R
 import com.qtekfun.ultimatevisitcards.ui.common.EmptyState
 
 @Composable
-fun CardsScreen(onAddCard: () -> Unit, modifier: Modifier = Modifier, viewModel: CardsViewModel = hiltViewModel()) {
+fun CardsScreen(
+    onAddCard: () -> Unit,
+    onQuickScan: () -> Unit,
+    onPending: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: CardsViewModel = hiltViewModel()
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    CardsContent(state, onAddCard, modifier)
+    CardsContent(state, onAddCard, onQuickScan, onPending, modifier)
 }
 
 @Composable
-fun CardsContent(state: CardsUiState, onAddCard: () -> Unit, modifier: Modifier = Modifier) {
+fun CardsContent(state: CardsUiState, onAddCard: () -> Unit, onQuickScan: () -> Unit, onPending: () -> Unit, modifier: Modifier = Modifier) {
     Box(modifier.fillMaxSize()) {
         when (state) {
             CardsUiState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
             CardsUiState.Error -> EmptyState(R.string.cards_error)
             is CardsUiState.Content -> Column(Modifier.fillMaxSize()) {
                 if (state.pendingReview > 0) {
+                    // «Pending review: N» → review queue (docs/03).
                     Surface(
+                        onClick = onPending,
                         color = MaterialTheme.colorScheme.secondaryContainer,
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
                         shape = MaterialTheme.shapes.medium
@@ -53,11 +63,19 @@ fun CardsContent(state: CardsUiState, onAddCard: () -> Unit, modifier: Modifier 
                 EmptyState(R.string.cards_empty, Modifier.weight(1f))
             }
         }
-        ExtendedFloatingActionButton(
-            onClick = onAddCard,
-            icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-            text = { Text(stringResource(R.string.cards_add)) },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
-        )
+        Column(
+            Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            SmallFloatingActionButton(onClick = onQuickScan) {
+                Text(stringResource(R.string.cards_quick_scan), modifier = Modifier.padding(horizontal = 12.dp))
+            }
+            ExtendedFloatingActionButton(
+                onClick = onAddCard,
+                icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                text = { Text(stringResource(R.string.cards_add)) }
+            )
+        }
     }
 }
