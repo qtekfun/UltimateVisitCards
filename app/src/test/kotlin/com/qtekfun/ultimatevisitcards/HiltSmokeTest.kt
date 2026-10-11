@@ -1,9 +1,9 @@
 package com.qtekfun.ultimatevisitcards
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.qtekfun.ultimatevisitcards.di.DefaultDispatcher
-import com.qtekfun.ultimatevisitcards.di.IoDispatcher
 import com.qtekfun.ultimatevisitcards.domain.ocr.OcrEngineInfo
+import com.qtekfun.ultimatevisitcards.domain.util.DefaultDispatcher
+import com.qtekfun.ultimatevisitcards.domain.util.IoDispatcher
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import javax.inject.Inject
