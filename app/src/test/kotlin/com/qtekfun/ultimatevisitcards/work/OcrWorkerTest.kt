@@ -141,6 +141,14 @@ class OcrWorkerTest {
     }
 
     @Test
+    fun `a card left in PROCESSING by a crash is read again`() {
+        card()
+        runBlocking { cards.updateOcr(cardId, OcrStatus.PROCESSING) }
+        assertEquals(ListenableWorker.Result.success(), run(ScriptedOcr(result("Ana Ruiz"))))
+        assertEquals(OcrStatus.PENDING_REVIEW, status())
+    }
+
+    @Test
     fun `both sides are read and their text kept`() {
         card(back = true)
         val ocr = ScriptedOcr(result("Ana Ruiz"), result("Sales Director"))

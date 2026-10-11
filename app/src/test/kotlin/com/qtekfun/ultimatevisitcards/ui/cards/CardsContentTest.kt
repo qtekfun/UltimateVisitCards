@@ -20,27 +20,39 @@ class CardsContentTest {
 
     @Test
     fun emptyWithoutPendingCards() {
-        compose.setContent { CardsContent(CardsUiState.Content(pendingReview = 0), onAddCard = {}) }
+        compose.setContent { CardsContent(CardsUiState.Content(pendingReview = 0), onAddCard = {}, onQuickScan = {}, onPending = {}) }
         compose.onNodeWithText(string(R.string.cards_empty)).assertExists()
         compose.onNodeWithText(string(R.string.cards_pending, 0)).assertDoesNotExist()
     }
 
     @Test
     fun showsThePendingReviewCount() {
-        compose.setContent { CardsContent(CardsUiState.Content(pendingReview = 3), onAddCard = {}) }
+        compose.setContent { CardsContent(CardsUiState.Content(pendingReview = 3), onAddCard = {}, onQuickScan = {}, onPending = {}) }
         compose.onNodeWithText(string(R.string.cards_pending, 3)).assertExists()
     }
 
     @Test
+    fun theBannerOpensTheQueueAndQuickScanHasItsButton() {
+        var queue = false
+        var quick = false
+        compose.setContent {
+            CardsContent(CardsUiState.Content(pendingReview = 2), onAddCard = {}, onQuickScan = { quick = true }, onPending = { queue = true })
+        }
+        compose.onNodeWithText(string(R.string.cards_pending, 2)).performClick()
+        compose.onNodeWithText(string(R.string.cards_quick_scan), useUnmergedTree = true).performClick()
+        assertTrue(queue && quick)
+    }
+
+    @Test
     fun errorState() {
-        compose.setContent { CardsContent(CardsUiState.Error, onAddCard = {}) }
+        compose.setContent { CardsContent(CardsUiState.Error, onAddCard = {}, onQuickScan = {}, onPending = {}) }
         compose.onNodeWithText(string(R.string.cards_error)).assertExists()
     }
 
     @Test
     fun theAddButtonOpensCapture() {
         var opened = false
-        compose.setContent { CardsContent(CardsUiState.Loading, onAddCard = { opened = true }) }
+        compose.setContent { CardsContent(CardsUiState.Loading, onAddCard = { opened = true }, onQuickScan = {}, onPending = {}) }
         // The FAB merges its label into its own node; the text is in the unmerged tree.
         compose.onNodeWithText(string(R.string.cards_add), useUnmergedTree = true).performClick()
         assertTrue(opened)

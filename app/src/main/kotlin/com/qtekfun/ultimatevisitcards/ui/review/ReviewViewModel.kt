@@ -37,17 +37,24 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** Where to go after saving. */
-enum class ReviewExit {
+sealed interface ReviewExit {
     /** Back to where the user came from. */
-    DONE,
+    data object Done : ReviewExit
 
     /** «Save and scan next»: straight to the camera. */
-    SCAN_NEXT
+    data object ScanNext : ReviewExit
+
+    /** «Save and review next» (from the queue): the next pending card. */
+    data class ReviewNext(val cardId: String) : ReviewExit
 }
+
+/** What the secondary save button does. */
+enum class SaveAndNext { SCAN, REVIEW }
 
 enum class ReviewError { EMPTY, SAVE_FAILED }
 
@@ -116,6 +123,9 @@ class ReviewViewModel @Inject constructor(
 ) : ViewModel() {
     val cardId: String = checkNotNull(savedState[ARG_CARD_ID])
 
+    /** Opened from the review queue: «Save and review next» instead of «Save and scan next». */
+    val next: SaveAndNext = if (savedState.get<Boolean>(ARG_FROM_QUEUE) == true) SaveAndNext.REVIEW else SaveAndNext.SCAN
+
     private val _state = MutableStateFlow(ReviewUiState())
     val state: StateFlow<ReviewUiState> = _state.asStateFlow()
 
@@ -123,7 +133,7 @@ class ReviewViewModel @Inject constructor(
     private var filledFromOcr = false
     private var knownCompanies: List<Company> = emptyList()
     private var duplicatesConfirmed = false
-    private var pendingExit = ReviewExit.DONE
+    private var pendingExit: ReviewExit = ReviewExit.Done
     private val companyKeys = CompanyNameNormalizer.fromBundledDictionary()
     private val countries = ExtractionDictionaries.bundled.countries
 
@@ -271,8 +281,14 @@ class ReviewViewModel @Inject constructor(
         }
     }
 
+    /** «Save»: back to where the user came from. */
+    fun save() = save(ReviewExit.Done)
+
+    /** «Save and scan next» or «Save and review next», depending on where the review was opened from. */
+    fun saveAndNext() = save(if (next == SaveAndNext.SCAN) ReviewExit.ScanNext else NEXT_IN_QUEUE)
+
     /** Checks for duplicates first; when there are, the warning is shown and nothing is saved yet. */
-    fun save(exit: ReviewExit) {
+    private fun save(exit: ReviewExit) {
         val current = _state.value
         if (current.saving) return
         val input = reviewed(current)
@@ -292,7 +308,7 @@ class ReviewViewModel @Inject constructor(
                 }
             }
             when (val result = saveCard(input)) {
-                is DomainResult.Success -> _state.update { it.copy(saving = false, exit = exit) }
+                is DomainResult.Success -> _state.update { it.copy(saving = false, exit = resolve(exit)) }
                 is DomainResult.Failure -> _state.update {
                     it.copy(saving = false, error = if (result.error is DomainError.Invalid) ReviewError.EMPTY else ReviewError.SAVE_FAILED)
                 }
@@ -316,6 +332,13 @@ class ReviewViewModel @Inject constructor(
 
     fun dismissError() = _state.update { it.copy(error = null) }
 
+    /** The next card of the queue (oldest first, not this one), or done when the queue is empty. */
+    private suspend fun resolve(exit: ReviewExit): ReviewExit {
+        if (exit != NEXT_IN_QUEUE) return exit
+        val next = cards.observeAwaitingReview().first().firstOrNull { it.id != cardId }
+        return next?.let { ReviewExit.ReviewNext(it.id) } ?: ReviewExit.Done
+    }
+
     private fun reviewed(state: ReviewUiState): ReviewedCard {
         fun v(field: CardField) = state.value(field).trim().takeIf { it.isNotEmpty() }
         return ReviewedCard(
@@ -338,6 +361,10 @@ class ReviewViewModel @Inject constructor(
 
     companion object {
         const val ARG_CARD_ID = "cardId"
+        const val ARG_FROM_QUEUE = "queue"
+
+        /** Placeholder resolved after saving into [ReviewExit.ReviewNext] or [ReviewExit.Done]. */
+        private val NEXT_IN_QUEUE = ReviewExit.ReviewNext("")
         private const val MAX_SUGGESTIONS = 5
     }
 }

@@ -24,6 +24,8 @@ import com.qtekfun.ultimatevisitcards.ui.capture.CaptureScreen
 import com.qtekfun.ultimatevisitcards.ui.cards.CardsScreen
 import com.qtekfun.ultimatevisitcards.ui.companies.CompaniesScreen
 import com.qtekfun.ultimatevisitcards.ui.events.EventsScreen
+import com.qtekfun.ultimatevisitcards.ui.queue.ReviewQueueScreen
+import com.qtekfun.ultimatevisitcards.ui.quickscan.QuickScanScreen
 import com.qtekfun.ultimatevisitcards.ui.review.ReviewExit
 import com.qtekfun.ultimatevisitcards.ui.review.ReviewScreen
 import com.qtekfun.ultimatevisitcards.ui.review.ReviewViewModel
@@ -33,9 +35,11 @@ import com.qtekfun.ultimatevisitcards.ui.settings.SettingsScreen
 /** Routes outside the bottom bar: they open over it (docs/03-pantallas-navegacion.md). */
 object Routes {
     const val CAPTURE = "capture"
-    const val REVIEW = "review/{${ReviewViewModel.ARG_CARD_ID}}"
+    const val QUICK_SCAN = "quick-scan"
+    const val QUEUE = "queue"
+    const val REVIEW = "review/{${ReviewViewModel.ARG_CARD_ID}}?${ReviewViewModel.ARG_FROM_QUEUE}={${ReviewViewModel.ARG_FROM_QUEUE}}"
 
-    fun review(cardId: String) = "review/$cardId"
+    fun review(cardId: String, fromQueue: Boolean = false) = "review/$cardId?${ReviewViewModel.ARG_FROM_QUEUE}=$fromQueue"
 }
 
 /** Root scaffold: bottom navigation over the five top-level sections. */
@@ -55,7 +59,13 @@ fun UvcApp(navController: NavHostController = rememberNavController()) {
             startDestination = TopLevelDestination.CARDS.route,
             modifier = Modifier.padding(padding)
         ) {
-            composable(TopLevelDestination.CARDS.route) { CardsScreen(onAddCard = { navController.navigate(Routes.CAPTURE) }) }
+            composable(TopLevelDestination.CARDS.route) {
+                CardsScreen(
+                    onAddCard = { navController.navigate(Routes.CAPTURE) },
+                    onQuickScan = { navController.navigate(Routes.QUICK_SCAN) },
+                    onPending = { navController.navigate(Routes.QUEUE) }
+                )
+            }
             composable(TopLevelDestination.EVENTS.route) { EventsScreen() }
             composable(TopLevelDestination.COMPANIES.route) { CompaniesScreen() }
             composable(TopLevelDestination.SECTORS.route) { SectorsScreen() }
@@ -67,13 +77,32 @@ fun UvcApp(navController: NavHostController = rememberNavController()) {
                     onSaved = { cardId -> navController.navigate(Routes.review(cardId)) { popUpTo(Routes.CAPTURE) { inclusive = true } } }
                 )
             }
-            composable(Routes.REVIEW, arguments = listOf(navArgument(ReviewViewModel.ARG_CARD_ID) { type = NavType.StringType })) {
+            composable(Routes.QUICK_SCAN) { QuickScanScreen(onFinished = { navController.popBackStack() }) }
+            composable(Routes.QUEUE) {
+                ReviewQueueScreen(
+                    onReview = { cardId -> navController.navigate(Routes.review(cardId, fromQueue = true)) },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable(
+                Routes.REVIEW,
+                arguments = listOf(
+                    navArgument(ReviewViewModel.ARG_CARD_ID) { type = NavType.StringType },
+                    navArgument(ReviewViewModel.ARG_FROM_QUEUE) {
+                        type = NavType.BoolType
+                        defaultValue = false
+                    }
+                )
+            ) {
                 ReviewScreen(
                     onBack = { navController.popBackStack() },
                     onExit = { exit ->
                         when (exit) {
-                            ReviewExit.DONE -> navController.popBackStack()
-                            ReviewExit.SCAN_NEXT -> navController.navigate(Routes.CAPTURE) { popUpTo(Routes.REVIEW) { inclusive = true } }
+                            ReviewExit.Done -> navController.popBackStack()
+                            ReviewExit.ScanNext -> navController.navigate(Routes.CAPTURE) { popUpTo(Routes.REVIEW) { inclusive = true } }
+                            is ReviewExit.ReviewNext -> navController.navigate(Routes.review(exit.cardId, fromQueue = true)) {
+                                popUpTo(Routes.REVIEW) { inclusive = true }
+                            }
                         }
                     }
                 )

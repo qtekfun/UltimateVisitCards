@@ -60,3 +60,12 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
 - **2026-10-11 · Mínimo para guardar.** Nombre, apellidos, empresa, email, teléfono o móvil: al menos uno. Un contacto sin nada de eso no se podría encontrar ni usar.
 - **2026-10-11 · Sugerencias.** Empresa: las existentes que contienen lo escrito (plegado). País: nombres normalizados cuyo alias en cualquiera de los 5 idiomas empieza por lo escrito («Corea» → «South Korea»); se guarda el nombre normalizado en inglés, como pide `docs/02`.
 - **2026-10-11 · Coil solo para archivos locales.** `coil-compose` sin módulos de red: no arrastra OkHttp ni permisos.
+
+## Fase 5
+
+- **2026-10-11 · Escaneo rápido con un canal ordenado y búfer de 3.** Cada disparo entra en un `Channel` que procesa una corrutina en orden (anverso, reverso, alta de la tarjeta, encolado del OCR). La UI nunca espera; si hay 3 fotos sin guardar, el disparador se pausa para no llenar la memoria con mapas de bits de ~17 MB. *Descartado*: procesar en paralelo (más memoria y orden incierto entre anverso y reverso).
+- **2026-10-11 · Nada se pierde al salir.** «Terminar» y el gesto atrás esperan a que todo esté en disco; un anverso cuyo reverso no llegó se guarda solo. Si la pantalla se destruye igualmente, los anversos ya guardados se dan de alta en el `@ApplicationScope`. Una muerte del proceso pierde, como mucho, las ≤ 3 fotos aún en memoria.
+- **2026-10-11 · Recuperación al arrancar.** `PROCESSING` → `PENDING` y reencolado de todas las `PENDING` en cada arranque. El worker es idempotente, así que reencolar de más no lee dos veces.
+- **2026-10-11 · `OcrScheduler` como interfaz.** La captura, el escaneo rápido y la recuperación solo necesitan «encolar esta tarjeta»; `OcrQueue` lo implementa con WorkManager y los tests usan un registrador. La semántica de la cadena (una a una, el resto `BLOCKED`) se prueba aparte con WorkManager real.
+- **2026-10-11 · La cola de revisión incluye las que aún se leen.** Se pueden revisar ya (el formulario se completa cuando termina el OCR); el orden es por fecha de captura.
+- **2026-10-11 · Límite de tiempo en los tests (10 min).** Un test colgado hace fallar la build en lugar de bloquear la máquina.

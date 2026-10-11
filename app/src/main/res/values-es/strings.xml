@@ -100,4 +100,25 @@
   <string name="duplicate_reason_initial_company">Coinciden apellido, inicial y empresa</string>
   <string name="preview_title">Contacto existente</string>
   <string name="preview_close">Cerrar</string>
+  <!-- Escaneo rápido y cola -->
+  <string name="cards_quick_scan">Escaneo rápido</string>
+  <string name="quick_finish">Terminar</string>
+  <string name="quick_finishing">Guardando las últimas tarjetas…</string>
+  <string name="quick_event">Evento: %1$s</string>
+  <string name="quick_counter">Escaneadas: %1$d</string>
+  <string name="quick_failed">Sin guardar: %1$d</string>
+  <string name="quick_has_back">¿Tiene reverso?</string>
+  <string name="queue_title">Pendientes de revisar</string>
+  <string name="queue_review_all">Revisar todas</string>
+  <string name="queue_review">Revisar</string>
+  <string name="queue_empty">No hay nada pendiente. Todas las tarjetas están revisadas.</string>
+  <string name="queue_error">No se pudieron cargar las tarjetas pendientes.</string>
+  <string name="queue_thumbnail">Miniatura de la tarjeta</string>
+  <string name="queue_status_reading">Leyendo…</string>
+  <string name="queue_status_ready">Lista para revisar</string>
+  <string name="queue_status_error">No se pudo leer: rellénala a mano o reinténtalo</string>
+  <string name="queue_retry">Reintentar</string>
+  <string name="queue_discard">Descartar</string>
+  <string name="queue_discard_confirm">¿Descartar esta tarjeta y sus fotos? No se puede deshacer.</string>
+  <string name="review_save_review_next">Guardar y revisar siguiente</string>
 </resources>
