@@ -19,11 +19,12 @@ Sector 1───N Company 1───N Contact N───N Event   (puente: Cont
 | Campo | Tipo | Notas |
 |---|---|---|
 | id | TEXT PK | |
-| name | TEXT | único (sin distinguir mayúsculas), editable |
+| name | TEXT | editable |
+| normalizedName | TEXT | `name` plegado (minúsculas, sin acentos). **Índice único**: así «Electrónica» y «ELECTRONICA» chocan (NOCASE de SQLite solo pliega ASCII) |
 | sortOrder | INTEGER | |
 | createdAt | INTEGER | |
 
-Siembra inicial en el primer arranque (localizada es/en) con la lista de la spec: Astillero, Armador, Ship Management, Fabricante de motores, Equipamiento naval, Electrónica, Automatización, Ingeniería, Clasificación, Servicios marítimos, Logística, Distribuidor, Proveedor, Otro. Se pueden crear, renombrar y borrar. Al borrar un sector, `Company.sectorId` pasa a `NULL` (`ON DELETE SET NULL`).
+Siembra inicial en el primer arranque (localizada es/en, `RoomDatabase.Callback.onCreate`: una sola vez; si el usuario los borra no vuelven) con la lista de la spec: Astillero, Armador, Ship Management, Fabricante de motores, Equipamiento naval, Electrónica, Automatización, Ingeniería, Clasificación, Servicios marítimos, Logística, Distribuidor, Proveedor, Otro. Se pueden crear, renombrar y borrar. Al borrar un sector, `Company.sectorId` pasa a `NULL` (`ON DELETE SET NULL`).
 
 ### Company
 | Campo | Tipo | Notas |
@@ -97,11 +98,15 @@ Tabla virtual **independiente** `contact_fts` (no `contentEntity`, porque mezcla
 ```
 contact_fts(contactId UNINDEXED, name, company, jobTitle, country, sector,
             email, phone, notes, ocrText, events,
-            tokenize=unicode61 "remove_diacritics=2")
+            tokenize=unicode61)
 ```
 
+- El texto se **pliega en la app** (`TextNormalizer`: minúsculas, sin acentos, `ß→ss`, `ø→o`…) antes de indexar y antes de consultar. No se usa `remove_diacritics=2` porque exige SQLite 3.27 y Android 10 (minSdk 29) trae 3.22.
+- Teléfonos: se indexan los grupos impresos, todos los dígitos y el número nacional (sin prefijo de 1–3 dígitos), para encontrar `+34 600 12 34 56` con `600123456`.
+- `ocrStatus` se guarda como el nombre del enum (`TEXT`); un valor desconocido se lee como `PENDING`.
+
 - `SearchIndexer` en `:data` reconstruye la fila de un contacto cuando cambia él, su empresa, su sector, sus eventos o sus tarjetas, dentro de la misma transacción.
-- Consulta: cada término → `term*` (prefijo) unidos con `AND`. Ej.: `hyundai ship*`.
+- Consulta (`SearchQuery`): cada término plegado → `term*` (prefijo), separados por espacio (AND implícito). Ej.: `hyundai* ship*`. Solo sobreviven letras y dígitos: no se puede inyectar sintaxis FTS.
 - Reconstrucción completa tras un restore y desde Ajustes («Reindexar»).
 
 ### Búsqueda dentro de un grupo y filtros combinables

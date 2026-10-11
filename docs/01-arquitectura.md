@@ -24,6 +24,7 @@
 
 ```
 :domain  model/ · repository/ · usecase/ · extract/ (CardFieldExtractor, dictionaries) · dedupe/ · ocr/ (OcrService, OcrResult)
+         text/ (TextNormalizer, CompanyNameNormalizer) · search/ (SearchQuery, ContactSearchDocument) · util/ (Clock, IdGenerator, qualifiers de Dispatchers)
 :data    db/ (entities, daos, migrations, fts) · repo/ · storage/ (ImageStore) · backup/ · export/ (vcf, csv, xlsx) · contacts/ (PhoneContactsWriter)
 :ocr     processing/ (CardDetector, ImagePreprocessor) · play/MlKitOcrService · foss/TesseractOcrService
 :app     ui/<feature>/ · navigation/ · work/ · di/ · settings/
@@ -53,7 +54,8 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 - `DomainModule`: casos de uso.
 - `DataModule`: Room, DAOs, repositorios, `ImageStore`.
 - `OcrModule`: **uno por flavour** (`src/play` y `src/foss`) que enlaza `OcrService`.
-- `DispatchersModule`: `@IoDispatcher`, `@DefaultDispatcher`.
+- `DispatchersModule`: `@IoDispatcher`, `@DefaultDispatcher` (las anotaciones viven en `:domain/util`).
+- `CoreModule`: `Clock` e `IdGenerator` (inyectados para tests deterministas).
 
 ## Dependencias aprobadas
 
@@ -61,7 +63,8 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 |---|---|---|
 | AndroidX Core/Lifecycle/Activity/Navigation-Compose | base | ambos |
 | Compose BOM + Material 3 | UI | ambos |
-| Room (+ KSP) | BD, FTS4 | ambos |
+| Room 3 (`androidx.room3`, + KSP y plugin de esquemas) con `AndroidSQLiteDriver` | BD, FTS4 | ambos |
+| `javax.inject` (JSR-330) | `@Inject`/`@Qualifier` en `:domain` sin depender de Android ni de Dagger | ambos |
 | CameraX (core, camera2, lifecycle, view) | captura | ambos |
 | WorkManager | cola OCR | ambos |
 | Hilt (+ hilt-work, navigation-compose) | DI | ambos |
@@ -73,6 +76,7 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 | Tesseract4Android | OCR | `foss` |
 | JUnit, Truth/Kotest, Turbine, MockK, Robolectric, AndroidX Test | tests | ambos |
 | `hilt-android-testing`, Compose `ui-test-junit4`/`ui-test-manifest` | tests (smoke de Hilt, navegación con Robolectric) | ambos |
+| `room3-testing`, `sqlite-bundled-jvm` | tests de BD en JVM (`MigrationTestHelper`, SQLite empaquetado con FTS4) — solo `testImplementation` | ambos |
 | `compose.material:material-icons-core` | iconos de la barra inferior (solo el set pequeño; no `-extended`) | ambos |
 | kotlinx-coroutines-android | `Dispatchers` inyectados, `Flow` | ambos |
 
