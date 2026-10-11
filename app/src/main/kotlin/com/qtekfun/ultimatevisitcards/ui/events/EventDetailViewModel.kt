@@ -34,7 +34,7 @@ data class EventDetailUiState(
     /** The edit dialog, when open. */
     val editor: EditorState? = null,
     /** The event was deleted: the screen goes back. */
-    val deleted: Boolean = false,
+    val deleted: Boolean = false
 )
 
 /**
@@ -43,11 +43,7 @@ data class EventDetailUiState(
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class EventDetailViewModel @Inject constructor(
-    savedState: SavedStateHandle,
-    private val events: EventRepository,
-    contacts: ContactRepository,
-) : ViewModel() {
+class EventDetailViewModel @Inject constructor(savedState: SavedStateHandle, private val events: EventRepository, contacts: ContactRepository) : ViewModel() {
     val eventId: String = checkNotNull(savedState[ARG_EVENT_ID])
 
     private val query = MutableStateFlow("")
@@ -82,7 +78,7 @@ class EventDetailViewModel @Inject constructor(
                 location = draft.location,
                 startDate = draft.startDate,
                 endDate = draft.endDate,
-                notes = draft.notes,
+                notes = draft.notes
             )
             when (val result = events.update(updated)) {
                 is DomainResult.Success -> _state.update { it.copy(editor = null) }

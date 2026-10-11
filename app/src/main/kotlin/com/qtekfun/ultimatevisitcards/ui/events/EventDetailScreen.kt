@@ -52,7 +52,7 @@ fun EventDetailScreen(
     onBack: () -> Unit,
     onOpenContact: (String) -> Unit,
     onGlobalSearch: (String) -> Unit,
-    viewModel: EventDetailViewModel = hiltViewModel(),
+    viewModel: EventDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.deleted) { if (state.deleted) onBack() }
@@ -63,7 +63,7 @@ fun EventDetailScreen(
         onGlobalSearch = { onGlobalSearch(state.query) },
         onQuery = viewModel::onQuery,
         onEdit = viewModel::startEdit,
-        onDelete = viewModel::delete,
+        onDelete = viewModel::delete
     )
     val editor = state.editor
     val event = state.event
@@ -81,7 +81,7 @@ fun EventDetailContent(
     onGlobalSearch: () -> Unit,
     onQuery: (String) -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit,
+    onDelete: () -> Unit
 ) {
     var confirmDelete by remember { mutableStateOf(false) }
     Scaffold(
@@ -94,11 +94,13 @@ fun EventDetailContent(
                 actions = {
                     if (state.event != null) {
                         IconButton(onClick = onEdit) { Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.catalog_edit)) }
-                        IconButton(onClick = { confirmDelete = true }) { Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.catalog_delete)) }
+                        IconButton(onClick = {
+                            confirmDelete = true
+                        }) { Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.catalog_delete)) }
                     }
-                },
+                }
             )
-        },
+        }
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             val event = state.event
@@ -131,7 +133,7 @@ fun EventDetailContent(
                 confirmDelete = false
                 onDelete()
             },
-            onDismiss = { confirmDelete = false },
+            onDismiss = { confirmDelete = false }
         )
     }
 }
@@ -156,14 +158,14 @@ private fun SearchBar(query: String, onQuery: (String) -> Unit, onGlobalSearch: 
             label = { Text(stringResource(R.string.event_search)) },
             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         )
         val everywhere = stringResource(R.string.event_search_everywhere)
         FilterChip(
             selected = true,
             onClick = onGlobalSearch,
             label = { Text(stringResource(R.string.event_only_this)) },
-            trailingIcon = { Icon(Icons.Filled.Close, contentDescription = everywhere) },
+            trailingIcon = { Icon(Icons.Filled.Close, contentDescription = everywhere) }
         )
     }
 }

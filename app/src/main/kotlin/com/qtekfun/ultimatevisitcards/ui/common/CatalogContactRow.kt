@@ -13,12 +13,11 @@ import com.qtekfun.ultimatevisitcards.domain.model.Contact
 fun CatalogContactRow(contact: Contact, companyName: String?, onOpen: (String) -> Unit) {
     val details = listOfNotNull(contact.jobTitle, companyName).joinToString(" · ")
     ListItem(
-        headlineContent = { Text("${contact.firstName} ${contact.lastName}".trim()) },
         supportingContent = if (details.isNotEmpty()) {
             { Text(details) }
         } else {
             null
         },
-        modifier = Modifier.clickable(role = Role.Button) { onOpen(contact.id) },
-    )
+        modifier = Modifier.clickable(role = Role.Button) { onOpen(contact.id) }
+    ) { Text("${contact.firstName} ${contact.lastName}".trim()) }
 }

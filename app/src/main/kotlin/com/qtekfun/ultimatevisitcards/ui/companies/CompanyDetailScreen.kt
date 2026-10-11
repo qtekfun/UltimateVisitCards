@@ -64,13 +64,7 @@ fun CompanyDetailScreen(onBack: () -> Unit, onOpenContact: (String) -> Unit, vie
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CompanyDetailContent(
-    state: CompanyDetailUiState,
-    onBack: () -> Unit,
-    onOpenContact: (String) -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-) {
+fun CompanyDetailContent(state: CompanyDetailUiState, onBack: () -> Unit, onOpenContact: (String) -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
     var confirmDelete by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
@@ -82,11 +76,13 @@ fun CompanyDetailContent(
                 actions = {
                     if (state.company != null) {
                         IconButton(onClick = onEdit) { Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.catalog_edit)) }
-                        IconButton(onClick = { confirmDelete = true }) { Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.catalog_delete)) }
+                        IconButton(onClick = {
+                            confirmDelete = true
+                        }) { Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.catalog_delete)) }
                     }
-                },
+                }
             )
-        },
+        }
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             val company = state.company
@@ -122,7 +118,7 @@ fun CompanyDetailContent(
                 confirmDelete = false
                 onDelete()
             },
-            onDismiss = { confirmDelete = false },
+            onDismiss = { confirmDelete = false }
         )
     }
 }
@@ -152,14 +148,14 @@ fun CompanyEditorDialog(company: Company, sectors: List<Sector>, error: EditErro
                         null
                     },
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 OptionField(
                     label = stringResource(R.string.company_sector),
                     options = sectors.map { it.id to it.name },
                     selected = sectorId,
                     onSelect = { sectorId = it },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = country,
@@ -167,7 +163,7 @@ fun CompanyEditorDialog(company: Company, sectors: List<Sector>, error: EditErro
                     label = { Text(stringResource(R.string.field_country)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = website,
@@ -175,20 +171,20 @@ fun CompanyEditorDialog(company: Company, sectors: List<Sector>, error: EditErro
                     label = { Text(stringResource(R.string.field_website)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
                     label = { Text(stringResource(R.string.field_notes)) },
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         },
         confirmButton = {
             TextButton(onClick = { onSave(CompanyEdit(name.trim(), sectorId, country, website, notes)) }) { Text(stringResource(R.string.catalog_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_cancel)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_cancel)) } }
     )
 }

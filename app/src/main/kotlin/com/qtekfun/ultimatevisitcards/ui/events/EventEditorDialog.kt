@@ -49,7 +49,7 @@ fun EventEditorDialog(title: String, initial: Event?, error: EditError?, onSave:
                         null
                     },
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = location,
@@ -57,7 +57,7 @@ fun EventEditorDialog(title: String, initial: Event?, error: EditError?, onSave:
                     label = { Text(stringResource(R.string.event_location)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 DateField(stringResource(R.string.event_start), start, { start = it }, Modifier.fillMaxWidth())
                 DateField(stringResource(R.string.event_end), end, { end = it }, Modifier.fillMaxWidth())
@@ -66,7 +66,7 @@ fun EventEditorDialog(title: String, initial: Event?, error: EditError?, onSave:
                     onValueChange = { notes = it },
                     label = { Text(stringResource(R.string.field_notes)) },
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         },
@@ -75,7 +75,7 @@ fun EventEditorDialog(title: String, initial: Event?, error: EditError?, onSave:
                 onSave(EventDraft(name = name.trim(), location = location, startDate = start, endDate = end, notes = notes))
             }) { Text(stringResource(R.string.catalog_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_cancel)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_cancel)) } }
     )
 }
 

@@ -35,20 +35,13 @@ fun ConfirmDialog(message: String, confirmLabel: String, onConfirm: () -> Unit, 
         onDismissRequest = onDismiss,
         text = { Text(message) },
         confirmButton = { TextButton(onClick = onConfirm) { Text(confirmLabel) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_cancel)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_cancel)) } }
     )
 }
 
 /** A dialog with one text field (create or rename something by name); [error] is shown under the field. */
 @Composable
-fun TextInputDialog(
-    title: String,
-    initial: String,
-    confirmLabel: String,
-    error: String?,
-    onConfirm: (String) -> Unit,
-    onDismiss: () -> Unit,
-) {
+fun TextInputDialog(title: String, initial: String, confirmLabel: String, error: String?, onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
     var text by remember { mutableStateOf(initial) }
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -65,11 +58,11 @@ fun TextInputDialog(
                 } else {
                     null
                 },
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
             )
         },
         confirmButton = { TextButton(onClick = { onConfirm(text.trim()) }, enabled = text.isNotBlank()) { Text(confirmLabel) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_cancel)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.review_cancel)) } }
     )
 }
 
@@ -84,7 +77,7 @@ fun DateField(label: String, value: Long?, onChange: (Long?) -> Unit, modifier: 
             onValueChange = {},
             readOnly = true,
             label = { Text(label) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         )
         // A read-only text field does not react to taps by itself.
         Box(Modifier.matchParentSize().clickable(role = Role.Button, onClickLabel = label) { picking = true })
@@ -104,7 +97,7 @@ fun DateField(label: String, value: Long?, onChange: (Long?) -> Unit, modifier: 
                     onChange(null)
                     picking = false
                 }) { Text(stringResource(R.string.catalog_clear_date)) }
-            },
+            }
         ) {
             DatePicker(state = state)
         }
@@ -123,7 +116,7 @@ fun OptionField(label: String, options: List<Pair<String, String>>, selected: St
             readOnly = true,
             label = { Text(label) },
             trailingIcon = { Icon(Icons.Filled.ArrowDropDown, contentDescription = null) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         )
         Box(Modifier.matchParentSize().clickable(role = Role.DropdownList, onClickLabel = label) { expanded = true })
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {

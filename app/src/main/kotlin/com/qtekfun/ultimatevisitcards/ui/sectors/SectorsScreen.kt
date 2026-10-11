@@ -48,19 +48,13 @@ fun SectorsScreen(modifier: Modifier = Modifier, viewModel: SectorsViewModel = h
             confirmLabel = stringResource(if (open.sector == null) R.string.review_create else R.string.catalog_save),
             error = open.error?.let { stringResource(it.message()) },
             onConfirm = viewModel::save,
-            onDismiss = viewModel::cancel,
+            onDismiss = viewModel::cancel
         )
     }
 }
 
 @Composable
-fun SectorsContent(
-    state: LoadState<SectorSummary>,
-    onNew: () -> Unit,
-    onRename: (Sector) -> Unit,
-    onDelete: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun SectorsContent(state: LoadState<SectorSummary>, onNew: () -> Unit, onRename: (Sector) -> Unit, onDelete: (String) -> Unit, modifier: Modifier = Modifier) {
     var deleting by remember { mutableStateOf<String?>(null) }
     Box(modifier.fillMaxSize()) {
         when (state) {
@@ -72,7 +66,6 @@ fun SectorsContent(
                 LazyColumn(Modifier.fillMaxSize()) {
                     items(state.items, key = { it.sector.id }) { summary ->
                         ListItem(
-                            headlineContent = { Text(summary.sector.name) },
                             supportingContent = { Text(stringResource(R.string.sectors_company_count, summary.companyCount)) },
                             trailingContent = {
                                 Row {
@@ -83,8 +76,8 @@ fun SectorsContent(
                                         Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.catalog_delete))
                                     }
                                 }
-                            },
-                        )
+                            }
+                        ) { Text(summary.sector.name) }
                         HorizontalDivider()
                     }
                 }
@@ -94,7 +87,7 @@ fun SectorsContent(
             onClick = onNew,
             icon = { Icon(Icons.Filled.Add, contentDescription = null) },
             text = { Text(stringResource(R.string.sectors_new)) },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
         )
     }
     deleting?.let { id ->
@@ -105,7 +98,7 @@ fun SectorsContent(
                 deleting = null
                 onDelete(id)
             },
-            onDismiss = { deleting = null },
+            onDismiss = { deleting = null }
         )
     }
 }

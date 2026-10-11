@@ -43,10 +43,12 @@ class MigrationTest {
         val file = File(folder.root, "test.db")
         helper(file).createDatabase(1).use { db ->
             db.execSQL(
-                "INSERT INTO Company (id, name, normalizedName, sectorId, country, website, notes, createdAt, updatedAt) VALUES ('co', 'ABC Marine', 'abc marine', NULL, 'Spain', NULL, NULL, 1, 1)"
+                "INSERT INTO Company (id, name, normalizedName, sectorId, country, website, notes, createdAt, updatedAt) " +
+                    "VALUES ('co', 'ABC Marine', 'abc marine', NULL, 'Spain', NULL, NULL, 1, 1)"
             )
             db.execSQL(
-                "INSERT INTO Contact (id, firstName, lastName, jobTitle, companyId, country, phone, mobile, email, website, address, notes, exportedToPhoneAt, createdAt, updatedAt) " +
+                "INSERT INTO Contact (id, firstName, lastName, jobTitle, companyId, country, phone, mobile, email, website, address, notes, " +
+                    "exportedToPhoneAt, createdAt, updatedAt) " +
                     "VALUES ('c1', 'José', 'Muñoz', 'Director', 'co', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 1)"
             )
             db.execSQL(

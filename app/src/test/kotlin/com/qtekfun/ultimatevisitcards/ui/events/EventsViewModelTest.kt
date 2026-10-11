@@ -46,7 +46,8 @@ class EventsViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun detail(eventId: String) = EventDetailViewModel(SavedStateHandle(mapOf(EventDetailViewModel.ARG_EVENT_ID to eventId)), data.events, data.contacts)
+    private fun detail(eventId: String) =
+        EventDetailViewModel(SavedStateHandle(mapOf(EventDetailViewModel.ARG_EVENT_ID to eventId)), data.events, data.contacts)
 
     @Test
     fun `the list goes from loading to empty to content and creates events`() = runTest(dispatcher) {

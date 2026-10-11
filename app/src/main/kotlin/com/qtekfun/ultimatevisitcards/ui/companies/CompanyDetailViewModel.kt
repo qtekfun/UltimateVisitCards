@@ -34,7 +34,7 @@ data class CompanyDetailUiState(
     val sectors: List<Sector> = emptyList(),
     val contacts: List<Contact> = emptyList(),
     val editor: EditorState? = null,
-    val deleted: Boolean = false,
+    val deleted: Boolean = false
 )
 
 /** One company (docs/03): sector, country, web, notes and its contacts; edit and delete. */
@@ -43,7 +43,7 @@ class CompanyDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val companies: CompanyRepository,
     contacts: ContactRepository,
-    sectors: SectorRepository,
+    sectors: SectorRepository
 ) : ViewModel() {
     val companyId: String = checkNotNull(savedState[ARG_COMPANY_ID])
 
@@ -63,7 +63,7 @@ class CompanyDetailViewModel @Inject constructor(
                             company = company,
                             sectorName = sectorList.firstOrNull { s -> s.id == company?.sectorId }?.name,
                             sectors = sectorList,
-                            contacts = people,
+                            contacts = people
                         )
                     }
                 }

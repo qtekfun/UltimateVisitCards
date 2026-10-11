@@ -25,8 +25,12 @@ import com.qtekfun.ultimatevisitcards.ui.cards.CardsActions
 import com.qtekfun.ultimatevisitcards.ui.cards.CardsScreen
 import com.qtekfun.ultimatevisitcards.ui.cards.CardsViewModel
 import com.qtekfun.ultimatevisitcards.ui.companies.CompaniesScreen
+import com.qtekfun.ultimatevisitcards.ui.companies.CompanyDetailScreen
+import com.qtekfun.ultimatevisitcards.ui.companies.CompanyDetailViewModel
 import com.qtekfun.ultimatevisitcards.ui.contact.ContactDetailScreen
 import com.qtekfun.ultimatevisitcards.ui.contact.ContactDetailViewModel
+import com.qtekfun.ultimatevisitcards.ui.events.EventDetailScreen
+import com.qtekfun.ultimatevisitcards.ui.events.EventDetailViewModel
 import com.qtekfun.ultimatevisitcards.ui.events.EventsScreen
 import com.qtekfun.ultimatevisitcards.ui.queue.ReviewQueueScreen
 import com.qtekfun.ultimatevisitcards.ui.quickscan.QuickScanScreen
@@ -51,6 +55,14 @@ object Routes {
 
     /** The Cards tab with an optional starting search (global search from an event). */
     const val CARDS_WITH_QUERY = "cards?${CardsViewModel.ARG_QUERY}={${CardsViewModel.ARG_QUERY}}"
+
+    const val EVENT = "event/{${EventDetailViewModel.ARG_EVENT_ID}}"
+
+    fun event(eventId: String) = "event/$eventId"
+
+    const val COMPANY = "company/{${CompanyDetailViewModel.ARG_COMPANY_ID}}"
+
+    fun company(companyId: String) = "company/$companyId"
 
     fun cards(query: String) = "cards?${CardsViewModel.ARG_QUERY}=${android.net.Uri.encode(query)}"
 }
@@ -91,10 +103,25 @@ fun UvcApp(navController: NavHostController = rememberNavController()) {
                 )
             }
             composable(Routes.CONTACT, arguments = listOf(navArgument(ContactDetailViewModel.ARG_CONTACT_ID) { type = NavType.StringType })) {
-                ContactDetailScreen(onBack = { navController.popBackStack() }, onOpenCompany = { /* company detail wired with the companies screen */ })
+                ContactDetailScreen(onBack = { navController.popBackStack() }, onOpenCompany = { navController.navigate(Routes.company(it)) })
             }
-            composable(TopLevelDestination.EVENTS.route) { EventsScreen() }
-            composable(TopLevelDestination.COMPANIES.route) { CompaniesScreen() }
+            composable(TopLevelDestination.EVENTS.route) { EventsScreen(onOpenEvent = { navController.navigate(Routes.event(it)) }) }
+            composable(TopLevelDestination.COMPANIES.route) { CompaniesScreen(onOpenCompany = { navController.navigate(Routes.company(it)) }) }
+            composable(Routes.EVENT, arguments = listOf(navArgument(EventDetailViewModel.ARG_EVENT_ID) { type = NavType.StringType })) {
+                EventDetailScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenContact = { navController.navigate(Routes.contact(it)) },
+                    // «Only in this event» removed: the same text as a global search in Cards.
+                    onGlobalSearch = { text ->
+                        navController.navigate(Routes.cards(text)) {
+                            popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                        }
+                    }
+                )
+            }
+            composable(Routes.COMPANY, arguments = listOf(navArgument(CompanyDetailViewModel.ARG_COMPANY_ID) { type = NavType.StringType })) {
+                CompanyDetailScreen(onBack = { navController.popBackStack() }, onOpenContact = { navController.navigate(Routes.contact(it)) })
+            }
             composable(TopLevelDestination.SECTORS.route) { SectorsScreen() }
             composable(TopLevelDestination.SETTINGS.route) { SettingsScreen() }
             composable(Routes.CAPTURE) {

@@ -43,7 +43,7 @@ fun CompaniesContent(
     filter: String,
     onFilter: (String) -> Unit,
     onOpenCompany: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(modifier.fillMaxSize()) {
         OutlinedTextField(
@@ -52,7 +52,7 @@ fun CompaniesContent(
             label = { Text(stringResource(R.string.companies_filter)) },
             leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
         )
         Box(Modifier.weight(1f).fillMaxWidth()) {
             when (state) {
@@ -77,13 +77,12 @@ fun CompaniesContent(
 private fun CompanyRow(summary: CompanySummary, onOpenCompany: (String) -> Unit) {
     val details = listOfNotNull(summary.sectorName, summary.company.country).joinToString(" · ")
     ListItem(
-        headlineContent = { Text(summary.company.name) },
         supportingContent = if (details.isNotEmpty()) {
             { Text(details) }
         } else {
             null
         },
         trailingContent = { Text(stringResource(R.string.catalog_contact_count, summary.contactCount)) },
-        modifier = Modifier.clickable(role = Role.Button) { onOpenCompany(summary.company.id) },
-    )
+        modifier = Modifier.clickable(role = Role.Button) { onOpenCompany(summary.company.id) }
+    ) { Text(summary.company.name) }
 }

@@ -40,7 +40,7 @@ fun EventsScreen(onOpenEvent: (String) -> Unit, modifier: Modifier = Modifier, v
             initial = null,
             error = open.error,
             onSave = viewModel::create,
-            onDismiss = viewModel::cancelCreate,
+            onDismiss = viewModel::cancelCreate
         )
     }
 }
@@ -66,7 +66,7 @@ fun EventsContent(state: LoadState<EventSummary>, onOpenEvent: (String) -> Unit,
             onClick = onNew,
             icon = { Icon(Icons.Filled.Add, contentDescription = null) },
             text = { Text(stringResource(R.string.events_new)) },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
         )
     }
 }
@@ -79,13 +79,12 @@ private fun EventRow(summary: EventSummary, onOpenEvent: (String) -> Unit) {
     }
     val details = listOfNotNull(dates, event.location).joinToString(" · ")
     ListItem(
-        headlineContent = { Text(event.name) },
         supportingContent = if (details.isNotEmpty()) {
             { Text(details) }
         } else {
             null
         },
         trailingContent = { Text(stringResource(R.string.catalog_contact_count, summary.contactCount)) },
-        modifier = Modifier.clickable(role = Role.Button) { onOpenEvent(event.id) },
-    )
+        modifier = Modifier.clickable(role = Role.Button) { onOpenEvent(event.id) }
+    ) { Text(event.name) }
 }
