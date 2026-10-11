@@ -38,6 +38,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,8 +66,9 @@ import com.qtekfun.ultimatevisitcards.domain.model.CardSide
 
 /** Normal capture: front, optional back, card saved as pending review. */
 @Composable
-fun CaptureScreen(onClose: () -> Unit, viewModel: CaptureViewModel = hiltViewModel()) {
+fun CaptureScreen(onClose: () -> Unit, onSaved: (cardId: String) -> Unit, viewModel: CaptureViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(state.savedCardId) { state.savedCardId?.let(onSaved) }
     val context = LocalContext.current
     var granted by remember {
         mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
@@ -165,7 +167,7 @@ private fun CaptureContent(state: CaptureUiState, viewModel: CaptureViewModel, o
                 }
             }
 
-            CaptureStep.SAVED -> SavedPanel(onScanAnother = viewModel::scanAnother, onDone = onClose)
+            CaptureStep.SAVED -> Unit
         }
     }
 }
@@ -250,19 +252,6 @@ private fun TakenPanel(side: CapturedSide, preview: Int, actions: @Composable ()
                 Text(stringResource(R.string.capture_not_detected), style = MaterialTheme.typography.bodyMedium)
             }
             FlowButtons(actions)
-        }
-    }
-}
-
-@Composable
-private fun SavedPanel(onScanAnother: () -> Unit, onDone: () -> Unit) {
-    Surface(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(stringResource(R.string.capture_saved), style = MaterialTheme.typography.titleMedium)
-            FlowButtons {
-                OutlinedButton(onClick = onDone) { Text(stringResource(R.string.capture_done)) }
-                Button(onClick = onScanAnother) { Text(stringResource(R.string.capture_scan_another)) }
-            }
         }
     }
 }

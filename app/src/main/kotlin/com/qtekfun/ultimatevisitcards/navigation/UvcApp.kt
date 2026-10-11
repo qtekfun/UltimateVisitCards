@@ -14,20 +14,28 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.qtekfun.ultimatevisitcards.ui.capture.CaptureScreen
 import com.qtekfun.ultimatevisitcards.ui.cards.CardsScreen
 import com.qtekfun.ultimatevisitcards.ui.companies.CompaniesScreen
 import com.qtekfun.ultimatevisitcards.ui.events.EventsScreen
+import com.qtekfun.ultimatevisitcards.ui.review.ReviewExit
+import com.qtekfun.ultimatevisitcards.ui.review.ReviewScreen
+import com.qtekfun.ultimatevisitcards.ui.review.ReviewViewModel
 import com.qtekfun.ultimatevisitcards.ui.sectors.SectorsScreen
 import com.qtekfun.ultimatevisitcards.ui.settings.SettingsScreen
 
 /** Routes outside the bottom bar: they open over it (docs/03-pantallas-navegacion.md). */
 object Routes {
     const val CAPTURE = "capture"
+    const val REVIEW = "review/{${ReviewViewModel.ARG_CARD_ID}}"
+
+    fun review(cardId: String) = "review/$cardId"
 }
 
 /** Root scaffold: bottom navigation over the five top-level sections. */
@@ -52,7 +60,24 @@ fun UvcApp(navController: NavHostController = rememberNavController()) {
             composable(TopLevelDestination.COMPANIES.route) { CompaniesScreen() }
             composable(TopLevelDestination.SECTORS.route) { SectorsScreen() }
             composable(TopLevelDestination.SETTINGS.route) { SettingsScreen() }
-            composable(Routes.CAPTURE) { CaptureScreen(onClose = { navController.popBackStack() }) }
+            composable(Routes.CAPTURE) {
+                CaptureScreen(
+                    onClose = { navController.popBackStack() },
+                    // Normal mode: front → back? → review (docs/03).
+                    onSaved = { cardId -> navController.navigate(Routes.review(cardId)) { popUpTo(Routes.CAPTURE) { inclusive = true } } }
+                )
+            }
+            composable(Routes.REVIEW, arguments = listOf(navArgument(ReviewViewModel.ARG_CARD_ID) { type = NavType.StringType })) {
+                ReviewScreen(
+                    onBack = { navController.popBackStack() },
+                    onExit = { exit ->
+                        when (exit) {
+                            ReviewExit.DONE -> navController.popBackStack()
+                            ReviewExit.SCAN_NEXT -> navController.navigate(Routes.CAPTURE) { popUpTo(Routes.REVIEW) { inclusive = true } }
+                        }
+                    }
+                )
+            }
         }
     }
 }
