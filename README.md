@@ -49,6 +49,7 @@ Todo el diseño se mide contra este escenario: captura rápida (modo **Escaneo r
 | [`docs/05-almacenamiento-backup-export.md`](docs/05-almacenamiento-backup-export.md) | Imágenes, backup/restore, VCF, CSV, XLSX, contactos |
 | [`docs/06-duplicados-historico.md`](docs/06-duplicados-historico.md) | Detección de duplicados, fusión e histórico |
 | [`docs/07-fases.md`](docs/07-fases.md) | Plan de desarrollo por fases, tests y criterios de cierre |
+| [`docs/08-versiones-y-publicacion.md`](docs/08-versiones-y-publicacion.md) | Flujo PR → CI → merge → versión, versionado y clave de firma |
 
 ## Puntos abiertos (decidir en el spike de cada fase)
 
