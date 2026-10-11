@@ -32,10 +32,10 @@ import com.qtekfun.ultimatevisitcards.ui.contact.ContactActions
 import com.qtekfun.ultimatevisitcards.ui.contact.ContactDetailScreen
 import com.qtekfun.ultimatevisitcards.ui.contact.ContactDetailViewModel
 import com.qtekfun.ultimatevisitcards.ui.contact.ContactEditScreen
+import com.qtekfun.ultimatevisitcards.ui.duplicates.DuplicatesScreen
 import com.qtekfun.ultimatevisitcards.ui.events.EventDetailScreen
 import com.qtekfun.ultimatevisitcards.ui.events.EventDetailViewModel
 import com.qtekfun.ultimatevisitcards.ui.events.EventsScreen
-import com.qtekfun.ultimatevisitcards.ui.duplicates.DuplicatesScreen
 import com.qtekfun.ultimatevisitcards.ui.merge.MergeScreen
 import com.qtekfun.ultimatevisitcards.ui.merge.MergeViewModel
 import com.qtekfun.ultimatevisitcards.ui.queue.ReviewQueueScreen
@@ -173,7 +173,9 @@ fun UvcApp(navController: NavHostController = rememberNavController()) {
                 SettingsScreen(onDuplicates = { navController.navigate(Routes.DUPLICATES) }, onAbout = { navController.navigate(Routes.ABOUT) })
             }
             composable(Routes.DUPLICATES) {
-                DuplicatesScreen(onBack = { navController.popBackStack() }, onMerge = { keepId, otherId -> navController.navigate(Routes.merge(keepId, otherId)) })
+                DuplicatesScreen(onBack = {
+                    navController.popBackStack()
+                }, onMerge = { keepId, otherId -> navController.navigate(Routes.merge(keepId, otherId)) })
             }
             composable(Routes.ABOUT) { AboutScreen(onBack = { navController.popBackStack() }) }
             composable(

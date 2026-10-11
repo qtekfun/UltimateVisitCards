@@ -27,7 +27,7 @@ class PreferencesViewModel @Inject constructor(
     private val preferences: UiPreferences,
     private val lock: AppLock,
     private val contacts: ContactRepository,
-    private val store: ImageStore,
+    private val store: ImageStore
 ) : ViewModel() {
     val lockEnabled: StateFlow<Boolean> = preferences.lock
     val secureScreen: StateFlow<Boolean> = preferences.secureScreen

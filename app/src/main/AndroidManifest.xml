@@ -20,6 +20,11 @@
         android:name="android.permission.ACCESS_NETWORK_STATE"
         tools:node="remove" />
 
+    <!-- androidx.biometric declares it for Android 9 and older; minSdk is 29 (USE_BIOMETRIC is enough). -->
+    <uses-permission
+        android:name="android.permission.USE_FINGERPRINT"
+        tools:node="remove" />
+
     <!-- WorkManager declares it for expedited work, which the app does not use. -->
     <uses-permission
         android:name="android.permission.FOREGROUND_SERVICE"

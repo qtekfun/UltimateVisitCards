@@ -2,7 +2,7 @@
   {"name": "Kotlin standard library", "license": "Apache-2.0", "url": "https://github.com/JetBrains/kotlin"},
   {"name": "kotlinx.coroutines", "license": "Apache-2.0", "url": "https://github.com/Kotlin/kotlinx.coroutines"},
   {"name": "kotlinx.serialization", "license": "Apache-2.0", "url": "https://github.com/Kotlin/kotlinx.serialization"},
-  {"name": "AndroidX Core, Activity, Lifecycle, Navigation", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/androidx"},
+  {"name": "AndroidX Core, Activity, Fragment, Lifecycle, Navigation, Biometric", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/androidx"},
   {"name": "Jetpack Compose (UI, Material 3, Material Icons)", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/compose"},
   {"name": "Room and AndroidX SQLite", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/androidx/releases/room"},
   {"name": "CameraX", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/androidx/releases/camera"},

@@ -140,7 +140,9 @@ val allowedPermissions = setOf(
     "android.permission.WRITE_CONTACTS",
     // WorkManager (cola de OCR): normales, se conceden al instalar y no dan acceso a datos.
     "android.permission.WAKE_LOCK",
-    "android.permission.RECEIVE_BOOT_COMPLETED"
+    "android.permission.RECEIVE_BOOT_COMPLETED",
+    // androidx.biometric, for the optional app lock (phase 10). Normal: granted at install, no data access.
+    "android.permission.USE_BIOMETRIC"
 )
 
 val verifyPermissions = tasks.register("verifyPermissions") {

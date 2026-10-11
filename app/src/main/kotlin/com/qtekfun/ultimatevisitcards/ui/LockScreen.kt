@@ -32,7 +32,7 @@ fun LockScreen(onUnlock: (title: String, subtitle: String) -> Unit) {
         Column(
             Modifier.fillMaxSize().padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(Icons.Filled.Lock, contentDescription = null, modifier = Modifier.size(48.dp))
             Text(stringResource(R.string.lock_title), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
