@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Possible duplicates -->
+  <string name="dedupe_title">Possible duplicates</string>
+  <string name="dedupe_empty">No possible duplicates found.</string>
+  <string name="dedupe_error">The contacts could not be checked.</string>
+  <string name="dedupe_hint">Tap a pair to compare and merge it into the older contact.</string>
+  <string name="dedupe_merge">Compare and merge</string>
+  <!-- About -->
+  <string name="about_title">About</string>
+  <string name="about_version">Version %1$s</string>
+  <string name="about_engine">Text recognition: %1$s</string>
+  <string name="about_engine_mlkit">ML Kit (Google, model included)</string>
+  <string name="about_engine_tesseract">Tesseract (open source)</string>
+  <string name="about_privacy_title">Privacy</string>
+  <string name="about_privacy">Your data never leaves the device: no Internet permission, no accounts, no analytics.</string>
+  <string name="about_licenses_title">Third-party licences</string>
+  <string name="about_licenses_error">The licence list could not be read.</string>
+</resources>

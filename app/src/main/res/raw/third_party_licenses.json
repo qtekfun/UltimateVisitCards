@@ -1,0 +1,19 @@
+[
+  {"name": "Kotlin standard library", "license": "Apache-2.0", "url": "https://github.com/JetBrains/kotlin"},
+  {"name": "kotlinx.coroutines", "license": "Apache-2.0", "url": "https://github.com/Kotlin/kotlinx.coroutines"},
+  {"name": "kotlinx.serialization", "license": "Apache-2.0", "url": "https://github.com/Kotlin/kotlinx.serialization"},
+  {"name": "AndroidX Core, Activity, Lifecycle, Navigation", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/androidx"},
+  {"name": "Jetpack Compose (UI, Material 3, Material Icons)", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/compose"},
+  {"name": "Room and AndroidX SQLite", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/androidx/releases/room"},
+  {"name": "CameraX", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/androidx/releases/camera"},
+  {"name": "WorkManager", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/androidx/releases/work"},
+  {"name": "Dagger and Hilt (including AndroidX Hilt)", "license": "Apache-2.0", "url": "https://github.com/google/dagger"},
+  {"name": "javax.inject", "license": "Apache-2.0", "url": "https://github.com/javax-inject/javax-inject"},
+  {"name": "Coil", "license": "Apache-2.0", "url": "https://github.com/coil-kt/coil"},
+  {"name": "zip4j", "license": "Apache-2.0", "url": "https://github.com/srikanth-lingala/zip4j"},
+  {"name": "ML Kit Text Recognition", "license": "LicenseRef-ML-Kit-Terms", "url": "https://developers.google.com/ml-kit/terms", "flavour": "play"},
+  {"name": "Tesseract4Android", "license": "Apache-2.0", "url": "https://github.com/adaptech-cz/Tesseract4Android", "flavour": "foss"},
+  {"name": "Tesseract OCR", "license": "Apache-2.0", "url": "https://github.com/tesseract-ocr/tesseract", "flavour": "foss"},
+  {"name": "Leptonica", "license": "BSD-2-Clause", "url": "http://www.leptonica.org/about-the-license.html", "flavour": "foss"},
+  {"name": "tessdata_fast (trained language data)", "license": "Apache-2.0", "url": "https://github.com/tesseract-ocr/tessdata_fast", "flavour": "foss"}
+]

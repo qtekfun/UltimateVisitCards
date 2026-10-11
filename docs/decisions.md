@@ -137,3 +137,10 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
 - **2026-10-11 · Mantenimiento de imágenes al arrancar.** `StorageMaintenance` borra carpetas sin tarjeta, escrituras interrumpidas y *staging* de restauraciones a medias; se ejecuta al iniciar el proceso, cuando no puede haber una captura en curso.
 - **2026-10-11 · Restauración escrita en paralelo por un subagente** sobre el formato común (`BackupFormat`); el test de ida y vuelta une el exportador y el restaurador reales (sin y con cifrado, hash de imágenes, idempotencia).
 - **2026-10-11 · Pendiente**: «cambiar de teléfono sin perder nada (probado entre dos emuladores)» no se ha ejecutado en emuladores en esta sesión; lo cubre el test de ida y vuelta entre dos bases de datos y almacenes independientes.
+
+## Fase 10 · Duplicados y Acerca de
+
+- **2026-10-11 · «Posibles duplicados» con las reglas del aviso al guardar.** `DuplicateScanner` usa las mismas reglas y puntuaciones que `DuplicateDetector` (≥ 55), expuestas como `internal` (`normalise`, `bestReason`) sin cambiar `find`. Cada pareja aparece una vez, la mejor primero.
+- **2026-10-11 · Comparación por grupos, no todos contra todos.** Se agrupan los contactos por las claves que exige alguna regla (email, últimos 9 dígitos de cada teléfono, nombre + apellido, nombre + empresa, apellido + empresa) y solo se comparan dentro de cada grupo. Un test comprueba que da lo mismo que comparar todas las parejas; 5 000 contactos tardan bastante menos de 2 s.
+- **2026-10-11 · Se conserva el contacto más antiguo.** Al tocar una pareja se abre la fusión con el de `createdAt` menor como destino; la lista se recalcula al volver.
+- **2026-10-11 · Licencias en un JSON escrito a mano** (`res/raw/third_party_licenses.json`, leído con `org.json`: la app no tiene el plugin de serialización). Las entradas de un solo sabor llevan `flavour` y «Acerca de» muestra solo las del sabor instalado (por el motor OCR: ML Kit → `play`, Tesseract → `foss`). Sin enlaces abiertos desde la app: las URL se muestran como texto.

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Posibles duplicados -->
+  <string name="dedupe_title">Posibles duplicados</string>
+  <string name="dedupe_empty">No se han encontrado posibles duplicados.</string>
+  <string name="dedupe_error">No se han podido revisar los contactos.</string>
+  <string name="dedupe_hint">Toca una pareja para compararla y fusionarla en el contacto más antiguo.</string>
+  <string name="dedupe_merge">Comparar y fusionar</string>
+  <!-- Acerca de -->
+  <string name="about_title">Acerca de</string>
+  <string name="about_version">Versión %1$s</string>
+  <string name="about_engine">Reconocimiento de texto: %1$s</string>
+  <string name="about_engine_mlkit">ML Kit (Google, modelo incluido)</string>
+  <string name="about_engine_tesseract">Tesseract (código abierto)</string>
+  <string name="about_privacy_title">Privacidad</string>
+  <string name="about_privacy">Los datos no salen del dispositivo: sin permiso de Internet, sin cuentas, sin analítica.</string>
+  <string name="about_licenses_title">Licencias de terceros</string>
+  <string name="about_licenses_error">No se ha podido leer la lista de licencias.</string>
+</resources>
