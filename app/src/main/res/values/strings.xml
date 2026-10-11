@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name" translatable="false">UltimateVisitCards</string>
+
+  <!-- Navegación inferior -->
+  <string name="nav_cards">Cards</string>
+  <string name="nav_events">Events</string>
+  <string name="nav_companies">Companies</string>
+  <string name="nav_sectors">Sectors</string>
+  <string name="nav_settings">Settings</string>
+
+  <!-- Estados vacíos (fase 0: pantallas sin datos) -->
+  <string name="cards_empty">No cards yet. Scan the first one.</string>
+  <string name="events_empty">No events yet. Create one to group the cards from a trade fair.</string>
+  <string name="companies_empty">No companies yet. They are created when you save a card.</string>
+  <string name="sectors_empty">No sectors yet.</string>
+  <string name="settings_empty">Backup, export and security will appear here.</string>
+</resources>

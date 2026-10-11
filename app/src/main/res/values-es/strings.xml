@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Navegación inferior -->
+  <string name="nav_cards">Tarjetas</string>
+  <string name="nav_events">Eventos</string>
+  <string name="nav_companies">Empresas</string>
+  <string name="nav_sectors">Sectores</string>
+  <string name="nav_settings">Ajustes</string>
+
+  <!-- Estados vacíos (fase 0: pantallas sin datos) -->
+  <string name="cards_empty">Aún no hay tarjetas. Escanea la primera.</string>
+  <string name="events_empty">Aún no hay eventos. Crea uno para agrupar las tarjetas de una feria.</string>
+  <string name="companies_empty">Aún no hay empresas. Se crean al guardar una tarjeta.</string>
+  <string name="sectors_empty">Aún no hay sectores.</string>
+  <string name="settings_empty">Aquí aparecerán la copia de seguridad, la exportación y la seguridad.</string>
+</resources>

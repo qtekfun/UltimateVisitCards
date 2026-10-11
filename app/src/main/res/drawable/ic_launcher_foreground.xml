@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tarjeta de visita estilizada sobre la zona segura (66 dp) del icono adaptativo. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+  <path
+      android:fillColor="#FFFFFFFF"
+      android:pathData="M31,38h46a4,4 0,0 1,4 4v24a4,4 0,0 1,-4 4h-46a4,4 0,0 1,-4 -4v-24a4,4 0,0 1,4 -4z" />
+  <path
+      android:fillColor="#FF0B5D7A"
+      android:pathData="M42,47m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0M33,62c0,-5 4,-7 9,-7s9,2 9,7zM56,46h18v3h-18zM56,53h14v3h-14zM56,60h16v3h-16z" />
+</vector>
