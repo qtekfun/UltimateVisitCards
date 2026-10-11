@@ -1,0 +1,254 @@
+# Synthetischer Korpus (Deutsch). Fiktive Daten.
+=== de-01 | klassisch Hamburg
+[front]
+24 Elbe Schiffstechnik GmbH
+--
+17 Dr.-Ing. Klaus Becker
+12 Geschäftsführer
+--
+10 Hafenstraße 12, D-20457 Hamburg
+10 Telefon +49 40 123 456 0
+10 Mobil +49 171 234 5678
+10 k.becker@elbe-st-demo.de
+10 www.elbe-st-demo.de
+[expected]
+firstName = Klaus
+lastName = Becker
+jobTitle = Geschäftsführer
+company = Elbe Schiffstechnik GmbH
+country = Germany
+phone = +49 40 123 456 0
+mobile = +49 171 234 5678
+email = k.becker@elbe-st-demo.de
+website = www.elbe-st-demo.de
+address = Hafenstraße 12, D-20457 Hamburg
+notes = Dr.-Ing.
+
+=== de-02 | Vertriebsleiter, (0) im Format
+[front]
+22 Nordsee Antriebe AG
+--
+16 Stefan Hoffmann
+11 Vertriebsleiter Marine
+--
+10 Am Kaiserkai 5
+10 26382 Wilhelmshaven
+10 T +49 (0) 4421 000 00
+10 M +49 (0) 160 000 0000
+10 stefan.hoffmann@nsa-demo.de
+[expected]
+firstName = Stefan
+lastName = Hoffmann
+jobTitle = Vertriebsleiter Marine
+company = Nordsee Antriebe AG
+country = Germany
+phone = +49 4421 000 00
+mobile = +49 160 000 0000
+email = stefan.hoffmann@nsa-demo.de
+address = Am Kaiserkai 5, 26382 Wilhelmshaven
+
+=== de-03 | nationale Nummern ohne Etiketten
+[front]
+17 Anna Schneider
+12 Leiterin Einkauf
+--
+24 Bremer Bordtechnik KG
+--
+10 Überseering 3, 28217 Bremen
+10 0421 000 000
+10 0172 000 0000
+10 a.schneider@bbt-demo.de
+[expected]
+firstName = Anna
+lastName = Schneider
+jobTitle = Leiterin Einkauf
+company = Bremer Bordtechnik KG
+phone = 0421 000 000
+mobile = 0172 000 0000
+email = a.schneider@bbt-demo.de
+address = Überseering 3, 28217 Bremen
+
+=== de-04 | Partikel «von»
+[front]
+24 Kieler Werft Service GmbH & Co. KG
+--
+16 Friedrich von Hagen
+11 Prokurist
+--
+10 Werftstraße 40, 24143 Kiel, Deutschland
+10 Tel.: 0431 000 000
+10 f.vonhagen@kws-demo.de
+[expected]
+firstName = Friedrich
+lastName = von Hagen
+jobTitle = Prokurist
+company = Kieler Werft Service GmbH & Co. KG
+country = Germany
+phone = 0431 000 000
+email = f.vonhagen@kws-demo.de
+address = Werftstraße 40, 24143 Kiel, Deutschland
+
+=== de-05 | Österreich
+[front]
+24 Donau Hydraulik GmbH
+--
+16 Michael Gruber
+11 Technischer Leiter
+--
+10 Hafenstraße 7, 4020 Linz, Österreich
+10 +43 732 000 000
+10 michael.gruber@donauhydraulik-demo.at
+[expected]
+firstName = Michael
+lastName = Gruber
+jobTitle = Technischer Leiter
+company = Donau Hydraulik GmbH
+country = Austria
+phone = +43 732 000 000
+email = michael.gruber@donauhydraulik-demo.at
+address = Hafenstraße 7, 4020 Linz, Österreich
+
+=== de-06 | Schweiz, Postfach
+[front]
+24 Rhein Navigation AG
+--
+16 Laura Meier
+11 Projektleiterin
+--
+10 Postfach 210, CH-4019 Basel
+10 +41 61 000 00 00
+10 laura.meier@rheinnav-demo.ch
+10 rheinnav-demo.ch
+[expected]
+firstName = Laura
+lastName = Meier
+jobTitle = Projektleiterin
+company = Rhein Navigation AG
+country = Switzerland
+phone = +41 61 000 00 00
+email = laura.meier@rheinnav-demo.ch
+website = rheinnav-demo.ch
+address = Postfach 210, CH-4019 Basel
+
+=== de-07 | Rückseite auf Englisch
+[front]
+24 Ostsee Elektronik GmbH
+--
+16 Jonas Wagner
+11 Ingenieur Automatisierung
+--
+10 Seestraße 3, 18119 Rostock
+10 Tel. 0381 000 000
+10 j.wagner@ose-demo.de
+[back]
+24 Ostsee Elektronik GmbH
+--
+16 Jonas Wagner
+11 Automation Engineer
+[expected]
+firstName = Jonas
+lastName = Wagner
+jobTitle = Ingenieur Automatisierung
+company = Ostsee Elektronik GmbH
+phone = 0381 000 000
+email = j.wagner@ose-demo.de
+address = Seestraße 3, 18119 Rostock
+
+=== de-08 | Doppelname
+[front]
+17 Katrin Müller-Schmidt
+12 Assistentin der Geschäftsführung
+--
+22 Weser Logistik GmbH
+--
+10 Hafenkopf 1, 27568 Bremerhaven
+10 Fon 0471 000 00 00
+10 Handy 0151 000 0000
+10 mueller-schmidt@weserlog-demo.de
+[expected]
+firstName = Katrin
+lastName = Müller-Schmidt
+jobTitle = Assistentin der Geschäftsführung
+company = Weser Logistik GmbH
+phone = 0471 000 00 00
+mobile = 0151 000 0000
+email = mueller-schmidt@weserlog-demo.de
+address = Hafenkopf 1, 27568 Bremerhaven
+
+=== de-09 | ohne Firma
+[front]
+17 Thomas Richter
+12 Schiffsbesichtiger
+--
+10 +49 170 000 0000
+10 thomas.richter@web.de
+[expected]
+firstName = Thomas
+lastName = Richter
+country = Germany
+mobile = +49 170 000 0000
+email = thomas.richter@web.de
+
+=== de-10 | Kapitän, Website mit Pfad
+[front]
+24 Hanse Reederei GmbH
+--
+16 Kapt. Jens Petersen
+11 Kapitän / Marine Superintendent
+--
+10 Große Elbstraße 145, 22767 Hamburg
+10 +49 40 000 000 00
+10 j.petersen@hanse-reederei-demo.de
+10 www.hanse-reederei-demo.de/team
+[expected]
+firstName = Jens
+lastName = Petersen
+jobTitle = Kapitän / Marine Superintendent
+company = Hanse Reederei GmbH
+country = Germany
+phone = +49 40 000 000 00
+email = j.petersen@hanse-reederei-demo.de
+website = www.hanse-reederei-demo.de/team
+address = Große Elbstraße 145, 22767 Hamburg
+notes = Kapt.
+
+=== de-11 | Name zuerst in Großbuchstaben
+[front]
+16 Markus WEBER
+11 Leiter Qualitätssicherung
+--
+24 Rostocker Motorenwerke AG
+--
+10 Werftallee 9, 18057 Rostock
+10 T 0381 000 0000
+10 M 0176 000 00000
+10 markus.weber@rmw-demo.de
+[expected]
+firstName = Markus
+lastName = WEBER
+jobTitle = Leiter Qualitätssicherung
+company = Rostocker Motorenwerke AG
+phone = 0381 000 0000
+mobile = 0176 000 00000
+email = markus.weber@rmw-demo.de
+address = Werftallee 9, 18057 Rostock
+
+=== de-12 | Polen mit Partner
+[front]
+24 Baltic Ship Repair Sp. z o.o.
+--
+16 Piotr Kowalski
+11 Managing Director
+--
+10 ul. Portowa 1, 81-000 Gdynia, Poland
+10 +48 58 000 00 00
+10 p.kowalski@bsr-demo.pl
+[expected]
+firstName = Piotr
+lastName = Kowalski
+jobTitle = Managing Director
+company = Baltic Ship Repair Sp. z o.o.
+country = Poland
+phone = +48 58 000 00 00
+email = p.kowalski@bsr-demo.pl
+address = ul. Portowa 1, 81-000 Gdynia, Poland

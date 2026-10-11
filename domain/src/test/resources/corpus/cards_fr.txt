@@ -1,0 +1,245 @@
+# Corpus synthétique (français). Données fictives.
+=== fr-01 | classique
+[front]
+24 Chantiers Navals de l'Ouest SAS
+--
+17 Jean-Pierre Lemoine
+12 Directeur Commercial
+--
+10 12 quai de la Fosse, 44000 Nantes
+10 Tél. +33 2 40 00 00 00
+10 Port. +33 6 12 34 56 78
+10 jp.lemoine@cno-demo.fr
+10 www.cno-demo.fr
+[expected]
+firstName = Jean-Pierre
+lastName = Lemoine
+jobTitle = Directeur Commercial
+company = Chantiers Navals de l'Ouest SAS
+country = France
+phone = +33 2 40 00 00 00
+mobile = +33 6 12 34 56 78
+email = jp.lemoine@cno-demo.fr
+website = www.cno-demo.fr
+address = 12 quai de la Fosse, 44000 Nantes
+
+=== fr-02 | nom de famille en majuscules
+[front]
+17 Sophie DURAND
+12 Responsable Achats
+--
+22 MARINE ÉQUIPEMENTS SARL
+--
+10 ZI du Port, 13002 Marseille
+10 T 04 91 00 00 00
+10 M 06 98 76 54 32
+10 s.durand@marine-equip-demo.fr
+[expected]
+firstName = Sophie
+lastName = DURAND
+jobTitle = Responsable Achats
+company = MARINE ÉQUIPEMENTS SARL
+phone = 04 91 00 00 00
+mobile = 06 98 76 54 32
+email = s.durand@marine-equip-demo.fr
+address = ZI du Port, 13002 Marseille
+
+=== fr-03 | nom inversé avec virgule
+[front]
+22 Électronique Navale Bretonne
+--
+16 MARTIN, Luc
+11 Ingénieur Systèmes
+--
+10 5 rue des Forges, 29200 Brest, France
+10 +33 2 98 00 00 00
+10 luc.martin@enb-demo.fr
+[expected]
+firstName = Luc
+lastName = MARTIN
+jobTitle = Ingénieur Systèmes
+company = Électronique Navale Bretonne
+country = France
+phone = +33 2 98 00 00 00
+email = luc.martin@enb-demo.fr
+address = 5 rue des Forges, 29200 Brest, France
+
+=== fr-04 | Belgique, préfixe postal
+[front]
+24 Anvers Shipping Services SA
+--
+16 Thomas Dubois
+11 Chef de Projet
+--
+10 Avenue du Port 86, B-1000 Bruxelles
+10 +32 2 500 00 00
+10 thomas.dubois@ass-demo.be
+[expected]
+firstName = Thomas
+lastName = Dubois
+jobTitle = Chef de Projet
+company = Anvers Shipping Services SA
+country = Belgium
+phone = +32 2 500 00 00
+email = thomas.dubois@ass-demo.be
+address = Avenue du Port 86, B-1000 Bruxelles
+
+=== fr-05 | Madame et fax
+[front]
+22 Méditerranée Remorquage
+--
+16 Mme Claire Fontaine
+11 Directrice Générale
+--
+10 Port de Toulon, Quai Cronstadt, 83000 Toulon
+10 Tél : 04 94 00 00 00 Fax : 04 94 00 00 01
+10 c.fontaine@medrem-demo.fr
+10 medrem-demo.fr
+[expected]
+firstName = Claire
+lastName = Fontaine
+jobTitle = Directrice Générale
+company = Méditerranée Remorquage
+phone = 04 94 00 00 00
+email = c.fontaine@medrem-demo.fr
+website = medrem-demo.fr
+address = Port de Toulon, Quai Cronstadt, 83000 Toulon
+notes = Mme
+
+=== fr-06 | Suisse
+[front]
+24 Lémanique Moteurs SA
+--
+16 Nicolas Favre
+11 Responsable Après-vente
+--
+10 Route de Genève 21, CH-1110 Morges
+10 Suisse
+10 +41 21 800 00 00
+10 nicolas.favre@lemoteurs-demo.ch
+[expected]
+firstName = Nicolas
+lastName = Favre
+jobTitle = Responsable Après-vente
+company = Lémanique Moteurs SA
+country = Switzerland
+phone = +41 21 800 00 00
+email = nicolas.favre@lemoteurs-demo.ch
+address = Route de Genève 21, CH-1110 Morges
+
+=== fr-07 | particule «du»
+[front]
+16 Antoine du Plessis
+11 Directeur Technique
+--
+24 Atlantique Propulsion
+--
+10 8 boulevard Maritime, 17000 La Rochelle
+10 05 46 00 00 00
+10 07 11 22 33 44
+10 adp@atlprop-demo.fr
+10 www.atlprop-demo.fr
+[expected]
+firstName = Antoine
+lastName = du Plessis
+jobTitle = Directeur Technique
+company = Atlantique Propulsion
+phone = 05 46 00 00 00
+mobile = 07 11 22 33 44
+email = adp@atlprop-demo.fr
+website = www.atlprop-demo.fr
+address = 8 boulevard Maritime, 17000 La Rochelle
+
+=== fr-08 | carte de visite minimaliste
+[front]
+18 Camille Roux
+12 Consultante Maritime
+--
+10 06 55 44 33 22
+10 camille.roux@orange.fr
+[expected]
+firstName = Camille
+lastName = Roux
+jobTitle = Consultante Maritime
+mobile = 06 55 44 33 22
+email = camille.roux@orange.fr
+
+=== fr-09 | courriel avec ©
+[front]
+24 Normandie Hydraulique
+--
+16 Julien Lefèvre
+11 Technicien Service
+--
+10 Rue du Havre 14, 76600 Le Havre
+10 02 35 00 00 00
+10 j.lefevre©normhydro-demo.fr
+[expected]
+firstName = Julien
+lastName = Lefèvre
+jobTitle = Technicien Service
+company = Normandie Hydraulique
+phone = 02 35 00 00 00
+email = j.lefevre@normhydro-demo.fr
+address = Rue du Havre 14, 76600 Le Havre
+
+=== fr-10 | Monaco/France, deux titres
+[front]
+24 Yachting Riviera Services
+--
+16 Isabelle Moreau
+11 Directrice des Ventes
+11 et du Marketing
+--
+10 Quai Antoine 1er, 98000 Monaco
+10 +377 93 00 00 00
+10 isabelle.moreau@yrs-demo.mc
+[expected]
+firstName = Isabelle
+lastName = Moreau
+jobTitle = Directrice des Ventes et du Marketing
+company = Yachting Riviera Services
+phone = +377 93 00 00 00
+email = isabelle.moreau@yrs-demo.mc
+address = Quai Antoine 1er, 98000 Monaco
+
+=== fr-11 | CEDEX
+[front]
+24 Groupe Naval Fictif
+--
+16 Marc Girard
+11 Acheteur
+--
+10 BP 102, 56100 Lorient Cedex
+10 +33 2 97 00 00 00
+10 marc.girard@gnf-demo.fr
+[expected]
+firstName = Marc
+lastName = Girard
+jobTitle = Acheteur
+company = Groupe Naval Fictif
+country = France
+phone = +33 2 97 00 00 00
+email = marc.girard@gnf-demo.fr
+address = BP 102, 56100 Lorient Cedex
+
+=== fr-12 | Maroc
+[front]
+24 Atlas Logistique Portuaire
+--
+16 Youssef Benali
+11 Directeur d'Agence
+--
+10 Port de Casablanca, Bd des Almohades
+10 Casablanca, Maroc
+10 +212 522 00 00 00
+10 y.benali@atlaslp-demo.ma
+[expected]
+firstName = Youssef
+lastName = Benali
+jobTitle = Directeur d'Agence
+company = Atlas Logistique Portuaire
+country = Morocco
+phone = +212 522 00 00 00
+email = y.benali@atlaslp-demo.ma
+address = Port de Casablanca, Bd des Almohades, Casablanca, Maroc
