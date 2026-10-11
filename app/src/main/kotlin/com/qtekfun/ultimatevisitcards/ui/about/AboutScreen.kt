@@ -48,6 +48,7 @@ fun AboutScreen(onBack: () -> Unit, viewModel: AboutViewModel = hiltViewModel())
                     Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall)
                     if (state.version.isNotEmpty()) Text(stringResource(R.string.about_version, state.version))
                     state.engine?.let { Text(stringResource(R.string.about_engine, stringResource(it))) }
+                    Text(stringResource(R.string.about_license), style = MaterialTheme.typography.bodyMedium)
                     Text(stringResource(R.string.about_privacy_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
                     Text(stringResource(R.string.about_privacy))
                     Text(stringResource(R.string.about_licenses_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
