@@ -1,0 +1,34 @@
+UltimateVisitCards convierte las tarjetas de visita que recoges en una lista de contactos que puedes buscar, filtrar y exportar. Funciona <b>sin conexión de principio a fin</b>: no tiene permiso de Internet, ni cuentas, ni analítica. Tus datos no salen del teléfono.
+
+<b>Pensada para ferias</b>
+<ul>
+<li>Escaneo rápido: fotografía una tarjeta tras otra sin pararte y revísalas después desde la cola de «pendientes de revisar».</li>
+<li>Cada tarjeta se detecta, se recorta y se endereza sola; siempre puedes recortarla a mano.</li>
+<li>Asocia cada tarjeta a la feria o evento donde la conseguiste.</li>
+</ul>
+
+<b>Lee la tarjeta por ti</b>
+<ul>
+<li>El reconocimiento de texto en el propio teléfono rellena nombre, cargo, empresa, teléfonos, email, web, dirección y país. Funciona con tarjetas en español, inglés, francés, alemán e italiano.</li>
+<li>Los campos dudosos se resaltan y lo revisas todo antes de guardar.</li>
+<li>Avisa de posibles duplicados y permite fusionar contactos eligiendo cada dato, con opción de deshacer.</li>
+</ul>
+
+<b>Encuentra a cualquiera meses después</b>
+<ul>
+<li>Busca en todos los campos sin importar tildes ni mayúsculas, incluso con parte del nombre.</li>
+<li>Combina filtros: evento, sector, país, empresa, cargo y fechas.</li>
+<li>Cada contacto guarda el histórico de sus tarjetas.</li>
+</ul>
+
+<b>Tuyos, para llevarlos donde quieras</b>
+<ul>
+<li>Añade contactos a la agenda del teléfono o compártelos como vCard.</li>
+<li>Exporta la lista actual a .vcf, CSV o Excel (.xlsx).</li>
+<li>Copia de seguridad completa en un solo .zip, cifrada con AES-256 si quieres, para cambiar de teléfono.</li>
+<li>Bloqueo opcional con huella, cara o bloqueo de pantalla, y opción de ocultar la app en apps recientes.</li>
+</ul>
+
+En español e inglés. Software libre (GPL-3.0-or-later).
+
+Esta versión de F-Droid lee las tarjetas con Tesseract, un motor de código abierto. La versión de Google Play usa ML Kit, con el modelo incluido en la app; tampoco se conecta a Internet.

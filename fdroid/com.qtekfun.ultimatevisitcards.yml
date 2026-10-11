@@ -1,0 +1,39 @@
+# Draft of the F-Droid metadata (for a merge request to gitlab.com/fdroid/fdroiddata), see
+# docs/09-publicacion.md. Before submitting, replace `commit` with the full hash of the release tag's commit.
+# F-Droid builds the `foss` flavour (Tesseract). The prebuild step removes the ML Kit lines of the `play`
+# flavour so that no proprietary dependency is even declared; the `foss` APK does not change.
+Categories:
+  - Contact
+  - OCR
+License: GPL-3.0-or-later
+AuthorName: qtekfun
+SourceCode: https://github.com/qtekfun/ultimatevisitcards
+IssueTracker: https://github.com/qtekfun/ultimatevisitcards/issues
+Changelog: https://github.com/qtekfun/ultimatevisitcards/blob/HEAD/CHANGELOG.md
+
+AutoName: UltimateVisitCards
+
+RepoType: git
+Repo: https://github.com/qtekfun/ultimatevisitcards.git
+Binaries: https://github.com/qtekfun/ultimatevisitcards/releases/download/v%v/UltimateVisitCards-%v-foss.apk
+
+Builds:
+  - versionName: 0.12.0
+    versionCode: 120099
+    commit: v0.12.0
+    subdir: app
+    sudo:
+      - apt-get update
+      - apt-get install -y openjdk-21-jdk-headless
+      - update-java-alternatives -a
+    gradle:
+      - foss
+    prebuild:
+      - sed -i -e '/mlkit/d' ../gradle/libs.versions.toml ../ocr/build.gradle.kts
+
+AllowedAPKSigningKeys: bc0cacafb9b3fe33b95710f5fac4ec544156c5cc1de876b4c2ad2a3cffab7d51
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9]+\.[0-9]+\.[0-9]+$
+CurrentVersion: 0.12.0
+CurrentVersionCode: 120099

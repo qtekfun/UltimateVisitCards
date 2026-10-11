@@ -1,0 +1,1 @@
+Lista para publicar: licencia GPL-3.0-or-later, política de privacidad, textos de tienda y receta de F-Droid. Bloqueo opcional, ocultar en recientes, posibles duplicados, umbral de confianza y APK más pequeños.

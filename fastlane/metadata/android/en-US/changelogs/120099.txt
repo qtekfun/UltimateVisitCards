@@ -1,0 +1,1 @@
+Ready for publication: GPL-3.0-or-later licence, privacy policy, store texts and F-Droid recipe. Optional app lock, hide in recent apps, possible duplicates, confidence threshold and smaller APKs.
