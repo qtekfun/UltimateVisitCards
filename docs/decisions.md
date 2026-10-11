@@ -167,5 +167,5 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
 - **2026-10-11 · Categorías de F-Droid** `Contact` y `OCR`, de la lista vigente de fdroiddata (`config/categories.yml`).
 - **2026-10-11 · App Bundle solo para `play`.** La Release adjunta el AAB firmado con la misma clave, que en Play será la clave de subida. F-Droid y GitHub siguen con APK.
 - **2026-10-11 · Icono de tienda** generado a partir del vector del icono adaptativo: zona visible de 72 dp sobre el fondo, a 512 px. No es un diseño nuevo.
-- **2026-10-11 · Sin capturas de pantalla.** Hacerlas exige ejecutar la app en un dispositivo o emulador, y no se han usado los del usuario. Quedan en la lista de pendientes manuales.
+- **2026-10-12 · Capturas en el Pixel 8 del usuario, con su permiso.** Se hicieron con datos sintéticos cargados mediante una copia de seguridad restaurada (`ScreenshotBackupGenerator`), sin añadir a la app código de demostración. Las tarjetas sintéticas miden 85 × 55 mm, como las que endereza la app; con otra proporción la rejilla las recortaba por los lados. El procedimiento está en docs/09.
 

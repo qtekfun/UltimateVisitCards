@@ -10,6 +10,7 @@ Lo que hay en el repo y los pasos que faltan, que exigen las cuentas del autor y
 | Política de privacidad (en/es) | `PRIVACY.md`. URL pública: `https://github.com/qtekfun/ultimatevisitcards/blob/main/PRIVACY.md` |
 | Changelog | `CHANGELOG.md` |
 | Textos de tienda en/es | `fastlane/metadata/android/{en-US,es-ES}/` (título, descripción corta ≤ 80, descripción larga, `changelogs/<versionCode>.txt`, icono 512 px) |
+| Capturas en/es (8 por idioma, Pixel 8, 1080×2400) | `fastlane/metadata/android/{en-US,es-ES}/images/phoneScreenshots/` |
 | Receta de F-Droid | `fdroid/com.qtekfun.ultimatevisitcards.yml` |
 | APK firmados (play y foss), AAB de play y `SHA256SUMS` | Cada GitHub Release (workflow Release) |
 
@@ -42,7 +43,7 @@ Cada versión nueva añade `fastlane/metadata/android/*/changelogs/<versionCode>
 **Pasos en Play Console** (exigen la cuenta de desarrollador del autor):
 1. **Crear la app:** nombre «UltimateVisitCards», idioma predeterminado español (España) e inglés (EE. UU.) como traducción, gratuita, aplicación (no juego).
 2. **Firma de apps de Play.** Subir `UltimateVisitCards-X.Y.Z-play.aab` de la release. La clave de `~/keys` queda como **clave de subida** y Google genera la de distribución. Desde ese momento, los APK de GitHub y los de Play tienen firmas distintas: no se puede actualizar uno con el otro sin desinstalar. Hay que avisarlo en el README.
-3. **Ficha:** textos de `fastlane/metadata/android/*`, icono `images/icon.png`. Faltan las **capturas** (mínimo 2 de teléfono) y la **imagen destacada** de 1024×500. Las capturas exigen ejecutar la app en un dispositivo o emulador y no se han hecho.
+3. **Ficha:** textos de `fastlane/metadata/android/*`, icono `images/icon.png` y capturas `images/phoneScreenshots/`. Falta la **imagen destacada** de 1024×500.
 4. **Política de privacidad:** la URL de `PRIVACY.md`.
 5. **Seguridad de los datos.** La app no recoge ni comparte datos: no hay permiso `INTERNET` y nada sale del dispositivo. Por eso se responde «No» a recogida y a compartición. El cifrado en tránsito no aplica (no hay transmisión). Para el borrado de datos: desinstalar la app los borra.
 6. **Clasificación de contenido:** cuestionario IARC, categoría «Utilidad / Productividad», sin contenido sensible → PEGI 3 / Everyone.
@@ -55,7 +56,30 @@ El AAB solo incluye las bibliotecas ARM (`arm64-v8a`, `armeabi-v7a`), igual que 
 
 ## Pendiente manual (no se puede hacer desde aquí)
 
-- Capturas de pantalla e imagen destacada para Play: hay que ejecutar la app en un dispositivo o emulador.
+- Imagen destacada de 1024×500 para Play.
 - Cuenta de Play Console y ficha.
 - MR en fdroiddata.
 - Prueba en teléfono real antes de producción. Ver la lista de pendientes en docs/07.
+
+## Cómo se hicieron las capturas
+
+Los datos son **sintéticos**: empresas y personas inventadas, teléfonos ficticios y dominios `.example`. Se cargan en la app por el camino normal, restaurando una copia de seguridad. Pasos:
+
+1. Generar las copias:
+   ```
+   UVC_SCREENSHOT_DIR=/tmp/shots ./gradlew :data:testDebugUnitTest --tests '*ScreenshotBackupGenerator'
+   ```
+   Sin esa variable, la prueba se omite. Salen dos copias, `screenshots-es.zip` y `screenshots-en.zip`; los nombres de sector coinciden con los que la app siembra en cada idioma.
+2. Instalar `play` debug y borrar los datos de la app. Para inglés, fijar el idioma de la app con `adb shell cmd locale set-app-locales com.qtekfun.ultimatevisitcards --locales en-US`.
+3. Abrir la app (siembra los sectores en ese idioma). Ajustes → Restaurar copia → la copia del idioma → Combinar.
+4. Barra de estado limpia con el modo demo de SystemUI (`sysui_demo_allowed`). En Android 17 no oculta los iconos de notificación.
+5. Pantallas capturadas:
+   1. Tarjetas;
+   2. revisión con un campo dudoso;
+   3. ficha;
+   4. ficha con la tarjeta;
+   5. búsqueda «naval»;
+   6. detalle de feria;
+   7. Ajustes;
+   8. Acerca de.
+
