@@ -91,6 +91,7 @@ Regla: **cada fase termina con el proyecto compilando en `play` y `foss`, tests 
 - **2026-10-11 · Fase 3 · Sin estirado global de contraste** antes de binarizar para Tesseract (ver `docs/04`).
 - **2026-10-11 · Fase 4 · Sin panel «Guardada» en la captura**: en modo normal, al guardar se pasa directamente a la revisión (docs/03); «Escanear otra» es «Guardar y escanear siguiente» en la revisión.
 - **2026-10-11 · Fase 4 · Selector con `DropdownMenu`**: el `ExposedDropdownMenu` de Material3 1.5.0-beta01 no resolvía en compilación; se usa un campo de solo lectura + `DropdownMenu`, API estable.
+- **2026-10-11 · Fase 5 · «Descartar» en la cola**: no estaba en docs; hace falta para las fotos malas de un escaneo rápido.
 - **2026-10-11 · Fase 0 · JVM 21**: todos los módulos compilan con target Java/Kotlin 21 (JDK de desarrollo: Temurin 21).
 
 ## Resultados de medición

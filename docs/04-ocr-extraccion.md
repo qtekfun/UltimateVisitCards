@@ -87,7 +87,8 @@ PENDING ─► PROCESSING ─► PENDING_REVIEW ─► REVIEWED
                  └──────► OCR_ERROR ──(reintentar)──► PENDING
 ```
 
-- `OcrWorker` procesa de una en una. Idempotente: si la app muere en `PROCESSING`, al arrancar se devuelve a `PENDING`.
+- `OcrWorker` procesa de una en una. Idempotente: si la app muere en `PROCESSING`, al arrancar (`OcrRecovery.resume`, desde `Application.onCreate`) se devuelve a `PENDING` y todas las `PENDING` se vuelven a encolar; una tarjeta encolada dos veces se lee una sola vez.
+- «Reintentar» (cola de revisión) pasa una tarjeta de `OCR_ERROR` a `PENDING` y la encola.
 - Tras 2 fallos → `OCR_ERROR` (la imagen se conserva; el usuario rellena a mano).
 - La UI observa los conteos por estado en `Flow` (banner «Pendientes de revisar: N»).
 

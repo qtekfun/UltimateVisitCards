@@ -48,7 +48,11 @@ Ajustes
 - Detección automática del borde: se dibuja el cuadrilátero encontrado sobre la vista previa; el disparo (manual o automático al estabilizarse) recorta y endereza.
 - Tras el anverso: **«Añadir reverso» / «Continuar sin reverso»**.
 - Flash, enfoque por toque, indicador de desenfoque («Mueve el móvil, la imagen está borrosa»).
-- **Escaneo rápido**: sin diálogos entre tarjetas. Disparo → guardado (original + enderezada) → siguiente. Interruptor «¿Tiene reverso?» por tarjeta. Contador visible. Se puede fijar un **evento activo** para toda la tanda.
+- **Escaneo rápido** (botón en Tarjetas, ruta `quick-scan`): sin diálogos entre tarjetas. Disparo → guardado (original + enderezada) → siguiente. Interruptor «¿Tiene reverso?» por tarjeta (con «Continuar sin reverso» si al final no lo tiene). Contador visible y «Sin guardar: N» si alguna falla. Se puede fijar un **evento activo** para toda la tanda (con «Nuevo evento…»). Las fotos se procesan en segundo plano y en orden; como mucho 3 esperan en memoria (el disparador se pausa mientras tanto). «Terminar» (o atrás) guarda lo pendiente —un anverso sin su reverso se guarda solo— y cierra.
+
+## Cola de revisión
+
+Ruta `queue`, desde el banner «Pendientes de revisar: N». Tarjetas sin contacto, de la más antigua a la más nueva, con miniatura, fecha y estado (leyendo, lista, no se pudo leer). Tocar una abre la revisión en modo cola («Guardar y revisar siguiente» pasa a la siguiente y, sin más, vuelve). «Reintentar» devuelve una tarjeta en `OCR_ERROR` a la cola de OCR; «Descartar» (con confirmación) borra la tarjeta y sus fotos. «Revisar todas» empieza por la primera.
 
 ## Revisión
 
