@@ -80,3 +80,10 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
 - **2026-10-11 · Búsqueda global desde un evento.** Quitar el chip «Solo en este evento» abre Tarjetas con el mismo texto (`cards?q=`).
 - **2026-10-11 · Ficha de contacto básica ya en la fase 6** (solo lectura) para que la lista lleve a algún sitio; la fase 7 añade edición, acciones, histórico y fusión.
 - **2026-10-11 · Paralelización con un subagente.** Las pantallas de Eventos, Empresas y Sectores las escribió un subagente en un worktree sin compilar (solo quedaban ~2,5 GB de RAM libres y dos builds de Gradle a la vez no caben); se integraron y compilaron después en una sola build.
+
+## Fase 7 · vCard y contactos del teléfono
+
+- **2026-10-11 · Escritor vCard 3.0 propio (`VCardWriter`, Kotlin puro).** UTF-8, CRLF, escapado RFC 2426 (`\`, `,`, `;`, saltos) y plegado a 75 octetos sin partir caracteres multibyte. Sin foto por ahora (desactivada por defecto en `docs/05`). *Descartado*: ez-vcard (dependencia no aprobada, solo para unas pocas propiedades).
+- **2026-10-11 · Validación con un parser independiente escrito en el test.** `docs/05` pide validar contra un parser independiente; añadir una librería solo para tests no está aprobado, así que el test trae su propio lector mínimo (desplegado, parámetros, desescapado, componentes) sin compartir código con el escritor.
+- **2026-10-11 · `PhoneContactsWriter` en un solo lote.** `ContentProviderOperation` con el contacto en bruto en la cuenta local/por defecto (sin tipo ni nombre de cuenta) y una fila por dato. No lee la agenda (sin `READ_CONTACTS`); el permiso que falta se devuelve como resultado (`Failed(PERMISSION)`), nunca como excepción. Su test instrumentado concede `READ_CONTACTS` solo al test para comprobar los campos.
+- **2026-10-11 · Exportación `.vcf` reutilizando los filtros.** `VcfExporter` exporta lo que seleccione un `ContactFilter` (evento, empresa, sector…) o una lista de ids (en bloques de 500 parámetros), con el país de la empresa si el contacto no tiene, sobre un `OutputStream` que abre quien llama (SAF o FileProvider).

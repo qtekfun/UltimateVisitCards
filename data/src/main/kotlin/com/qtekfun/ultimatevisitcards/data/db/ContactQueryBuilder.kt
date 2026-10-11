@@ -70,4 +70,17 @@ object ContactQueryBuilder {
             }
         }
     }
+
+    /** The same rows for an explicit selection of contacts (at most [MAX_IDS] ids per query), by surname. */
+    fun byIds(ids: List<String>): RoomRawQuery {
+        require(ids.size in 1..MAX_IDS) { "Between 1 and $MAX_IDS ids per query" }
+        val sql = "SELECT c.*, co.name AS companyName, COALESCE(c.country, co.country) AS effectiveCountry, " +
+            "(SELECT b.id FROM BusinessCard b WHERE b.contactId = c.id ORDER BY b.isPrimary DESC, b.capturedAt DESC LIMIT 1) AS primaryCardId " +
+            "FROM Contact c LEFT JOIN Company co ON co.id = c.companyId WHERE c.id IN (${ids.joinToString(",") { "?" }}) " +
+            "ORDER BY c.lastName COLLATE NOCASE, c.firstName COLLATE NOCASE, c.id"
+        return RoomRawQuery(sql) { statement -> ids.forEachIndexed { i, id -> statement.bindText(i + 1, id) } }
+    }
+
+    /** Well under SQLite's limit of bound parameters per statement. */
+    const val MAX_IDS = 500
 }
