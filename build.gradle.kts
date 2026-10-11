@@ -23,6 +23,12 @@ subprojects {
     tasks.withType<Test>().configureEach {
         maxParallelForks = 1
         maxHeapSize = "1g"
+        // Robolectric toca internals del JDK (FileDescriptor, etc.) que Java 17+ cierra por defecto.
+        jvmArgs(
+            "--add-opens=java.base/java.io=ALL-UNNAMED",
+            "--add-opens=java.base/java.lang=ALL-UNNAMED",
+            "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
+        )
         val tmp = layout.buildDirectory.dir("tmp/test").get().asFile
         doFirst { tmp.mkdirs() }
         systemProperty("java.io.tmpdir", tmp.absolutePath)
