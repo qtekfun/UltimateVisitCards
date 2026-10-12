@@ -12,6 +12,7 @@
   <string name="about_engine">Reconocimiento de texto: %1$s</string>
   <string name="about_engine_mlkit">ML Kit (Google, modelo incluido)</string>
   <string name="about_engine_tesseract">Tesseract (código abierto)</string>
+  <string name="about_license">UltimateVisitCards es software libre con licencia GNU GPL versión 3 o posterior. Código fuente: github.com/qtekfun/ultimatevisitcards</string>
   <string name="about_privacy_title">Privacidad</string>
   <string name="about_privacy">Los datos no salen del dispositivo: sin permiso de Internet, sin cuentas, sin analítica.</string>
   <string name="about_licenses_title">Licencias de terceros</string>

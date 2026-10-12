@@ -35,7 +35,7 @@ jobs:
         run: ./gradlew --continue ci
 
       - name: Build de release sin firmar (R8) de ambos flavours
-        run: ./gradlew assemblePlayRelease assembleFossRelease
+        run: ./gradlew assemblePlayRelease assembleFossRelease bundlePlayRelease
 
       - name: Subir informes
         if: failure()

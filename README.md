@@ -1,5 +1,11 @@
 # UltimateVisitCards
 
+**Descargas:** APK firmados de cada versión en [Releases](https://github.com/qtekfun/ultimatevisitcards/releases):
+- `play`: ML Kit.
+- `foss`: Tesseract, sin dependencias privativas.
+
+Comprueba la descarga con `SHA256SUMS`. Los APK de GitHub y los de Google Play no tienen la misma firma, así que no se puede actualizar uno con el otro.
+
 Tarjetero digital Android, **100 % offline y local-first**, de la familia Ultimate.
 Fotografías una tarjeta de visita, el OCR local extrae los campos, la revisas y se guarda en una base de datos que **sigue siendo tuya**: buscable, filtrable, exportable a la agenda del teléfono y recuperable con una copia de seguridad.
 
@@ -51,6 +57,8 @@ Todo el diseño se mide contra este escenario: captura rápida (modo **Escaneo r
 | [`docs/07-fases.md`](docs/07-fases.md) | Plan de desarrollo por fases, tests y criterios de cierre |
 | [`docs/decisions.md`](docs/decisions.md) | Decisiones tomadas durante el desarrollo y su motivo |
 | [`docs/08-versiones-y-publicacion.md`](docs/08-versiones-y-publicacion.md) | Flujo PR → CI → merge → versión, versionado y clave de firma |
+| [`docs/09-publicacion.md`](docs/09-publicacion.md) | Google Play y F-Droid: qué hay preparado y pasos pendientes |
+| [`PRIVACY.md`](PRIVACY.md) · [`CHANGELOG.md`](CHANGELOG.md) | Política de privacidad y cambios por versión |
 
 ## Puntos abiertos (decidir en el spike de cada fase)
 
@@ -59,3 +67,7 @@ Todo el diseño se mide contra este escenario: captura rápida (modo **Escaneo r
 3. **Calidad Tesseract vs ML Kit**: medir ambos sobre el mismo corpus en la fase 3 y documentar la diferencia entre flavours.
 4. **Originales**: se conserva el original reducido (≤2400 px) además de la imagen enderezada. Revisar el consumo de disco con 500+ tarjetas.
 5. **Sin permiso INTERNET**: la spec admite un OCR online como último recurso; se descarta porque ambos motores funcionan offline. Si algún día se añade, será otro flavour.
+
+## Licencia
+
+UltimateVisitCards es software libre: [GNU GPL versión 3 o posterior](LICENSE). Las licencias de terceros se ven en la app, en Ajustes → Acerca de.

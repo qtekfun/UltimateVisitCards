@@ -160,3 +160,12 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
 - **2026-10-11 · Rendimiento medido en la JVM.** El test de 5 000 contactos usa el mismo SQLite empaquetado que el teléfono, pero en la máquina de CI. El presupuesto de 100 ms se aplica a la mediana con mucho margen. La fluidez del scroll y los tiempos en un teléfono real quedan como comprobación manual (no se han usado los dispositivos del usuario).
 - **2026-10-11 · Accesibilidad.** Las filas de ajustes son un único interruptor para TalkBack (`toggleable` con `Role.Switch`). Los iconos sin descripción son decorativos y van junto a un texto, y los campos dudosos lo dicen también con texto. La pantalla de bloqueo oculta la app al lector de pantalla.
 
+## Fase 11 · Publicación
+
+- **2026-10-11 · Licencia GPL-3.0-or-later**, como el resto de la familia Ultimate (UltimateGallery, UltimateDeck…). Las dependencias son Apache-2.0 o BSD, compatibles con ella. ML Kit (solo `play`) se distribuye con sus términos propios, igual que en las apps hermanas con flavour de Play; el flavour `foss` no lo incluye.
+- **2026-10-11 · F-Droid distribuye nuestro APK** (`Binaries` + `AllowedAPKSigningKeys`), como UltimateDeck, porque la compilación de `foss` es reproducible: probado en local con dos árboles, sale el mismo SHA-256. El `prebuild` borra las líneas de ML Kit del catálogo y de `:ocr` para que el escáner no vea dependencias privativas declaradas. Esto no cambia el APK `foss`, también comprobado.
+- **2026-10-11 · Categorías de F-Droid** `Contact` y `OCR`, de la lista vigente de fdroiddata (`config/categories.yml`).
+- **2026-10-11 · App Bundle solo para `play`.** La Release adjunta el AAB firmado con la misma clave, que en Play será la clave de subida. F-Droid y GitHub siguen con APK.
+- **2026-10-11 · Icono de tienda** generado a partir del vector del icono adaptativo: zona visible de 72 dp sobre el fondo, a 512 px. No es un diseño nuevo.
+- **2026-10-12 · Capturas en el Pixel 8 del usuario, con su permiso.** Se hicieron con datos sintéticos cargados mediante una copia de seguridad restaurada (`ScreenshotBackupGenerator`), sin añadir a la app código de demostración. Las tarjetas sintéticas miden 85 × 55 mm, como las que endereza la app; con otra proporción la rejilla las recortaba por los lados. El procedimiento está en docs/09.
+

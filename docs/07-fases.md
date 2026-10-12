@@ -63,6 +63,10 @@ Regla: **cada fase termina con el proyecto compilando en `play` y `foss`, tests 
 
 ## Fase 11 · Publicación
 - Firma, `versionCode`, metadatos F-Droid (flavour `foss` sin dependencias propietarias, verificar con `fdroid scanner`), ficha de Google Play (flavour `play`), política de privacidad («los datos no salen del dispositivo»), licencias de terceros en «Acerca de».
+- **Estado (2026-10-11):** todo lo que se puede preparar desde el repo está hecho y verificado. Los detalles están en [09-publicacion.md](09-publicacion.md). Quedan pasos que exigen las cuentas del autor o un dispositivo:
+  - MR en fdroiddata;
+  - Play Console;
+  - capturas de pantalla.
 
 ## Definición de «hecho» para cualquier fase
 - [ ] Compila `assemblePlayDebug` y `assembleFossDebug`.

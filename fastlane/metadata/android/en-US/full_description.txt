@@ -1,0 +1,34 @@
+UltimateVisitCards turns the business cards you collect into a contact list you can search, filter and export. It works <b>entirely offline</b>: it has no Internet permission, no accounts and no analytics. Your data never leaves your phone.
+
+<b>Made for trade fairs</b>
+<ul>
+<li>Quick scan: shoot card after card without stopping and review them later, from the "pending review" queue.</li>
+<li>Each card is found, cropped and straightened automatically; you can always crop by hand.</li>
+<li>Tag every card with the event where you got it.</li>
+</ul>
+
+<b>Reads the card for you</b>
+<ul>
+<li>On-device text recognition fills in name, job title, company, phones, email, website, address and country. Works with English, Spanish, French, German and Italian cards.</li>
+<li>Fields the reader is unsure about are highlighted, and you check everything before saving.</li>
+<li>Warns about possible duplicates and lets you merge contacts, choosing each value, with undo.</li>
+</ul>
+
+<b>Find anyone months later</b>
+<ul>
+<li>Search across every field, ignoring accents and case, even from part of a name.</li>
+<li>Combine filters: event, sector, country, company, job title and dates.</li>
+<li>Every contact keeps the history of its cards.</li>
+</ul>
+
+<b>Yours to take anywhere</b>
+<ul>
+<li>Add contacts to your phone's address book, or share them as vCard.</li>
+<li>Export the current list to .vcf, CSV or Excel (.xlsx).</li>
+<li>Full backup to a single .zip, optionally encrypted with AES-256, to move to a new phone.</li>
+<li>Optional app lock with fingerprint, face or screen lock, and an option to hide the app in recent apps.</li>
+</ul>
+
+English and Spanish. Free software (GPL-3.0-or-later).
+
+This F-Droid version reads cards with Tesseract, an open-source engine. The Google Play version uses ML Kit, with the model bundled in the app; it does not go online either.
