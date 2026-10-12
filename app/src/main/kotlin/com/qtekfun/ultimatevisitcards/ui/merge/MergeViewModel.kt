@@ -53,6 +53,9 @@ class MergeViewModel @Inject constructor(
 ) : ViewModel() {
     val keepId: String = checkNotNull(savedState[ARG_KEEP_ID])
 
+    /** Set when coming from «Possible duplicates»: the comparison opens straight away. */
+    private val preselectedId: String? = savedState.get<String>(ARG_OTHER_ID)?.takeIf { it.isNotEmpty() }
+
     private val query = MutableStateFlow("")
     private val _state = MutableStateFlow(MergeUiState())
     val state: StateFlow<MergeUiState> = _state.asStateFlow()
@@ -64,6 +67,7 @@ class MergeViewModel @Inject constructor(
                 _state.update { it.copy(candidates = list.filter { item -> item.contact.id != keepId }) }
             }
         }
+        preselectedId?.let { id -> viewModelScope.launch { contacts.get(id)?.let(::pick) } }
     }
 
     fun onQuery(text: String) {
@@ -106,5 +110,6 @@ class MergeViewModel @Inject constructor(
 
     companion object {
         const val ARG_KEEP_ID = "keepId"
+        const val ARG_OTHER_ID = "otherId"
     }
 }

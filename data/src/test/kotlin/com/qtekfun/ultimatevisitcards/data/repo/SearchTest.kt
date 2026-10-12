@@ -4,6 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.qtekfun.ultimatevisitcards.data.testing.TestData
 import com.qtekfun.ultimatevisitcards.data.testing.value
 import com.qtekfun.ultimatevisitcards.domain.model.Contact
+import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import com.qtekfun.ultimatevisitcards.domain.model.OcrStatus
 import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardDraft
 import com.qtekfun.ultimatevisitcards.domain.repository.CompanyDraft
@@ -123,7 +124,7 @@ class SearchTest {
         contact("Luca", "Bianchi") { copy(jobTitle = "Responsabile Vendite") }
         data.db.searchDao().deleteAll()
         assertEquals(emptyList(), search("bianchi"))
-        data.contacts.rebuildSearchIndex()
+        assertEquals(DomainResult.Success(Unit), data.contacts.rebuildSearchIndex())
         assertEquals(listOf("Bianchi"), search("vendite"))
     }
 }

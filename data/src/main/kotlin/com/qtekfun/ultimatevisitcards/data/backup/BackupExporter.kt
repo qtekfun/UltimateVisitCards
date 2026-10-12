@@ -70,7 +70,8 @@ class BackupExporter @Inject constructor(
                     businessCards = database.businessCards.size,
                     images = images.size
                 ),
-                includesOriginals = options.includeOriginals,
+                // Only claim the originals when every card has them (they may have been discarded in Settings).
+                includesOriginals = options.includeOriginals && allOriginalsPresent(database, images),
                 encrypted = options.password?.isNotEmpty() == true
             )
             val expected = write(out, manifest, database, options, images, onProgress)
@@ -100,6 +101,11 @@ class BackupExporter @Inject constructor(
                 )
             }
         )
+    }
+
+    private fun allOriginalsPresent(database: BackupDatabase, images: List<Pair<String, File>>): Boolean {
+        val present = images.map { it.first }.toSet()
+        return database.businessCards.all { card -> listOfNotNull(card.frontOriginal, card.backOriginal).all { it in present } }
     }
 
     /** Existing image files to include, by storage path (a missing file is left out, never invented). */

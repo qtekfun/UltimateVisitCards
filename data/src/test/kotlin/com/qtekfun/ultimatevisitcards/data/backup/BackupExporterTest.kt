@@ -102,6 +102,7 @@ class BackupExporterTest {
         val manifest = assertIs<BackupResult.Done>(result).manifest
         assertEquals(BackupCounts(contacts = 2, companies = 1, sectors = 1, events = 1, contactEvents = 1, businessCards = 2, images = 6), manifest.counts)
         assertEquals(false, manifest.encrypted)
+        assertEquals(true, manifest.includesOriginals)
 
         val files = entries(bytes)
         assertEquals(listOf("manifest.json", "database.json", "settings.json"), files.keys.take(3))

@@ -33,13 +33,26 @@ import com.qtekfun.ultimatevisitcards.data.backup.BackupCounts
 import com.qtekfun.ultimatevisitcards.data.backup.RestoreMode
 import java.time.LocalDate
 
-/** Settings (docs/03): backup and restore; security, reindex and «About» come in phase 10. */
+/** Settings (docs/03): security, capture and review, backup and restore, maintenance and «About». */
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier, backup: BackupViewModel = hiltViewModel(), restore: RestoreViewModel = hiltViewModel()) {
+fun SettingsScreen(
+    onDuplicates: () -> Unit,
+    onAbout: () -> Unit,
+    modifier: Modifier = Modifier,
+    preferences: PreferencesViewModel = hiltViewModel(),
+    backup: BackupViewModel = hiltViewModel(),
+    restore: RestoreViewModel = hiltViewModel()
+) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp).then(modifier), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SecuritySection(preferences)
+        HorizontalDivider()
+        CaptureSection(preferences)
+        HorizontalDivider()
         BackupSection(backup)
         HorizontalDivider()
         RestoreSection(restore)
+        HorizontalDivider()
+        MaintenanceSection(preferences, onDuplicates, onAbout)
     }
 }
 

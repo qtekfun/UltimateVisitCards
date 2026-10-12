@@ -25,6 +25,7 @@ import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardDraft
 import com.qtekfun.ultimatevisitcards.domain.util.Clock
 import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
 import com.qtekfun.ultimatevisitcards.ocr.processing.CardImageProcessor
+import com.qtekfun.ultimatevisitcards.settings.UiPreferences
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -64,6 +65,7 @@ class CaptureViewModelTest {
     private val clock = Clock { 1_767_225_600_000L }
 
     private val scheduled = com.qtekfun.ultimatevisitcards.testing.RecordingScheduler()
+    private val preferences by lazy { UiPreferences(ApplicationProvider.getApplicationContext()) }
 
     @Before
     fun setUp() {
@@ -83,7 +85,7 @@ class CaptureViewModelTest {
     }
 
     private fun viewModel() = CaptureViewModel(
-        CardCaptureSaver(store, CardImageProcessor(), cards, scheduled, dispatcher),
+        CardCaptureSaver(store, CardImageProcessor(), cards, scheduled, preferences, dispatcher),
         IdGenerator { ids.removeFirst() },
         clock,
         appScope
@@ -145,6 +147,19 @@ class CaptureViewModelTest {
         assertEquals("cards/${card.id}/back.jpg", card.backProcessed)
         assertNotNull(CardQuad.fromJson(card.backQuad))
         assertEquals(listOf("back.jpg", "back_original.jpg", "front.jpg", "front_original.jpg"), files(card.id))
+    }
+
+    @Test
+    fun `with keep originals off, only the straightened images stay once saved`() = runTest(dispatcher) {
+        preferences.setKeepOriginals(false)
+        val vm = viewModel()
+        vm.onPhoto(cardPhoto())
+        advanceUntilIdle()
+        vm.skipBack()
+        advanceUntilIdle()
+        val card = assertNotNull(cards.get("11111111-1111-4111-8111-111111111111"))
+        assertEquals(listOf("front.jpg"), files(card.id))
+        assertEquals(listOf(card.id), scheduled.enqueued)
     }
 
     @Test

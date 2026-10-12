@@ -34,6 +34,7 @@ import com.qtekfun.ultimatevisitcards.domain.text.TextNormalizer
 import com.qtekfun.ultimatevisitcards.domain.usecase.AddCardToContactUseCase
 import com.qtekfun.ultimatevisitcards.domain.usecase.ReviewedCard
 import com.qtekfun.ultimatevisitcards.domain.usecase.SaveReviewedCardUseCase
+import com.qtekfun.ultimatevisitcards.settings.UiPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import java.io.IOException
@@ -131,7 +132,8 @@ class ReviewViewModel @Inject constructor(
     private val store: ImageStore,
     private val detector: DuplicateDetector,
     private val saveCard: SaveReviewedCardUseCase,
-    private val addCard: AddCardToContactUseCase
+    private val addCard: AddCardToContactUseCase,
+    private val preferences: UiPreferences
 ) : ViewModel() {
     val cardId: String = checkNotNull(savedState[ARG_CARD_ID])
 
@@ -200,7 +202,7 @@ class ReviewViewModel @Inject constructor(
     private fun fill(state: ReviewUiState, fields: ExtractedFields): ReviewUiState {
         val values = state.values.toMutableMap()
         REVIEW_FIELDS.filter { it !in touched }.forEach { field -> fields.value(field)?.let { values[field] = it } }
-        val doubtful = fields.doubtful(ExtractedFields.DEFAULT_THRESHOLD).filter { it !in touched }.toSet()
+        val doubtful = fields.doubtful(preferences.confidenceThreshold.value).filter { it !in touched }.toSet()
         val sector = state.sectorId ?: matchingCompany(values[CardField.COMPANY])?.sectorId
         return state.copy(values = values, doubtful = doubtful, sectorId = sector)
     }

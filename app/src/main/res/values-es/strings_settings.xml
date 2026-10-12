@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Bloqueo de la app (fase 10). -->
+  <string name="lock_title">UltimateVisitCards está bloqueada</string>
+  <string name="lock_unlock">Desbloquear</string>
+  <string name="lock_prompt_title">Desbloquear UltimateVisitCards</string>
+  <string name="lock_prompt_subtitle">Usa tu huella, tu cara o el bloqueo de pantalla</string>
+
+  <!-- Ajustes: seguridad. -->
+  <string name="settings_security">Seguridad</string>
+  <string name="settings_lock">Bloquear la app</string>
+  <string name="settings_lock_hint">Pide huella, cara o bloqueo de pantalla al abrir la app o al volver tras 30 segundos.</string>
+  <string name="settings_lock_unavailable">Configura un bloqueo de pantalla en el teléfono para usarlo.</string>
+  <string name="settings_secure_screen">Ocultar en apps recientes</string>
+  <string name="settings_secure_screen_hint">El contenido se oculta en la vista de apps recientes y se bloquean las capturas de pantalla.</string>
+
+  <!-- Ajustes: captura y revisión. -->
+  <string name="settings_capture">Captura y revisión</string>
+  <string name="settings_keep_originals">Conservar originales sin recortar</string>
+  <string name="settings_keep_originals_hint">Guarda la foto completa de cada tarjeta además de la enderezada. Desactivarlo ahorra espacio.</string>
+  <string name="settings_keep_originals_off_title">¿Borrar los originales?</string>
+  <string name="settings_keep_originals_off_warning">Se borrarán las fotos sin recortar ya guardadas. Las tarjetas enderezadas se conservan.</string>
+  <string name="settings_keep_originals_off_confirm">Borrar</string>
+  <string name="settings_threshold">Marcar campos dudosos por debajo del %1$d %% de confianza</string>
+  <string name="settings_threshold_hint">Los campos de los que el lector está menos seguro se marcan para revisarlos.</string>
+
+  <!-- Ajustes: mantenimiento e información. -->
+  <string name="settings_maintenance">Mantenimiento</string>
+  <string name="settings_reindex">Reindexar búsqueda</string>
+  <string name="settings_reindex_done">Índice de búsqueda reconstruido.</string>
+  <string name="settings_originals_deleted">Originales borrados.</string>
+  <string name="settings_maintenance_failed">No se ha podido completar la acción.</string>
+  <string name="settings_duplicates">Posibles duplicados</string>
+  <string name="settings_about">Acerca de</string>
+</resources>

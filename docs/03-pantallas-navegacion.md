@@ -26,12 +26,13 @@ Eventos ─► Detalle de evento (con buscador propio) ─► Crear/editar event
 Empresas ─► Detalle de empresa (contactos) ─► Editar empresa
 Sectores ─► Crear/renombrar/borrar sector
 Ajustes
+ ├─ Seguridad (bloqueo biométrico/PIN, ocultar en recientes)
+ ├─ Captura y revisión (conservar originales, umbral de confianza)
  ├─ Copia de seguridad (exportar, cifrado opcional)
  ├─ Restaurar copia (validar → resumen → confirmar)
- ├─ Exportar datos (VCF / CSV / XLSX; todo o filtrado)
- ├─ Seguridad (bloqueo biométrico/PIN)
- ├─ Reindexar búsqueda
- └─ Acerca de (licencias, flavour, motor OCR)
+ ├─ Mantenimiento: reindexar búsqueda, Posibles duplicados ─► Fusionar
+ └─ Acerca de (versión, motor OCR, privacidad, licencias)
+(Exportar datos VCF / CSV / XLSX está en el menú de Tarjetas: exporta la lista actual, filtrada o no.)
 ```
 
 ## Pantalla principal (Tarjetas)

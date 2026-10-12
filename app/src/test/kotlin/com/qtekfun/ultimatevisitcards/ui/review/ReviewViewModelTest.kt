@@ -32,6 +32,7 @@ import com.qtekfun.ultimatevisitcards.domain.usecase.AddCardToContactUseCase
 import com.qtekfun.ultimatevisitcards.domain.usecase.SaveReviewedCardUseCase
 import com.qtekfun.ultimatevisitcards.domain.util.Clock
 import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
+import com.qtekfun.ultimatevisitcards.settings.UiPreferences
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -66,6 +67,7 @@ class ReviewViewModelTest {
     private lateinit var sectors: RoomSectorRepository
     private lateinit var store: ImageStore
     private val cardId = "55555555-5555-4555-8555-555555555555"
+    private val preferences by lazy { UiPreferences(ApplicationProvider.getApplicationContext()) }
 
     @Before
     fun setUp() {
@@ -110,7 +112,8 @@ class ReviewViewModelTest {
         store,
         DuplicateDetector(),
         SaveReviewedCardUseCase(companies, contacts, cards, RoomTransactionRunner(db)),
-        AddCardToContactUseCase(contacts, companies, cards, RoomTransactionRunner(db), Clock { 1L })
+        AddCardToContactUseCase(contacts, companies, cards, RoomTransactionRunner(db), Clock { 1L }),
+        preferences
     )
 
     private suspend fun card(status: OcrStatus = OcrStatus.PENDING, fields: ExtractedFields? = null) {
@@ -146,6 +149,16 @@ class ReviewViewModelTest {
         // Low confidence → highlighted.
         assertEquals(setOf(CardField.JOB_TITLE), state.doubtful)
         vm.onChange(CardField.JOB_TITLE, "Directora Comercial")
+        assertTrue(vm.state.value.doubtful.isEmpty())
+    }
+
+    @Test
+    fun `the doubtful fields follow the confidence threshold of Settings`() = runTest(dispatcher) {
+        preferences.setConfidenceThreshold(0.3f)
+        card(OcrStatus.PENDING_REVIEW, ana)
+        val vm = viewModel()
+        advanceUntilIdle()
+        // 0.4 is above a 0.3 threshold: nothing is highlighted.
         assertTrue(vm.state.value.doubtful.isEmpty())
     }
 

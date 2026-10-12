@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.qtekfun.ultimatevisitcards.ui.about.AboutScreen
 import com.qtekfun.ultimatevisitcards.ui.capture.CaptureScreen
 import com.qtekfun.ultimatevisitcards.ui.cards.CardsActions
 import com.qtekfun.ultimatevisitcards.ui.cards.CardsScreen
@@ -31,6 +32,7 @@ import com.qtekfun.ultimatevisitcards.ui.contact.ContactActions
 import com.qtekfun.ultimatevisitcards.ui.contact.ContactDetailScreen
 import com.qtekfun.ultimatevisitcards.ui.contact.ContactDetailViewModel
 import com.qtekfun.ultimatevisitcards.ui.contact.ContactEditScreen
+import com.qtekfun.ultimatevisitcards.ui.duplicates.DuplicatesScreen
 import com.qtekfun.ultimatevisitcards.ui.events.EventDetailScreen
 import com.qtekfun.ultimatevisitcards.ui.events.EventDetailViewModel
 import com.qtekfun.ultimatevisitcards.ui.events.EventsScreen
@@ -62,9 +64,13 @@ object Routes {
 
     fun contactEdit(contactId: String) = "contact/$contactId/edit"
 
-    const val MERGE = "merge/{${MergeViewModel.ARG_KEEP_ID}}"
+    const val MERGE = "merge/{${MergeViewModel.ARG_KEEP_ID}}?${MergeViewModel.ARG_OTHER_ID}={${MergeViewModel.ARG_OTHER_ID}}"
 
-    fun merge(keepId: String) = "merge/$keepId"
+    fun merge(keepId: String, otherId: String? = null) = "merge/$keepId?${MergeViewModel.ARG_OTHER_ID}=${otherId.orEmpty()}"
+
+    const val DUPLICATES = "duplicates"
+
+    const val ABOUT = "about"
 
     const val CONTACT = "contact/{${ContactDetailViewModel.ARG_CONTACT_ID}}"
 
@@ -133,7 +139,16 @@ fun UvcApp(navController: NavHostController = rememberNavController()) {
             composable(Routes.CONTACT_EDIT, arguments = listOf(navArgument(ContactDetailViewModel.ARG_CONTACT_ID) { type = NavType.StringType })) {
                 ContactEditScreen(onDone = { navController.popBackStack() })
             }
-            composable(Routes.MERGE, arguments = listOf(navArgument(MergeViewModel.ARG_KEEP_ID) { type = NavType.StringType })) {
+            composable(
+                Routes.MERGE,
+                arguments = listOf(
+                    navArgument(MergeViewModel.ARG_KEEP_ID) { type = NavType.StringType },
+                    navArgument(MergeViewModel.ARG_OTHER_ID) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    }
+                )
+            ) {
                 MergeScreen(onDone = { navController.popBackStack() }, onBack = { navController.popBackStack() })
             }
             composable(TopLevelDestination.EVENTS.route) { EventsScreen(onOpenEvent = { navController.navigate(Routes.event(it)) }) }
@@ -154,7 +169,15 @@ fun UvcApp(navController: NavHostController = rememberNavController()) {
                 CompanyDetailScreen(onBack = { navController.popBackStack() }, onOpenContact = { navController.navigate(Routes.contact(it)) })
             }
             composable(TopLevelDestination.SECTORS.route) { SectorsScreen() }
-            composable(TopLevelDestination.SETTINGS.route) { SettingsScreen() }
+            composable(TopLevelDestination.SETTINGS.route) {
+                SettingsScreen(onDuplicates = { navController.navigate(Routes.DUPLICATES) }, onAbout = { navController.navigate(Routes.ABOUT) })
+            }
+            composable(Routes.DUPLICATES) {
+                DuplicatesScreen(onBack = {
+                    navController.popBackStack()
+                }, onMerge = { keepId, otherId -> navController.navigate(Routes.merge(keepId, otherId)) })
+            }
+            composable(Routes.ABOUT) { AboutScreen(onBack = { navController.popBackStack() }) }
             composable(
                 Routes.CAPTURE,
                 arguments = listOf(

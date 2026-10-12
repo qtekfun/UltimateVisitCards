@@ -94,7 +94,7 @@ Cualquier otra requiere justificación aquí antes de añadirla. Excluidas por d
 
 ## Permisos
 
-`CAMERA`; `WRITE_CONTACTS` (fase 7, bajo demanda); `WAKE_LOCK` y `RECEIVE_BOOT_COMPLETED` (los declara WorkManager; normales). `INTERNET`, `ACCESS_NETWORK_STATE` y `FOREGROUND_SERVICE` se eliminan del manifest fusionado. `./gradlew verifyPermissions` (parte de `ci`) falla ante cualquier otro.
+`CAMERA`; `WRITE_CONTACTS` (fase 7, bajo demanda); `WAKE_LOCK` y `RECEIVE_BOOT_COMPLETED` (los declara WorkManager; normales); `USE_BIOMETRIC` (lo declara androidx.biometric para el bloqueo opcional, fase 10; normal). `USE_FINGERPRINT` (solo Android ≤ 9) se elimina. `INTERNET`, `ACCESS_NETWORK_STATE` y `FOREGROUND_SERVICE` se eliminan del manifest fusionado. `./gradlew verifyPermissions` (parte de `ci`) falla ante cualquier otro.
 
 ## Hilos y rendimiento
 

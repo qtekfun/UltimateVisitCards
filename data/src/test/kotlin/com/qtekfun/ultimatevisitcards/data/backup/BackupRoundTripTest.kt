@@ -115,4 +115,22 @@ class BackupRoundTripTest {
 
     @Test
     fun `encrypted backup round trip`() = runTest(dispatcher) { roundTrip(password = "una contraseña larga") }
+
+    @Test
+    fun `with the originals discarded in Settings, the backup does not claim them and restores fine`() = runTest(dispatcher) {
+        fill()
+        assertEquals(3, sourceStore.deleteAllOriginals())
+        val bytes = ByteArrayOutputStream().also { out ->
+            val result = BackupExporter(source.db, sourceStore, source.clock, dispatcher)
+                .export(out, { ByteArrayInputStream(out.toByteArray()) }, BackupOptions(appVersion = "test"))
+            assertEquals(false, assertIs<BackupResult.Done>(result).manifest.includesOriginals)
+        }.toByteArray()
+
+        val restorer = BackupRestorer(target.db, targetStore, SearchIndexer(target.db), dispatcher)
+        assertIs<InspectResult.Ready>(restorer.inspect({ ByteArrayInputStream(bytes) }, null))
+        val report = assertIs<RestoreOutcome.Done>(restorer.restore({ ByteArrayInputStream(bytes) }, null, RestoreMode.MERGE)).report
+        assertEquals(3, report.added.contacts)
+        assertEquals(3, report.images)
+        assertEquals(hashes(File(folder.root, "a-files")), hashes(File(folder.root, "b-files")))
+    }
 }

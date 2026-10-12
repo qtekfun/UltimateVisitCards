@@ -97,6 +97,29 @@ Regla: **cada fase termina con el proyecto compilando en `play` y `foss`, tests 
 ## Resultados de medición
 *(Fase 2: detector. Fase 3: acierto de OCR por campo `play` vs `foss`. Fase 10: rendimiento.)*
 
+### Fase 10 · Rendimiento y tamaño (2026-10-11)
+
+**Búsqueda con 5 000 contactos sintéticos** (`SearchPerformanceTest`). Datos: 200 empresas, 10 sectores y 8 ferias, con FTS4 en la JVM y el SQLite empaquetado. Cada consulta se ejecuta 7 veces tras un calentamiento.
+
+| Consulta | Mediana | Peor |
+|---|---|---|
+| Todos los contactos (sin filtro) | 12,4 ms | 12,4 ms |
+| Texto, una palabra (`sanchez`) | 1,9 ms | 2,1 ms |
+| Texto, prefijo (`garc`) | 1,8 ms | 1,9 ms |
+| Texto, dos palabras (`propulsion electrica`) | 2,8 ms | 5,5 ms |
+| Texto + empresa | 1,8 ms | 1,9 ms |
+| Feria + país | 1,2 ms | 1,2 ms |
+| Nombre + apellido | 0,4 ms | 0,6 ms |
+
+Cargar los 5 000 contactos con el índice tarda 5,6 s. Con la misma cantidad de contactos, «Posibles duplicados» (`DuplicateScannerTest`) tarda menos de 2 s. **Pendiente en teléfono real:** fluidez del scroll y tiempos en el dispositivo.
+
+**Tamaño de los APK de release** (sin firmar, solo ARM):
+
+| Flavour | Antes (todas las ABI) | Ahora | Partes principales |
+|---|---|---|---|
+| play | 45 MB | 24,5 MB | `lib/arm64-v8a` 10,6 MB · `lib/armeabi-v7a` 6,5 MB · modelos ML Kit 1,4 MB |
+| foss | 38 MB | 23,6 MB | tessdata 11,2 MB · `lib/arm64-v8a` 7,2 MB · `lib/armeabi-v7a` 5,3 MB |
+
 ### Fase 3 · Extracción de campos (2026-10-11)
 
 Sobre el corpus sintético (62 tarjetas, es/en/fr/de/it): **100 %** en todos los campos, y ≥ 95 % (patrones) / ≥ 80 % (resto) con los bloques en orden inverso. **Ojo**: las reglas se ajustaron sobre este mismo corpus, así que es una red contra regresiones, no una medida de acierto real.

@@ -1,6 +1,5 @@
 package com.qtekfun.ultimatevisitcards.data.repo
 
-import androidx.room3.withWriteTransaction
 import com.qtekfun.ultimatevisitcards.data.db.AppDatabase
 import com.qtekfun.ultimatevisitcards.data.db.ContactQueryBuilder
 import com.qtekfun.ultimatevisitcards.data.db.entity.ContactEventEntity
@@ -134,9 +133,7 @@ class RoomContactRepository @Inject constructor(
 
     override suspend fun allWithCompany(): List<ContactWithCompany> = dao.allWithCompany().map { ContactWithCompany(it.contact.toDomain(), it.companyName) }
 
-    override suspend fun rebuildSearchIndex() {
-        db.withWriteTransaction { indexer.rebuild() }
-    }
+    override suspend fun rebuildSearchIndex(): DomainResult<Unit> = db.writeResult { indexer.rebuild().success() }
 
     private fun Flow<List<com.qtekfun.ultimatevisitcards.data.db.entity.ContactEntity>>.toDomain(): Flow<List<Contact>> =
         map { list -> list.map { it.toDomain() } }

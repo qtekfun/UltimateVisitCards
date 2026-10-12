@@ -48,7 +48,18 @@ class DuplicateDetector @Inject constructor() {
         }.sortedWith(compareByDescending<DuplicateCandidate> { it.score }.thenBy { it.contact.lastName }).take(MAX_CANDIDATES)
     }
 
-    private fun bestReason(a: Normalised, b: Normalised): MatchReason? {
+    /** A contact prepared for comparison (also used by [DuplicateScanner]). */
+    internal fun normalise(contact: ContactWithCompany): Normalised = Normalised.of(
+        contact.contact.firstName,
+        contact.contact.lastName,
+        contact.companyName,
+        contact.contact.email,
+        listOfNotNull(contact.contact.phone, contact.contact.mobile),
+        companies
+    )
+
+    /** The best rule matching two normalised contacts, or null (docs/06 §2). */
+    internal fun bestReason(a: Normalised, b: Normalised): MatchReason? {
         val reasons = mutableListOf<MatchReason>()
         if (a.email != null && a.email == b.email) reasons += MatchReason.EMAIL
         if (a.phones.any { it in b.phones }) reasons += MatchReason.PHONE
@@ -69,7 +80,7 @@ class DuplicateDetector @Inject constructor() {
         return a.length == 1 || b.length == 1
     }
 
-    private class Normalised(val first: String, val last: String, val company: String?, val email: String?, val phones: Set<String>) {
+    internal class Normalised(val first: String, val last: String, val company: String?, val email: String?, val phones: Set<String>) {
         fun isEmpty() = first.isEmpty() && last.isEmpty() && email == null && phones.isEmpty()
 
         companion object {

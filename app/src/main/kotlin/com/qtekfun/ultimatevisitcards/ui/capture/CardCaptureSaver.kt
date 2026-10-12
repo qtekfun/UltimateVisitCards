@@ -10,6 +10,7 @@ import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardDraft
 import com.qtekfun.ultimatevisitcards.domain.repository.BusinessCardRepository
 import com.qtekfun.ultimatevisitcards.domain.util.DefaultDispatcher
 import com.qtekfun.ultimatevisitcards.ocr.processing.CardImageProcessor
+import com.qtekfun.ultimatevisitcards.settings.UiPreferences
 import com.qtekfun.ultimatevisitcards.work.OcrScheduler
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
@@ -37,6 +38,7 @@ class CardCaptureSaver @Inject constructor(
     private val processor: CardImageProcessor,
     private val cards: BusinessCardRepository,
     private val ocrQueue: OcrScheduler,
+    private val preferences: UiPreferences,
     @DefaultDispatcher private val default: CoroutineDispatcher
 ) {
     /** Saves the original, straightens it and saves the result. [photo] must be upright. */
@@ -72,7 +74,11 @@ class CardCaptureSaver @Inject constructor(
         )
         val result = cards.create(draft, id = cardId)
         when (result) {
-            is DomainResult.Success -> ocrQueue.enqueue(cardId)
+            is DomainResult.Success -> {
+                // «Keep uncropped originals» off: they were only needed for re-cropping during the capture.
+                if (!preferences.keepOriginals.value) store.deleteOriginals(cardId)
+                ocrQueue.enqueue(cardId)
+            }
             is DomainResult.Failure -> store.deleteCard(cardId)
         }
         return result
