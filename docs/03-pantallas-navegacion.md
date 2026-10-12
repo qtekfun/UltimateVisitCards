@@ -73,6 +73,8 @@ Ruta `review/{cardId}`. En modo normal la captura lleva aquí al guardar la tarj
 
 Secciones: Información personal · Empresa (sector, país) · Contacto · Procedencia (eventos, fecha) · Tarjeta (Anverso | Reverso, con pellizco para ampliar) · Notas.
 
+En «Procedencia», **«Eventos…»** abre la lista de eventos con casillas para elegir en cuáles está el contacto (filtro de texto a partir de 8 eventos).
+
 Acciones rápidas, solo si hay dato: **llamar · email · abrir web · copiar email · copiar teléfono · compartir contacto (vCard) · añadir a contactos del teléfono**.
 
 **Histórico**: si el contacto tiene varias tarjetas, carrusel con fecha y evento de cada una y «Añadir nueva tarjeta». Se puede marcar cuál es la principal y borrar una tarjeta antigua (con confirmación).
@@ -82,6 +84,7 @@ Fase 7: barra superior con «Editar» (pantalla `contact/{id}/edit`) y menú «F
 ## Eventos y empresas
 
 - Evento: nombre, fechas, lugar, notas, «N contactos». Su detalle incluye lista, buscador limitado al evento (chip «Solo en este evento» que se quita para volver a global), filtros y exportación del evento.
+- Detalle de evento: botón flotante **«Contactos»** que abre una lista de todos los contactos con casillas (marcados los que ya están en el evento) y un campo para filtrar; al guardar se añaden los nuevos y se quitan los desmarcados.
 - Empresa: nombre, sector, país, web, notas y lista de sus contactos.
 
 ## Estados de UI (obligatorio en cada pantalla con datos)

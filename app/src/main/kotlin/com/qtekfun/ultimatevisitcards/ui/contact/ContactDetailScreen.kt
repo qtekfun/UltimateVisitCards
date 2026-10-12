@@ -70,6 +70,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.qtekfun.ultimatevisitcards.R
 import com.qtekfun.ultimatevisitcards.ui.common.EmptyState
+import com.qtekfun.ultimatevisitcards.ui.common.MultiSelectDialog
+import com.qtekfun.ultimatevisitcards.ui.common.SelectOption
 import com.qtekfun.ultimatevisitcards.ui.common.formatDate
 import com.qtekfun.ultimatevisitcards.ui.review.CardImage
 import java.io.File
@@ -277,10 +279,36 @@ private fun Details(
         Section(R.string.contact_section_company, listOfNotNull(state.sectorName, state.country))
         Section(R.string.contact_section_contact, listOfNotNull(contact.phone, contact.mobile, contact.email, contact.website, contact.address))
         Section(R.string.contact_section_origin, state.events.map { it.name } + stringResource(R.string.contact_added_on, formatDate(contact.createdAt)))
+        EventsButton(state, viewModel::setEvents)
         contact.notes?.let { Section(R.string.field_notes, listOf(it)) }
         History(state, viewModel, onAddCard = { actions.onAddCard(contact.id) })
     }
 }
+
+/** «Events…»: choose which events the contact belongs to. */
+@Composable
+private fun EventsButton(state: ContactDetailUiState.Content, onSave: (Set<String>) -> Unit) {
+    var picking by remember { mutableStateOf(false) }
+    TextButton(onClick = { picking = true }) { Text(stringResource(R.string.contact_events_edit)) }
+    if (picking) {
+        MultiSelectDialog(
+            title = stringResource(R.string.contact_events_title),
+            options = state.allEvents.map { SelectOption(it.id, it.name, it.location) },
+            initial = state.events.map { it.id }.toSet(),
+            confirmLabel = stringResource(R.string.catalog_save),
+            empty = stringResource(R.string.contact_events_none),
+            searchable = state.allEvents.size > EVENT_FILTER_FROM,
+            onConfirm = {
+                picking = false
+                onSave(it)
+            },
+            onDismiss = { picking = false }
+        )
+    }
+}
+
+/** With few events a filter field is just noise. */
+private const val EVENT_FILTER_FROM = 8
 
 @Composable
 private fun Section(title: Int, lines: List<String>) {

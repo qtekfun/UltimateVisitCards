@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,8 +35,14 @@ data class EventDetailUiState(
     /** The edit dialog, when open. */
     val editor: EditorState? = null,
     /** The event was deleted: the screen goes back. */
-    val deleted: Boolean = false
+    val deleted: Boolean = false,
+    /** «Contacts in this event» picker, when open: every contact and which ones are in the event. */
+    val picker: ContactPicker? = null,
+    /** Saving the picker's choice failed. */
+    val membershipFailed: Boolean = false
 )
+
+data class ContactPicker(val contacts: List<ContactListItem>, val inEvent: Set<String>)
 
 /**
  * One event (docs/03): its data, edit and delete, and its contacts with a search limited to the event. The
@@ -43,7 +50,8 @@ data class EventDetailUiState(
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class EventDetailViewModel @Inject constructor(savedState: SavedStateHandle, private val events: EventRepository, contacts: ContactRepository) : ViewModel() {
+class EventDetailViewModel @Inject constructor(savedState: SavedStateHandle, private val events: EventRepository, private val contacts: ContactRepository) :
+    ViewModel() {
     val eventId: String = checkNotNull(savedState[ARG_EVENT_ID])
 
     private val query = MutableStateFlow("")
@@ -86,6 +94,30 @@ class EventDetailViewModel @Inject constructor(savedState: SavedStateHandle, pri
             }
         }
     }
+
+    /** Opens the picker with every contact, the ones already in the event checked. */
+    fun startPicking() {
+        viewModelScope.launch {
+            val all = contacts.observeList(ContactFilter()).first()
+            val inEvent = contacts.observeList(ContactFilter(eventId = eventId)).first().map { it.contact.id }.toSet()
+            _state.update { it.copy(picker = ContactPicker(all, inEvent), membershipFailed = false) }
+        }
+    }
+
+    fun cancelPicking() = _state.update { it.copy(picker = null) }
+
+    /** The event ends up with exactly [chosen] among the picker's contacts: new ones are added, unchecked ones removed. */
+    fun saveMembers(chosen: Set<String>) {
+        val picker = _state.value.picker ?: return
+        viewModelScope.launch {
+            val results = (chosen - picker.inEvent).map { contacts.addToEvent(it, eventId) } +
+                (picker.inEvent - chosen).map { contacts.removeFromEvent(it, eventId) }
+            val failed = results.any { it is DomainResult.Failure }
+            _state.update { it.copy(picker = null, membershipFailed = failed) }
+        }
+    }
+
+    fun membershipErrorShown() = _state.update { it.copy(membershipFailed = false) }
 
     /** Deletes the event; its contacts and cards stay. */
     fun delete() {
