@@ -112,3 +112,28 @@ Formato: fecha · fase · decisión · motivo · alternativas descartadas. Las q
 - **2026-10-11 · Protección contra fórmulas en CSV y XLSX.** Prefijo `'` si la celda empieza por `=`, `+`, `-`, `@`, tabulador o retorno de carro. Implica que un teléfono «+34…» se exporta como «'+34…»: es la contrapartida conocida de esta protección y la recomendada por OWASP.
 - **2026-10-11 · Una consulta para eventos y otra para sectores.** La exportación carga los nombres de eventos por contacto y el sector de cada empresa en dos consultas, no una por contacto.
 - **2026-10-11 · BOM escrito como `Char(0xFEFF)`.** Un literal con el carácter (o su escape en una cadena) desaparecía al formatear el código.
+
+## Fase 9 · Restauración
+
+- **2026-10-11 · Dos pasadas sobre el documento SAF.** La primera valida y lee `manifest.json`, `database.json` y `settings.json` y recorre todas las imágenes (comprueba CRC y descifrado); la segunda copia solo las imágenes de las tarjetas que se importan. Así no hace falta copiar a la caché un ZIP que puede pasar de 1 GB.
+- **2026-10-11 · Todo o nada.** La parte de base de datos va en una sola transacción, y las imágenes se copian a una carpeta de preparación (`filesDir/.restore-<uuid>`) dentro de esa misma transacción. Solo se mueven a su sitio, renombrando en el mismo sistema de archivos, cuando la transacción se confirma. Cualquier fallo o cancelación deshace la base de datos y borra la preparación. En modo «reemplazar», las imágenes que ya no tienen tarjeta se borran después, con `deleteOrphans`, para no quedarse nunca sin las nuevas.
+- **2026-10-11 · Reglas de «combinar».** El mismo UUID es la misma fila. Contactos y empresas se actualizan solo si el `updatedAt` de la copia es más reciente. Sectores, eventos y tarjetas no tienen fecha de actualización, así que si ya existen se conservan. Empresas (por nombre normalizado) y sectores (por nombre plegado) que ya existen con otro id se **enlazan**: el id de la copia se reasigna en todas sus referencias. Una empresa no se renombra si chocaría con otra existente. Si al combinar un contacto queda con varias tarjetas principales, se deja solo la más reciente. Restaurar dos veces la misma copia no cambia nada.
+- **2026-10-11 · Validación estricta.**
+  - Solo se admiten `manifest.json`, `database.json`, `settings.json`, `images/<id>/` y `images/<id>/(front|back)[_original].jpg`. Cualquier nombre con `..`, ruta absoluta o barra invertida se rechaza como dañado (*zip slip*).
+  - Las rutas de imagen de cada tarjeta deben estar dentro de su propia carpeta (`cards/<id>/`).
+  - Se comprueban ids duplicados y referencias entre entidades.
+  - Las imágenes enderezadas son obligatorias; los originales lo son solo si `includes_originals` es verdadero.
+  - Un ZIP sin `manifest.json` ni `database.json` no es una copia («no es una copia de seguridad»). Una copia con contenido inesperado está dañada.
+  - Una contraseña incorrecta (`WRONG_PASSWORD` de zip4j) se distingue de un archivo dañado.
+- **2026-10-11 · Migraciones de formato.** `BackupMigrations.upgrade` encadena pasos vN→vN+1 sobre el JSON antes de decodificarlo. La v1 es la actual y todavía no tiene pasos. Una versión mayor que la soportada se rechaza.
+- **2026-10-11 · Ajustes.** `settings.json` se devuelve en el informe para que la app los aplique. Si no se puede leer, se ignora: los datos se restauran igualmente.
+
+## Fase 9 · Copia de seguridad
+
+- **2026-10-11 · Instantánea en una transacción de lectura.** La copia lee todas las tablas dentro de `withReadTransaction`: es coherente aunque se esté escribiendo (p. ej. la cola de OCR).
+- **2026-10-11 · Verificación leyendo todo el archivo.** Tras escribir, se reabre el documento SAF y se descomprime (y descifra) entera, comparando entradas y tamaños. Si no coincide, se borra el archivo y se avisa: una copia que no se puede leer es peor que ninguna.
+- **2026-10-11 · Una copia cancelada o fallida se borra** (`DocumentsContract.deleteDocument`).
+- **2026-10-11 · Contraseña solo en memoria.** `CharArray` que se sobrescribe al terminar; mínimo 8 caracteres y repetida.
+- **2026-10-11 · Mantenimiento de imágenes al arrancar.** `StorageMaintenance` borra carpetas sin tarjeta, escrituras interrumpidas y *staging* de restauraciones a medias; se ejecuta al iniciar el proceso, cuando no puede haber una captura en curso.
+- **2026-10-11 · Restauración escrita en paralelo por un subagente** sobre el formato común (`BackupFormat`); el test de ida y vuelta une el exportador y el restaurador reales (sin y con cifrado, hash de imágenes, idempotencia).
+- **2026-10-11 · Pendiente**: «cambiar de teléfono sin perder nada (probado entre dos emuladores)» no se ha ejecutado en emuladores en esta sesión; lo cubre el test de ida y vuelta entre dos bases de datos y almacenes independientes.

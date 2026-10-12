@@ -14,7 +14,6 @@
   <string name="events_empty">No events yet. Create one to group the cards from a trade fair.</string>
   <string name="companies_empty">No companies yet. They are created when you save a card.</string>
   <string name="sectors_empty">No sectors yet.</string>
-  <string name="settings_empty">Backup, export and security will appear here.</string>
   <!-- Tarjetas -->
   <string name="cards_add">Add card</string>
   <string name="cards_pending">Pending review: %1$d</string>
@@ -219,4 +218,43 @@
   <string name="export_col_sector">Sector</string>
   <string name="export_col_event">Event</string>
   <string name="export_col_date">Date</string>
+  <!-- Ajustes: copia de seguridad y restauración -->
+  <string name="settings_backup">Backup</string>
+  <string name="settings_backup_hint">A single .zip with every contact, company, event, sector and card photo. Keep it somewhere safe to move to another phone.</string>
+  <string name="settings_backup_export">Export full backup</string>
+  <string name="backup_export_title">Export backup</string>
+  <string name="backup_include_originals">Include uncropped originals</string>
+  <string name="backup_include_originals_hint">Lets you re-crop cards after restoring; makes the file larger.</string>
+  <string name="backup_encrypt">Encrypt with a password</string>
+  <string name="backup_password">Password</string>
+  <string name="backup_password_repeat">Repeat the password</string>
+  <string name="backup_password_short">At least %1$d characters.</string>
+  <string name="backup_password_mismatch">The passwords do not match.</string>
+  <string name="backup_password_warning">If you lose the password, the backup cannot be recovered. It is not saved anywhere.</string>
+  <string name="backup_choose_file">Choose where to save</string>
+  <string name="backup_running">Creating the backup…</string>
+  <string name="backup_counts">%1$d contacts · %2$d companies · %3$d events · %4$d sectors · %5$d images</string>
+  <string name="backup_done">Backup created and checked: %1$s</string>
+  <string name="backup_failed">The backup could not be written. Nothing was saved.</string>
+  <string name="backup_verification_failed">The backup did not read back correctly and was deleted. Try again, maybe in another place.</string>
+  <string name="backup_cancelled">Backup cancelled.</string>
+  <string name="settings_restore">Restore backup</string>
+  <string name="settings_restore_hint">Brings back the contacts of a backup. Combining never duplicates contacts: the same contact is updated only if the backup is newer.</string>
+  <string name="settings_restore_open">Choose backup</string>
+  <string name="restore_checking">Checking the backup…</string>
+  <string name="restore_password_title">Encrypted backup</string>
+  <string name="restore_wrong_password">Wrong password.</string>
+  <string name="restore_summary_title">This backup contains</string>
+  <string name="restore_mode_merge">Combine with what I have (recommended)</string>
+  <string name="restore_mode_replace">Replace everything</string>
+  <string name="restore_start">Restore</string>
+  <string name="restore_replace_title">Replace everything?</string>
+  <string name="restore_replace_warning">Every contact, card and photo now on this phone will be deleted and replaced by the backup. This cannot be undone.</string>
+  <string name="restore_replace_confirm">Delete and replace</string>
+  <string name="restore_running">Restoring…</string>
+  <string name="restore_done">Restored. Contacts added: %1$d · updated: %2$d · unchanged: %3$d · images: %4$d</string>
+  <string name="restore_not_a_backup">This file is not an UltimateVisitCards backup.</string>
+  <string name="restore_corrupt">The backup is damaged and cannot be restored. Nothing was changed.</string>
+  <string name="restore_too_new">This backup was made by a newer version of the app. Update the app and try again.</string>
+  <string name="restore_failed">The restore failed. Nothing was changed.</string>
 </resources>

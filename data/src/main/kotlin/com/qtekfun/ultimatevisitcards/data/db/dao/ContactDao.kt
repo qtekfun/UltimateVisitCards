@@ -106,4 +106,18 @@ interface ContactDao {
 
     @Query("SELECT contactId FROM ContactEvent WHERE eventId = :eventId")
     suspend fun contactIdsOfEvent(eventId: String): List<String>
+
+    /** Every row (backup and restore). */
+    @Query("SELECT * FROM Contact")
+    suspend fun all(): List<ContactEntity>
+
+    @Query("SELECT * FROM ContactEvent")
+    suspend fun allLinks(): List<ContactEventEntity>
+
+    /** Restore in «replace everything» mode. */
+    @Query("DELETE FROM Contact")
+    suspend fun deleteAll()
+
+    @Query("DELETE FROM ContactEvent")
+    suspend fun deleteAllLinks()
 }

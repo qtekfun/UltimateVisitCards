@@ -38,4 +38,12 @@ interface SectorDao {
 
     @Query("DELETE FROM Sector WHERE id = :id")
     suspend fun delete(id: String): Int
+
+    /** Every row (backup and restore). */
+    @Query("SELECT * FROM Sector")
+    suspend fun all(): List<SectorEntity>
+
+    /** Restore in «replace everything» mode. */
+    @Query("DELETE FROM Sector")
+    suspend fun deleteAll()
 }

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.qtekfun.ultimatevisitcards.data.repo.SearchIndexHealth
+import com.qtekfun.ultimatevisitcards.data.storage.StorageMaintenance
 import com.qtekfun.ultimatevisitcards.di.ApplicationScope
 import com.qtekfun.ultimatevisitcards.work.OcrRecovery
 import dagger.hilt.android.HiltAndroidApp
@@ -26,6 +27,9 @@ class UltimateVisitCardsApp :
     lateinit var searchIndexHealth: SearchIndexHealth
 
     @Inject
+    lateinit var storageMaintenance: StorageMaintenance
+
+    @Inject
     @ApplicationScope
     lateinit var appScope: CoroutineScope
 
@@ -36,6 +40,8 @@ class UltimateVisitCardsApp :
             searchIndexHealth.ensure()
             // Cards interrupted by a forced close go back to the OCR queue.
             ocrRecovery.resume()
+            // Files without a card (abandoned capture, crash, interrupted restore) are removed.
+            storageMaintenance.run()
         }
     }
 

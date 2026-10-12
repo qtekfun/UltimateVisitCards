@@ -47,4 +47,12 @@ interface CompanyDao {
 
     @Query("SELECT c.id FROM Contact c JOIN Company co ON co.id = c.companyId WHERE co.sectorId = :sectorId")
     suspend fun contactIdsOfSector(sectorId: String): List<String>
+
+    /** Every row (backup and restore). */
+    @Query("SELECT * FROM Company")
+    suspend fun all(): List<CompanyEntity>
+
+    /** Restore in «replace everything» mode. */
+    @Query("DELETE FROM Company")
+    suspend fun deleteAll()
 }

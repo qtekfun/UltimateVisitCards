@@ -36,4 +36,12 @@ interface EventDao {
 
     @Query("DELETE FROM Event WHERE id = :id")
     suspend fun delete(id: String): Int
+
+    /** Every row (backup and restore). */
+    @Query("SELECT * FROM Event")
+    suspend fun all(): List<EventEntity>
+
+    /** Restore in «replace everything» mode. */
+    @Query("DELETE FROM Event")
+    suspend fun deleteAll()
 }
