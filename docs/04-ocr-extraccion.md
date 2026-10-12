@@ -89,7 +89,8 @@ PENDING ─► PROCESSING ─► PENDING_REVIEW ─► REVIEWED
 
 - `OcrWorker` procesa de una en una. Idempotente: si la app muere en `PROCESSING`, al arrancar (`OcrRecovery.resume`, desde `Application.onCreate`) se devuelve a `PENDING` y todas las `PENDING` se vuelven a encolar; una tarjeta encolada dos veces se lee una sola vez.
 - «Reintentar» (cola de revisión) pasa una tarjeta de `OCR_ERROR` a `PENDING` y la encola.
-- Tras 2 fallos → `OCR_ERROR` (la imagen se conserva; el usuario rellena a mano).
+- Tras 2 fallos → `OCR_ERROR` (la imagen se conserva; el usuario rellena a mano). Cuenta como fallo cualquier error del motor (no solo `OcrException`/`IOException`: también una librería nativa que no carga o falta de memoria) y que el motor no responda en **2 minutos** (`OCR_TIMEOUT_MILLIS`). Tras un fallo se libera el motor para que la siguiente tarjeta use uno nuevo. Ninguna tarjeta se queda en `PROCESSING`: si el sistema detiene el worker, vuelve a `PENDING`.
+- En Android 12+ cada tarjeta se encola como trabajo **urgente** (`setExpedited`, con `RUN_AS_NON_EXPEDITED_WORK_REQUEST` si se agota la cuota): el usuario la está esperando en la revisión y algunas capas de fabricante (ColorOS, MIUI…) aplazan muchos minutos los trabajos normales. En Android 10–11 el trabajo urgente exige un servicio en primer plano (permiso `FOREGROUND_SERVICE`, que la app no pide), así que allí sigue siendo normal.
 - La UI observa los conteos por estado en `Flow` (banner «Pendientes de revisar: N»).
 
 ## 5. Pruebas
