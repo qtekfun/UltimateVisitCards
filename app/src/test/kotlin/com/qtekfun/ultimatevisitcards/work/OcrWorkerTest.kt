@@ -36,8 +36,10 @@ import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -108,12 +110,14 @@ class OcrWorkerTest {
         )
     }
 
-    private fun run(ocr: OcrService, attempt: Int = 0, id: String = cardId): ListenableWorker.Result = runBlocking {
+    private fun run(ocr: OcrService, attempt: Int = 0, id: String = cardId): ListenableWorker.Result = runBlocking { work(ocr, attempt, id) }
+
+    private suspend fun work(ocr: OcrService, attempt: Int = 0, id: String = cardId): ListenableWorker.Result {
         val factory = object : WorkerFactory() {
             override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters) =
                 OcrWorker(appContext, workerParameters, cards, store, ocr, CardFieldExtractor(), OcrQueue(appContext))
         }
-        TestListenableWorkerBuilder<OcrWorker>(context)
+        return TestListenableWorkerBuilder<OcrWorker>(context)
             .setWorkerFactory(factory)
             .setInputData(workDataOf(OcrWorker.KEY_CARD_ID to id))
             .setRunAttemptCount(attempt)
@@ -205,5 +209,38 @@ class OcrWorkerTest {
             cards.attachToContact(cardId, contact.id)
             assertEquals(listOf("Ruiz"), contacts.search("compras").first().map { it.lastName })
         }
+    }
+
+    @Test
+    fun `an unexpected engine error ends in manual input, never in an endless reading`() {
+        card()
+        val broken = object : OcrService {
+            var released = 0
+            override val engineId = "broken"
+
+            override suspend fun recognize(image: OcrImage, hints: OcrHints): OcrResult = throw IllegalStateException("native crash")
+
+            override suspend fun release() {
+                released++
+            }
+        }
+        assertEquals(ListenableWorker.Result.retry(), run(broken, attempt = 0))
+        assertEquals(OcrStatus.PENDING, status())
+        assertEquals(ListenableWorker.Result.success(), run(broken, attempt = 1))
+        assertEquals(OcrStatus.OCR_ERROR, status())
+        // The broken engine is thrown away each time so the next card gets a fresh one.
+        assertTrue(broken.released >= 2)
+    }
+
+    @Test
+    fun `an engine that never answers times out and the card can be filled by hand`() = runTest {
+        card()
+        val hung = object : OcrService {
+            override val engineId = "hung"
+
+            override suspend fun recognize(image: OcrImage, hints: OcrHints): OcrResult = awaitCancellation()
+        }
+        assertEquals(ListenableWorker.Result.success(), work(hung, attempt = 1))
+        assertEquals(OcrStatus.OCR_ERROR, status())
     }
 }

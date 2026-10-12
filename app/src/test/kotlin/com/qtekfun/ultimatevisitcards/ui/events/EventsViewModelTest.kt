@@ -11,7 +11,9 @@ import com.qtekfun.ultimatevisitcards.testing.CatalogTestData
 import com.qtekfun.ultimatevisitcards.testing.orFail
 import com.qtekfun.ultimatevisitcards.ui.common.LoadState
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
@@ -113,6 +115,36 @@ class EventsViewModelTest {
         assertNull(data.events.get(smm.id))
         // Its contacts stay.
         assertEquals(2, data.contacts.observeCount().first())
+    }
+
+    @Test
+    fun `contacts are added to and taken out of the event from its picker`() = runTest(dispatcher) {
+        val smm = data.events.create(EventDraft("SMM 2026")).orFail()
+        val ana = data.contacts.create(ContactDraft("Ana", "Ruiz")).orFail()
+        val luis = data.contacts.create(ContactDraft("Luis", "Gil")).orFail()
+        data.contacts.addToEvent(ana.id, smm.id).orFail()
+
+        val vm = detail(smm.id)
+        advanceUntilIdle()
+        vm.startPicking()
+        advanceUntilIdle()
+        val picker = assertNotNull(vm.state.value.picker)
+        assertEquals(setOf("Ruiz", "Gil"), picker.contacts.map { it.contact.lastName }.toSet())
+        assertEquals(setOf(ana.id), picker.inEvent)
+
+        // Luis in, Ana out.
+        vm.saveMembers(setOf(luis.id))
+        advanceUntilIdle()
+        assertNull(vm.state.value.picker)
+        assertFalse(vm.state.value.membershipFailed)
+        assertEquals(listOf("Gil"), vm.state.value.contacts.map { it.contact.lastName })
+        assertEquals(setOf(smm.id), data.contacts.eventIds(luis.id))
+        assertTrue(data.contacts.eventIds(ana.id).isEmpty())
+
+        vm.startPicking()
+        advanceUntilIdle()
+        vm.cancelPicking()
+        assertNull(vm.state.value.picker)
     }
 
     @Test

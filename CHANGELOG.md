@@ -4,6 +4,16 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-10-12
+
+### Fixed
+
+- Card reading (OCR) could stay on "Reading…" for a long time without finishing. On Android 12+ it now starts right away, and a card that cannot be read within 2 minutes is left ready to fill in by hand.
+
+### Added
+
+- Add contacts to an event, or take them out: "Contacts" in the event, and "Events…" in the contact sheet.
+
 ## [0.12.0] - 2026-10-11
 
 Ready for publication.

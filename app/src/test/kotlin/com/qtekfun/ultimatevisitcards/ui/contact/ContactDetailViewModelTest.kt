@@ -116,6 +116,26 @@ class ContactDetailViewModelTest {
     private fun files(cardId: String) = File(folder.root, "files/cards/$cardId")
 
     @Test
+    fun `the contact's events are chosen from every event`() = runTest(dispatcher) {
+        val ana = contacts.create(ContactDraft("Ana", "Ruiz")).value()
+        val smm = data.events.create(EventDraft("SMM 2026")).value()
+        val navalia = data.events.create(EventDraft("Navalia")).value()
+        contacts.addToEvent(ana.id, smm.id).value()
+        val vm = viewModel(ana.id)
+        backgroundScope.launch { vm.state.collect {} }
+        advanceUntilIdle()
+        val before = assertIs<ContactDetailUiState.Content>(vm.state.value)
+        assertEquals(setOf("SMM 2026", "Navalia"), before.allEvents.map { it.name }.toSet())
+        assertEquals(listOf("SMM 2026"), before.events.map { it.name })
+
+        vm.setEvents(setOf(navalia.id))
+        advanceUntilIdle()
+        assertEquals(setOf(navalia.id), contacts.eventIds(ana.id))
+        assertEquals(listOf("Navalia"), assertIs<ContactDetailUiState.Content>(vm.state.value).events.map { it.name })
+        assertEquals(null, vm.events.value)
+    }
+
+    @Test
     fun `shows the contact with company, inherited country, events and cards`() = runTest(dispatcher) {
         val sector = sectors.create("Astillero").value()
         val company = companies.create(CompanyDraft("Example Heavy Industries", sector.id, "South Korea")).value()

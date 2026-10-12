@@ -23,8 +23,16 @@
   <string name="event_search">Buscar en este evento</string>
   <string name="event_only_this">Solo en este evento</string>
   <string name="event_search_everywhere">Buscar en todo</string>
-  <string name="event_no_contacts">Aún no hay contactos en este evento.</string>
+  <string name="event_no_contacts">Este evento aún no tiene contactos. Pulsa «Contactos» para añadirlos.</string>
   <string name="event_missing">Este evento ya no existe.</string>
+  <string name="event_members_action">Contactos</string>
+  <string name="event_members_title">Contactos de este evento</string>
+  <string name="event_members_none">Aún no hay contactos. Escanea antes una tarjeta.</string>
+  <string name="event_members_failed">No se pudieron actualizar algunos contactos. Inténtalo de nuevo.</string>
+  <string name="contact_events_edit">Eventos…</string>
+  <string name="contact_events_title">Eventos de este contacto</string>
+  <string name="contact_events_none">Aún no hay eventos. Crea uno en la pestaña Eventos.</string>
+  <string name="select_filter">Filtrar</string>
 
   <!-- Empresas -->
   <string name="companies_error">No se pudieron cargar las empresas.</string>

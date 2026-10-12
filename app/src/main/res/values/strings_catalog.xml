@@ -23,8 +23,16 @@
   <string name="event_search">Search in this event</string>
   <string name="event_only_this">Only in this event</string>
   <string name="event_search_everywhere">Search everywhere</string>
-  <string name="event_no_contacts">No contacts in this event yet.</string>
+  <string name="event_no_contacts">No contacts in this event yet. Tap «Contacts» to add them.</string>
   <string name="event_missing">This event no longer exists.</string>
+  <string name="event_members_action">Contacts</string>
+  <string name="event_members_title">Contacts in this event</string>
+  <string name="event_members_none">There are no contacts yet. Scan a card first.</string>
+  <string name="event_members_failed">Some contacts could not be updated. Try again.</string>
+  <string name="contact_events_edit">Events…</string>
+  <string name="contact_events_title">Events of this contact</string>
+  <string name="contact_events_none">There are no events yet. Create one in the Events tab.</string>
+  <string name="select_filter">Filter</string>
 
   <!-- Empresas -->
   <string name="companies_error">The companies could not be loaded.</string>

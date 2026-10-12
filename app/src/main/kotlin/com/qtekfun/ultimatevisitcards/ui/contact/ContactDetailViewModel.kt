@@ -51,8 +51,15 @@ sealed interface ContactDetailUiState {
 
     data object Missing : ContactDetailUiState
 
-    data class Content(val contact: Contact, val company: Company?, val sectorName: String?, val events: List<Event>, val cards: List<CardImages>) :
-        ContactDetailUiState {
+    data class Content(
+        val contact: Contact,
+        val company: Company?,
+        val sectorName: String?,
+        val events: List<Event>,
+        val cards: List<CardImages>,
+        /** Every event, to choose the contact's ones. */
+        val allEvents: List<Event> = emptyList()
+    ) : ContactDetailUiState {
         /** The contact's country or, if missing, the company's (docs/02). */
         val country: String? get() = contact.country ?: company?.country
 
@@ -143,7 +150,8 @@ class ContactDetailViewModel @Inject constructor(
                 company = co,
                 sectorName = co?.sectorId?.let { id -> sectorList.firstOrNull { it.id == id }?.name },
                 events = eventList.map { it.event }.filter { it.id in eventIds },
-                cards = cardList.map { CardImages(it, image(it.frontProcessed), it.backProcessed?.let { path -> image(path) }) }
+                cards = cardList.map { CardImages(it, image(it.frontProcessed), it.backProcessed?.let { path -> image(path) }) },
+                allEvents = eventList.map { it.event }
             ) as ContactDetailUiState
         }
     }.catch { emit(ContactDetailUiState.Error) }
@@ -152,6 +160,16 @@ class ContactDetailViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             undoHolder.last.collect { pending -> if (pending != null) undoHolder.take(contactId)?.let { _undo.value = it } }
+        }
+    }
+
+    /** The contact ends up in exactly the [chosen] events. */
+    fun setEvents(chosen: Set<String>) {
+        viewModelScope.launch {
+            val current = contactsRepo.eventIds(contactId)
+            val results = (chosen - current).map { contactsRepo.addToEvent(contactId, it) } +
+                (current - chosen).map { contactsRepo.removeFromEvent(contactId, it) }
+            if (results.any { it is DomainResult.Failure }) _events.value = ContactEvent.Failed
         }
     }
 

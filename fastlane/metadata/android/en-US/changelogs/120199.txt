@@ -1,0 +1,2 @@
+- Card reading no longer gets stuck on "Reading…".
+- Add contacts to events from the event ("Contacts") or from the contact sheet ("Events…").
