@@ -11,7 +11,7 @@ Fotografías una tarjeta de visita, el OCR local extrae los campos, la revisas y
 
 - Paquete: `com.qtekfun.ultimatevisitcards`
 - minSdk 29 (Android 10) · targetSdk = última estable
-- Stack: Kotlin, Jetpack Compose + Material 3, Room (+FTS4), CameraX, WorkManager, Hilt, Coroutines/Flow
+- Stack: Kotlin, Jetpack Compose + Material 3, Room (+FTS4), CameraX, Hilt, Coroutines/Flow
 - Idiomas de la interfaz: español e inglés (recursos desde el día 1)
 - Sin backend, sin cuentas, sin sincronización cloud, **sin permiso INTERNET**
 

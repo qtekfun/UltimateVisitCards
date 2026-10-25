@@ -1,8 +1,6 @@
 package com.qtekfun.ultimatevisitcards
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
 import com.qtekfun.ultimatevisitcards.data.repo.SearchIndexHealth
 import com.qtekfun.ultimatevisitcards.data.storage.StorageMaintenance
 import com.qtekfun.ultimatevisitcards.di.ApplicationScope
@@ -12,14 +10,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-/** WorkManager is initialised on demand with Hilt's worker factory (the default initializer is removed in the manifest). */
 @HiltAndroidApp
-class UltimateVisitCardsApp :
-    Application(),
-    Configuration.Provider {
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
+class UltimateVisitCardsApp : Application() {
     @Inject
     lateinit var ocrRecovery: OcrRecovery
 
@@ -44,7 +36,4 @@ class UltimateVisitCardsApp :
             storageMaintenance.run()
         }
     }
-
-    override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
 }

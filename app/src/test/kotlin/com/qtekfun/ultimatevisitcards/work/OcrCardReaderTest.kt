@@ -1,17 +1,9 @@
 package com.qtekfun.ultimatevisitcards.work
 
-import android.content.Context
 import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.work.Configuration
-import androidx.work.ListenableWorker
-import androidx.work.WorkerFactory
-import androidx.work.WorkerParameters
-import androidx.work.testing.TestListenableWorkerBuilder
-import androidx.work.testing.WorkManagerTestInitHelper
-import androidx.work.workDataOf
 import com.qtekfun.ultimatevisitcards.data.db.AppDatabase
 import com.qtekfun.ultimatevisitcards.data.repo.RoomBusinessCardRepository
 import com.qtekfun.ultimatevisitcards.data.repo.SearchIndexer
@@ -36,8 +28,12 @@ import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -49,7 +45,7 @@ import org.junit.runner.RunWith
 
 /** The OCR state machine of one card, with a scripted engine and real database and files. */
 @RunWith(AndroidJUnit4::class)
-class OcrWorkerTest {
+class OcrCardReaderTest {
     @get:Rule
     val folder = TemporaryFolder()
 
@@ -71,7 +67,7 @@ class OcrWorkerTest {
         }
     }
 
-    private val context: Context get() = ApplicationProvider.getApplicationContext()
+    private val context: android.content.Context get() = ApplicationProvider.getApplicationContext()
     private lateinit var db: AppDatabase
     private lateinit var store: ImageStore
     private lateinit var cards: RoomBusinessCardRepository
@@ -79,9 +75,8 @@ class OcrWorkerTest {
 
     @Before
     fun setUp() {
-        WorkManagerTestInitHelper.initializeTestWorkManager(context, Configuration.Builder().setExecutor { }.build())
         db = Room.inMemoryDatabaseBuilder<AppDatabase>(context).setDriver(BundledSQLiteDriver()).build()
-        store = ImageStore(folder.newFolder("files"), folder.newFolder("cache"), kotlinx.coroutines.Dispatchers.Unconfined)
+        store = ImageStore(folder.newFolder("files"), folder.newFolder("cache"), Dispatchers.Unconfined)
         cards = RoomBusinessCardRepository(db, SearchIndexer(db), Clock { 1L }, IdGenerator.Uuid)
     }
 
@@ -110,20 +105,9 @@ class OcrWorkerTest {
         )
     }
 
-    private fun run(ocr: OcrService, attempt: Int = 0, id: String = cardId): ListenableWorker.Result = runBlocking { work(ocr, attempt, id) }
+    private fun reader(ocr: OcrService) = OcrCardReader(cards, store, ocr, CardFieldExtractor())
 
-    private suspend fun work(ocr: OcrService, attempt: Int = 0, id: String = cardId): ListenableWorker.Result {
-        val factory = object : WorkerFactory() {
-            override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters) =
-                OcrWorker(appContext, workerParameters, cards, store, ocr, CardFieldExtractor(), OcrQueue(appContext))
-        }
-        return TestListenableWorkerBuilder<OcrWorker>(context)
-            .setWorkerFactory(factory)
-            .setInputData(workDataOf(OcrWorker.KEY_CARD_ID to id))
-            .setRunAttemptCount(attempt)
-            .build()
-            .doWork()
-    }
+    private fun run(ocr: OcrService, id: String = cardId) = runBlocking { reader(ocr).read(id) }
 
     private fun status() = runBlocking { cards.get(cardId)!!.ocrStatus }
 
@@ -131,7 +115,7 @@ class OcrWorkerTest {
     fun `a readable card ends pending review with its text and proposed fields`() {
         card()
         val ocr = ScriptedOcr(result("NAVALTECH S.L.", "Ana Ruiz", "Directora Comercial", "ana.ruiz@navaltech-demo.es"))
-        assertEquals(ListenableWorker.Result.success(), run(ocr))
+        run(ocr)
         val stored = runBlocking { cards.get(cardId)!! }
         assertEquals(OcrStatus.PENDING_REVIEW, stored.ocrStatus)
         assertEquals("scripted", stored.ocrEngine)
@@ -140,15 +124,15 @@ class OcrWorkerTest {
         assertEquals("ana.ruiz@navaltech-demo.es", fields.value(CardField.EMAIL))
         assertEquals("Ana", fields.value(CardField.FIRST_NAME))
         assertEquals(listOf(File(folder.root, "files/cards/$cardId/front.jpg").canonicalFile), ocr.seen)
-        // Nothing else in the queue: the engine is freed.
-        assertEquals(1, ocr.released)
+        // A good reading keeps the engine for the next card (the queue frees it when it runs dry).
+        assertEquals(0, ocr.released)
     }
 
     @Test
     fun `a card left in PROCESSING by a crash is read again`() {
         card()
         runBlocking { cards.updateOcr(cardId, OcrStatus.PROCESSING) }
-        assertEquals(ListenableWorker.Result.success(), run(ScriptedOcr(result("Ana Ruiz"))))
+        run(ScriptedOcr(result("Ana Ruiz")))
         assertEquals(OcrStatus.PENDING_REVIEW, status())
     }
 
@@ -163,11 +147,18 @@ class OcrWorkerTest {
     }
 
     @Test
+    fun `a failure followed by a good reading ends pending review`() {
+        card()
+        run(ScriptedOcr(null, result("Ana Ruiz")))
+        assertEquals(OcrStatus.PENDING_REVIEW, status())
+    }
+
+    @Test
     fun `a failure is retried once, then the card waits for manual input with its photo`() {
         card()
-        assertEquals(ListenableWorker.Result.retry(), run(ScriptedOcr(null), attempt = 0))
-        assertEquals(OcrStatus.PENDING, status())
-        assertEquals(ListenableWorker.Result.success(), run(ScriptedOcr(null), attempt = 1))
+        val ocr = ScriptedOcr(null, null)
+        run(ocr)
+        assertEquals(2, ocr.seen.size)
         assertEquals(OcrStatus.OCR_ERROR, status())
         assertTrue(File(folder.root, "files/cards/$cardId/front.jpg").isFile)
     }
@@ -182,19 +173,19 @@ class OcrWorkerTest {
             override suspend fun recognize(image: OcrImage, hints: OcrHints): OcrResult =
                 if (image.file.isFile) OcrResult.EMPTY else throw OcrException("missing ${image.file}")
         }
-        assertEquals(ListenableWorker.Result.success(), run(ocr, attempt = 1))
+        run(ocr)
         assertEquals(OcrStatus.OCR_ERROR, status())
     }
 
     @Test
     fun `cards that are gone or already reviewed are skipped`() {
-        assertEquals(ListenableWorker.Result.success(), run(ScriptedOcr(), id = "44444444-4444-4444-8444-444444444444"))
+        run(ScriptedOcr(), id = "44444444-4444-4444-8444-444444444444")
         card()
         runBlocking {
             cards.updateOcr(cardId, OcrStatus.REVIEWED)
         }
         val ocr = ScriptedOcr()
-        assertEquals(ListenableWorker.Result.success(), run(ocr))
+        run(ocr)
         assertEquals(OcrStatus.REVIEWED, status())
         assertTrue(ocr.seen.isEmpty())
     }
@@ -224,12 +215,10 @@ class OcrWorkerTest {
                 released++
             }
         }
-        assertEquals(ListenableWorker.Result.retry(), run(broken, attempt = 0))
-        assertEquals(OcrStatus.PENDING, status())
-        assertEquals(ListenableWorker.Result.success(), run(broken, attempt = 1))
+        run(broken)
         assertEquals(OcrStatus.OCR_ERROR, status())
-        // The broken engine is thrown away each time so the next card gets a fresh one.
-        assertTrue(broken.released >= 2)
+        // The broken engine is thrown away after each failure so the next attempt gets a fresh one.
+        assertEquals(2, broken.released)
     }
 
     @Test
@@ -240,7 +229,26 @@ class OcrWorkerTest {
 
             override suspend fun recognize(image: OcrImage, hints: OcrHints): OcrResult = awaitCancellation()
         }
-        assertEquals(ListenableWorker.Result.success(), work(hung, attempt = 1))
+        reader(hung).read(cardId)
         assertEquals(OcrStatus.OCR_ERROR, status())
+    }
+
+    @Test
+    fun `a cancelled reading puts the card back in the queue state`() = runBlocking {
+        card()
+        val started = CompletableDeferred<Unit>()
+        val hung = object : OcrService {
+            override val engineId = "hung"
+
+            override suspend fun recognize(image: OcrImage, hints: OcrHints): OcrResult {
+                started.complete(Unit)
+                awaitCancellation()
+            }
+        }
+        val job = launch(Dispatchers.Default) { reader(hung).read(cardId) }
+        started.await()
+        assertEquals(OcrStatus.PROCESSING, status())
+        job.cancelAndJoin()
+        assertEquals(OcrStatus.PENDING, status())
     }
 }

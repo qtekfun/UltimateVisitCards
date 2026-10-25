@@ -138,9 +138,6 @@ abstract class VerifyPermissions : DefaultTask() {
 val allowedPermissions = setOf(
     "android.permission.CAMERA",
     "android.permission.WRITE_CONTACTS",
-    // WorkManager (cola de OCR): normales, se conceden al instalar y no dan acceso a datos.
-    "android.permission.WAKE_LOCK",
-    "android.permission.RECEIVE_BOOT_COMPLETED",
     // androidx.biometric, for the optional app lock (phase 10). Normal: granted at install, no data access.
     "android.permission.USE_BIOMETRIC"
 )
@@ -192,9 +189,6 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    implementation(libs.androidx.work.runtime)
-    implementation(libs.androidx.hilt.work)
-    ksp(libs.androidx.hilt.compiler)
 
     testImplementation(libs.junit)
     testImplementation(kotlin("test"))
@@ -206,7 +200,6 @@ dependencies {
     testImplementation(libs.sqlite.bundled.jvm)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
-    testImplementation(libs.androidx.work.testing)
     kspTest(libs.hilt.compiler)
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.ui.test.junit4)

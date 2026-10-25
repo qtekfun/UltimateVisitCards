@@ -36,7 +36,7 @@ data class OcrLine(val text: String, val box: NormRect, val confidence: Float?, 
 - `confidence` puede ser `null` (el extractor lo trata como «desconocida»).
 - El motor se enlaza por flavour en Hilt. **El extractor y los tests de extracción no conocen ningún motor.**
 
-`OcrService.release()` libera los recursos del motor al vaciarse la cola (`OcrWorker` lo llama cuando no queda nada detrás).
+`OcrService.release()` libera los recursos del motor al vaciarse la cola (`OcrQueue` lo llama cuando no queda nada detrás).
 
 ### `play` — ML Kit
 `com.google.mlkit:text-recognition` (reconocedor latino **empaquetado**, no el descargable vía Play Services, para que funcione offline desde la primera ejecución). Recibe la imagen enderezada en color; la confianza por línea de ML Kit pasa al `OcrLine`. Si alguna dependencia de ML Kit declara permisos de red, se eliminan del manifest.
@@ -44,7 +44,7 @@ data class OcrLine(val text: String, val box: NormRect, val confidence: Float?, 
 ### `foss` — Tesseract4Android
 - `traineddata` (variante *fast*, `tessdata_fast` con commit y SHA-256 en `ocr/src/foss/assets/tessdata/README.md`) de `eng`, `spa`, `fra`, `deu`, `ita` empaquetados en `assets`, copiados al almacenamiento privado en el primer uso (escritura atómica y marca de versión).
 - Ejecución con `eng+spa+fra+deu+ita` a la vez (ajustable). `PageSegMode` = `SPARSE_TEXT` (las tarjetas no son páginas de texto continuo); reintento con `AUTO` si el resultado es pobre.
-- Una sola instancia reutilizada dentro del `OcrWorker`; se libera al terminar la cola.
+- Una sola instancia reutilizada por la cola; se libera al terminar la cola.
 
 ### Añadir idiomas después
 Latin: añadir `traineddata` (foss) y, si hace falta, un diccionario en `extract/`. Otros alfabetos (CJK, cirílico…): nuevo reconocedor + diccionarios + tests; no requiere cambios en `domain`.
@@ -80,17 +80,16 @@ Entrada: `OcrResult` de anverso (+ reverso). Salida: `ExtractedFields` con **val
 - **Nunca inventar**: ante la duda, dejar el campo vacío con confianza 0 antes que rellenarlo mal.
 - Diccionarios en recursos de datos (`domain/src/main/resources/dictionaries/*.txt`), versionados y testeados; no embebidos en código: cargos (fuertes, débiles `~`, sufijos `*`), países (5 idiomas + ISO), prefijos telefónicos y de móvil, etiquetas, palabras de vía, formatos postales, dominios de correo públicos, partículas, tratamientos, segundos nombres compuestos, prefijos postales de país, marcadores de idioma y formas jurídicas.
 
-## 4. Cola y estados (WorkManager)
+## 4. Cola y estados
 
 ```
 PENDING ─► PROCESSING ─► PENDING_REVIEW ─► REVIEWED
                  └──────► OCR_ERROR ──(reintentar)──► PENDING
 ```
 
-- `OcrWorker` procesa de una en una. Idempotente: si la app muere en `PROCESSING`, al arrancar (`OcrRecovery.resume`, desde `Application.onCreate`) se devuelve a `PENDING` y todas las `PENDING` se vuelven a encolar; una tarjeta encolada dos veces se lee una sola vez.
+- `OcrQueue` lee las tarjetas **dentro del proceso de la app**, de una en una y en orden, en cuanto se guardan (un `Channel` consumido en el `ApplicationScope`); `OcrCardReader` lee cada una. No depende del planificador de trabajos del sistema: en la v0.12.1 la cola de WorkManager, incluso como trabajo urgente, se quedaba sin ejecutar media hora en el teléfono de un usuario. La cola vive en memoria y lo persistente es el estado de la tarjeta en la BD. Idempotente: si la app muere en `PROCESSING`, al arrancar (`OcrRecovery.resume`, desde `Application.onCreate`) se devuelve a `PENDING` y todas las `PENDING` se vuelven a encolar; una tarjeta encolada dos veces se lee una sola vez.
 - «Reintentar» (cola de revisión) pasa una tarjeta de `OCR_ERROR` a `PENDING` y la encola.
-- Tras 2 fallos → `OCR_ERROR` (la imagen se conserva; el usuario rellena a mano). Cuenta como fallo cualquier error del motor (no solo `OcrException`/`IOException`: también una librería nativa que no carga o falta de memoria) y que el motor no responda en **2 minutos** (`OCR_TIMEOUT_MILLIS`). Tras un fallo se libera el motor para que la siguiente tarjeta use uno nuevo. Ninguna tarjeta se queda en `PROCESSING`: si el sistema detiene el worker, vuelve a `PENDING`.
-- En Android 12+ cada tarjeta se encola como trabajo **urgente** (`setExpedited`, con `RUN_AS_NON_EXPEDITED_WORK_REQUEST` si se agota la cuota): el usuario la está esperando en la revisión y algunas capas de fabricante (ColorOS, MIUI…) aplazan muchos minutos los trabajos normales. En Android 10–11 el trabajo urgente exige un servicio en primer plano (permiso `FOREGROUND_SERVICE`, que la app no pide), así que allí sigue siendo normal.
+- Tras 2 fallos → `OCR_ERROR` (la imagen se conserva; el usuario rellena a mano). Cuenta como fallo cualquier error del motor (no solo `OcrException`/`IOException`: también una librería nativa que no carga o falta de memoria) y que el motor no responda en **2 minutos** (`OCR_TIMEOUT_MILLIS`). Tras un fallo se libera el motor para que el siguiente intento use uno nuevo. Si la lectura se cancela, la tarjeta vuelve a `PENDING`; si el proceso muere, la recupera `OcrRecovery` en el siguiente arranque.
 - La UI observa los conteos por estado en `Flow` (banner «Pendientes de revisar: N»).
 
 ## 5. Pruebas
