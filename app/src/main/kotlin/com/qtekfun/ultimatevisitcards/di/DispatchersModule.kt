@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
-/** Dispatchers are always injected: no hard-coded `Dispatchers.IO` in the logic (see CLAUDE.md). */
+/** Dispatchers are always injected: no hard-coded `Dispatchers.IO` in the logic (see CONTRIBUTING.md). */
 @Module
 @InstallIn(SingletonComponent::class)
 object DispatchersModule {

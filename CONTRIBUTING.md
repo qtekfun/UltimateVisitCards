@@ -1,4 +1,4 @@
-# CLAUDE.md — UltimateVisitCards
+# Cómo se trabaja en UltimateVisitCards
 
 App Android de tarjetero digital, offline y local-first. Lee primero `README.md` y `docs/`.
 La documentación manda: si el código y `docs/` se contradicen, se arregla uno de los dos en el mismo cambio.
@@ -6,22 +6,22 @@ La documentación manda: si el código y `docs/` se contradicen, se arregla uno 
 ## Forma de trabajar
 
 - **Una fase de `docs/07-fases.md` cada vez.** Al cerrar una fase el proyecto compila (`./gradlew assemblePlayDebug assembleFossDebug`) y los tests pasan (`./gradlew testPlayDebugUnitTest testFossDebugUnitTest`).
-- No empieces la fase N+1 sin cerrar la N. No implementes todo en un único bloque.
+- No se empieza la fase N+1 sin cerrar la N. No se implementa todo en un único bloque.
 - Antes de dar una fase por cerrada: tests nuevos de esa fase, estados loading/error/empty en la UI que toque y actualización de `docs/` si cambió una decisión.
 - Cada cambio terminado sigue `docs/08-versiones-y-publicacion.md`: PR → CI verde → merge → versión (tag `vX.Y.Z`).
 - Cada decisión que se desvíe de `docs/` se anota en `docs/07-fases.md` (sección *Desviaciones*) con el motivo.
 
 ## Reglas duras
 
-- **Nunca** añadas el permiso `INTERNET`, SDKs de analítica/crash, ni dependencias que lo requieran. Los datos no salen del dispositivo.
-- Permisos permitidos: `CAMERA` y `WRITE_CONTACTS` (esta última solo se pide al usar «Añadir a contactos»), más los normales que necesita WorkManager para la cola de OCR (`WAKE_LOCK`, `RECEIVE_BOOT_COMPLETED`) y `USE_BIOMETRIC` para el bloqueo opcional (androidx.biometric); todos se conceden al instalar y no dan acceso a datos. La tarea `verifyPermissions` falla ante cualquier otro. Sin permisos de almacenamiento: se usa SAF para exportar e importar.
+- **Nunca** se añade el permiso `INTERNET`, SDKs de analítica/crash, ni dependencias que lo requieran. Los datos no salen del dispositivo.
+- Permisos permitidos: `CAMERA` y `WRITE_CONTACTS` (esta última solo se pide al usar «Añadir a contactos»), más `USE_BIOMETRIC` para el bloqueo opcional (androidx.biometric), que se concede al instalar y no da acceso a datos. La tarea `verifyPermissions` falla ante cualquier otro. Sin permisos de almacenamiento: se usa SAF para exportar e importar.
 - `android:allowBackup="false"` y `dataExtractionRules` que excluyan todo.
 - Las imágenes viven en el almacenamiento privado de la app. Se comparten fuera solo con `FileProvider` y por acción explícita del usuario.
-- No metas en el código sectores ni textos fijos: los sectores se siembran en BD en el primer arranque y son editables.
+- Sin sectores ni textos fijos en el código: los sectores se siembran en BD en el primer arranque y son editables.
 - Todo texto de UI va en `strings.xml` (`es` y `en`). Sin cadenas literales en Compose.
 - La capa `domain` es Kotlin puro (sin imports de `android.*`).
-- Dependencias mínimas. Antes de añadir una, justifícala en `docs/01-arquitectura.md`. Lista aprobada: ver ese documento.
-- Los datos de prueba son **sintéticos**. No metas tarjetas ni datos personales reales en fixtures ni en commits.
+- Dependencias mínimas. Antes de añadir una, se justifica en `docs/01-arquitectura.md`. Lista aprobada: ver ese documento.
+- Los datos de prueba son **sintéticos**. Nada de tarjetas ni datos personales reales en fixtures ni en commits.
 
 ## Convenciones
 
@@ -39,5 +39,5 @@ La documentación manda: si el código y `docs/` se contradicen, se arregla uno 
 ./gradlew testPlayDebugUnitTest testFossDebugUnitTest
 ./gradlew connectedPlayDebugAndroidTest   # tests de Room y backup en dispositivo/emulador
 ./gradlew lint ktlintCheck
-./gradlew ci                              # todo lo anterior (sin dispositivo) + verificación de que no hay permiso INTERNET
+./gradlew ci                              # todo lo anterior (sin dispositivo) + verificación de permisos
 ```

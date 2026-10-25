@@ -1,6 +1,6 @@
 package com.qtekfun.ultimatevisitcards.domain.model
 
-/** Outcome of a domain operation that can fail. Errors never reach the UI as exceptions (see CLAUDE.md). */
+/** Outcome of a domain operation that can fail. Errors never reach the UI as exceptions (see CONTRIBUTING.md). */
 sealed interface DomainResult<out T> {
     data class Success<out T>(val value: T) : DomainResult<T>
 

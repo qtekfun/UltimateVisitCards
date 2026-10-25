@@ -218,7 +218,7 @@ private class Messages(
     val shareTitle: String
 )
 
-/** Shares a file through the FileProvider, on explicit user action only (CLAUDE.md). */
+/** Shares a file through the FileProvider, on explicit user action only (CONTRIBUTING.md). */
 private fun share(context: Context, file: File, title: String) {
     val uri = FileProvider.getUriForFile(context, context.packageName + ".files", file)
     val intent = Intent(Intent.ACTION_SEND).setType("text/x-vcard").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

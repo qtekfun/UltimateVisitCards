@@ -10,7 +10,7 @@ import com.qtekfun.ultimatevisitcards.domain.util.IdGenerator
  * Seeds the initial, editable sector list when the database is created (first launch), in the device
  * language at that moment. It runs only once: sectors the user deletes are not seeded again.
  *
- * The names come from the `default_sectors` string array, never from code (see CLAUDE.md).
+ * The names come from the `default_sectors` string array, never from code (see CONTRIBUTING.md).
  */
 class SectorSeedCallback(private val names: () -> List<String>, private val clock: Clock, private val ids: IdGenerator) : RoomDatabase.Callback() {
     override suspend fun onCreate(connection: SQLiteConnection) {
