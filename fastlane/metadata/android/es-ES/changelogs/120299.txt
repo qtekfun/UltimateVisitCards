@@ -1,0 +1,2 @@
+- La lectura de tarjetas empieza en cuanto se guarda la tarjeta y ya no se queda en «Leyendo…».
+- Dos permisos menos.
