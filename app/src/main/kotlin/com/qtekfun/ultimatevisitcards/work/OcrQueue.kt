@@ -1,45 +1,44 @@
 package com.qtekfun.ultimatevisitcards.work
 
-import android.content.Context
-import android.os.Build
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import androidx.work.workDataOf
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.qtekfun.ultimatevisitcards.di.ApplicationScope
+import com.qtekfun.ultimatevisitcards.domain.ocr.OcrService
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.flow.first
+import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 
 /**
- * The OCR queue (docs/04 §4): a single chain of [OcrWorker]s, one card each, so recognition never runs in
- * parallel (Tesseract is memory hungry). `APPEND_OR_REPLACE` keeps the chain going even after a failed card.
- *
- * On Android 12+ each card is *expedited*: the user is waiting for it on the review screen, and some vendors
- * (ColorOS, MIUI…) defer plain background jobs for many minutes. Before Android 12 expedited work needs a
- * foreground service (a permission the app does not ask for), so there it stays a regular job.
+ * The OCR queue (docs/04 §4): cards are read one at a time, in order, inside the app process, so recognition
+ * never runs in parallel (Tesseract is memory hungry) and starts as soon as the card is saved. It does not
+ * depend on the system job scheduler, which some vendors (ColorOS, MIUI…) defer for many minutes. The queue
+ * lives in memory; the card's state in the database is what persists, and [OcrRecovery] queues again at
+ * start-up whatever was left waiting. The engine is released when the queue runs dry.
  */
 @Singleton
-class OcrQueue @Inject constructor(@ApplicationContext private val context: Context) : OcrScheduler {
-    private val workManager get() = WorkManager.getInstance(context)
+class OcrQueue @Inject constructor(private val reader: OcrCardReader, private val ocr: OcrService, @ApplicationScope scope: CoroutineScope) : OcrScheduler {
+    private val cards = Channel<String>(Channel.UNLIMITED)
+    private val waiting = AtomicInteger()
 
-    override fun enqueue(cardId: String) {
-        val request = OneTimeWorkRequestBuilder<OcrWorker>()
-            .setInputData(workDataOf(OcrWorker.KEY_CARD_ID to cardId))
-            .addTag(TAG)
-            .apply { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST) }
-            .build()
-        workManager.enqueueUniqueWork(NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+    init {
+        scope.launch {
+            for (cardId in cards) {
+                try {
+                    reader.read(cardId)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    // The card stays as it was (OcrRecovery picks it up again); the queue goes on.
+                }
+                if (waiting.decrementAndGet() == 0) ocr.release()
+            }
+        }
     }
 
-    /** True when no other card is waiting behind the one running now. */
-    suspend fun isDrained(): Boolean = workManager.getWorkInfosForUniqueWorkFlow(NAME).first()
-        .none { it.state == WorkInfo.State.ENQUEUED || it.state == WorkInfo.State.BLOCKED }
-
-    companion object {
-        const val NAME = "ocr-queue"
-        const val TAG = "ocr"
+    override fun enqueue(cardId: String) {
+        waiting.incrementAndGet()
+        cards.trySend(cardId)
     }
 }

@@ -1,0 +1,2 @@
+- Card reading starts as soon as the card is saved and no longer gets stuck on "Reading…".
+- Two fewer permissions.

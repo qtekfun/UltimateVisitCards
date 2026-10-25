@@ -1,18 +1,10 @@
 package com.qtekfun.ultimatevisitcards.ui.quickscan
 
-import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.work.Configuration
-import androidx.work.ListenableWorker
-import androidx.work.WorkerFactory
-import androidx.work.WorkerParameters
-import androidx.work.testing.TestListenableWorkerBuilder
-import androidx.work.testing.WorkManagerTestInitHelper
-import androidx.work.workDataOf
 import com.qtekfun.ultimatevisitcards.domain.extract.CardFieldExtractor
 import com.qtekfun.ultimatevisitcards.domain.model.DomainResult
 import com.qtekfun.ultimatevisitcards.domain.model.OcrStatus
@@ -27,8 +19,7 @@ import com.qtekfun.ultimatevisitcards.settings.UiPreferences
 import com.qtekfun.ultimatevisitcards.testing.AppTestData
 import com.qtekfun.ultimatevisitcards.testing.RecordingScheduler
 import com.qtekfun.ultimatevisitcards.ui.capture.CardCaptureSaver
-import com.qtekfun.ultimatevisitcards.work.OcrQueue
-import com.qtekfun.ultimatevisitcards.work.OcrWorker
+import com.qtekfun.ultimatevisitcards.work.OcrCardReader
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
@@ -57,15 +48,12 @@ class QuickScanViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
     private lateinit var data: AppTestData
-    private lateinit var queue: OcrQueue
     private val scheduled = RecordingScheduler()
 
     @Before
     fun setUp() {
         Dispatchers.setMain(dispatcher)
         data = AppTestData(dispatcher, folder.root)
-        WorkManagerTestInitHelper.initializeTestWorkManager(data.app, Configuration.Builder().setExecutor { }.build())
-        queue = OcrQueue(data.app)
     }
 
     @After
@@ -109,24 +97,18 @@ class QuickScanViewModelTest {
         assertEquals(cards.map { it.id }.toSet(), scheduled.enqueued.toSet())
 
         // The OCR queue then reads every one of them.
-        cards.forEach { assertEquals(ListenableWorker.Result.success(), runOcr(it.id)) }
+        cards.forEach { runOcr(it.id) }
         assertTrue(pending().all { it.ocrStatus == OcrStatus.PENDING_REVIEW })
     }
 
     // Suspending, on the test dispatcher: Room runs there too, so blocking it would deadlock.
-    private suspend fun runOcr(cardId: String): ListenableWorker.Result {
+    private suspend fun runOcr(cardId: String) {
         val ocr = object : OcrService {
             override val engineId = "scripted"
 
             override suspend fun recognize(image: OcrImage, hints: OcrHints) = OcrResult("Ana Ruiz", emptyList())
         }
-        val factory = object : WorkerFactory() {
-            override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters) =
-                OcrWorker(appContext, workerParameters, data.cards, data.store, ocr, CardFieldExtractor(), queue)
-        }
-        return TestListenableWorkerBuilder<OcrWorker>(
-            data.app
-        ).setWorkerFactory(factory).setInputData(workDataOf(OcrWorker.KEY_CARD_ID to cardId)).build().doWork()
+        OcrCardReader(data.cards, data.store, ocr, CardFieldExtractor()).read(cardId)
     }
 
     @Test

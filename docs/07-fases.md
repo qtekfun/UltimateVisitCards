@@ -96,6 +96,7 @@ Regla: **cada fase termina con el proyecto compilando en `play` y `foss`, tests 
 - **2026-10-11 · Fase 4 · Sin panel «Guardada» en la captura**: en modo normal, al guardar se pasa directamente a la revisión (docs/03); «Escanear otra» es «Guardar y escanear siguiente» en la revisión.
 - **2026-10-11 · Fase 4 · Selector con `DropdownMenu`**: el `ExposedDropdownMenu` de Material3 1.5.0-beta01 no resolvía en compilación; se usa un campo de solo lectura + `DropdownMenu`, API estable.
 - **2026-10-11 · Fase 5 · «Descartar» en la cola**: no estaba en docs; hace falta para las fotos malas de un escaneo rápido.
+- **2026-10-25 · Tras la fase 11 · OCR sin WorkManager (v0.12.1)**: el OCR seguía sin arrancar en el teléfono de un usuario; la cola lee ahora en el proceso de la app y se retiran WorkManager y sus permisos (docs/04 §4, `docs/decisions.md`).
 - **2026-10-12 · Tras la fase 11 · Comentarios de usuarios (v0.12.0)**: (1) el OCR de `play` se quedaba «Leyendo…» sin terminar: la cola pasa a trabajo urgente en Android 12+, el worker tiene un tiempo máximo y trata cualquier error del motor como fallo (docs/04 §4); (2) no había forma de meter contactos en un evento salvo al revisar la tarjeta: se añaden «Contactos» en el detalle del evento y «Eventos…» en la ficha (docs/03). La selección múltiple con «Asignar evento» en Tarjetas sigue pendiente.
 - **2026-10-11 · Fase 0 · JVM 21**: todos los módulos compilan con target Java/Kotlin 21 (JDK de desarrollo: Temurin 21).
 

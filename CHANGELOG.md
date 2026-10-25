@@ -4,6 +4,16 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.12.2] - 2026-10-25
+
+### Fixed
+
+- Card reading (OCR) could still stay on "Reading…" without starting on some phones. Cards are now read inside the app as soon as they are saved, without waiting for the system to schedule background work.
+
+### Removed
+
+- The WorkManager library and the permissions it needed (`WAKE_LOCK`, `RECEIVE_BOOT_COMPLETED`).
+
 ## [0.12.1] - 2026-10-12
 
 ### Fixed

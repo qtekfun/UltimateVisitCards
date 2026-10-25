@@ -5,12 +5,12 @@
 1. **Local-first**: la BD y las fotos son la única fuente de verdad. Sin red.
 2. **Capas con dependencias hacia dentro**: `app → data/ocr → domain`.
 3. **El OCR es un detalle intercambiable** detrás de `OcrService`; la extracción de campos es lógica de dominio común a ambos motores.
-4. **Captura rápida y revisión lenta están desacopladas** mediante una cola persistente (estado de la `BusinessCard` + WorkManager).
+4. **Captura rápida y revisión lenta están desacopladas** mediante una cola: el estado de la `BusinessCard` en BD (persistente) y `OcrQueue`, que lee en el proceso de la app.
 
 ## Módulos Gradle
 
 ```
-:app      UI (Compose), navegación, ViewModels, DI (Hilt), WorkManager workers, CameraX
+:app      UI (Compose), navegación, ViewModels, DI (Hilt), cola de OCR, CameraX
 :domain   Kotlin puro: modelos, casos de uso, extractor de campos, duplicados, interfaces (repos, OcrService)
 :data     Room + FTS4, repositorios, almacenamiento de imágenes, backup/restore, VCF/CSV/XLSX, escritura en contactos
 :ocr      Implementaciones de OcrService por flavour (src/play → ML Kit, src/foss → Tesseract) + preprocesado de imagen
@@ -36,7 +36,7 @@
 CameraX capture ─► ImageStore.saveOriginal ─► CardDetector (recorte+enderezado)
                                          └──► ImageStore.saveProcessed
    BusinessCard(status = PENDING) insertada
-        │ (WorkManager: OcrWorker, una cola, un trabajo por tarjeta)
+        │ (OcrQueue: en el proceso de la app, una tarjeta cada vez)
         ▼
    OcrService.recognize(processed) ─► OcrResult(blocks, lines, confidences)
         ▼
@@ -67,7 +67,6 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 | Room 3 (`androidx.room3`, + KSP y plugin de esquemas) con `AndroidSQLiteDriver` | BD, FTS4 | ambos |
 | `javax.inject` (JSR-330) | `@Inject`/`@Qualifier` en `:domain` sin depender de Android ni de Dagger | ambos |
 | CameraX (core, camera2, lifecycle, view) | captura | ambos |
-| WorkManager | cola OCR | ambos |
 | Hilt (+ hilt-work, navigation-compose) | DI | ambos |
 | Coil 3 (`coil-compose`, solo archivos locales: sin `coil-network-*`) | miniaturas/visor | ambos |
 | kotlinx-serialization-json | `database.json` del backup; `CardQuad` (esquinas en JSON) en `:domain` | ambos |
@@ -77,7 +76,6 @@ En el flujo normal («Añadir tarjeta») el OCR se lanza en primer plano en cuan
 | Tesseract4Android 4.9.0 (`cz.adaptech.tesseract4android`, solo en JitPack: el repositorio está limitado a ese grupo en `settings.gradle.kts`) + `traineddata` *fast* en assets | OCR | `foss` |
 | JUnit, Truth/Kotest, Turbine, MockK, Robolectric, AndroidX Test | tests | ambos |
 | `hilt-android-testing`, Compose `ui-test-junit4`/`ui-test-manifest` | tests (smoke de Hilt, navegación con Robolectric) | ambos |
-| `work-testing` | tests de `OcrWorker` | ambos |
 | `room3-testing`, `sqlite-bundled-jvm` | tests de BD en JVM (`MigrationTestHelper`, SQLite empaquetado con FTS4) — solo `testImplementation` | ambos |
 | `androidx.hilt:hilt-lifecycle-viewmodel-compose`, `lifecycle-viewmodel-compose` | `hiltViewModel()` en Compose (parte de Hilt/Lifecycle) | ambos |
 | `compose.material:material-icons-core` | iconos de la barra inferior (solo el set pequeño; no `-extended`) | ambos |
@@ -94,10 +92,10 @@ Cualquier otra requiere justificación aquí antes de añadirla. Excluidas por d
 
 ## Permisos
 
-`CAMERA`; `WRITE_CONTACTS` (fase 7, bajo demanda); `WAKE_LOCK` y `RECEIVE_BOOT_COMPLETED` (los declara WorkManager; normales); `USE_BIOMETRIC` (lo declara androidx.biometric para el bloqueo opcional, fase 10; normal). `USE_FINGERPRINT` (solo Android ≤ 9) se elimina. `INTERNET`, `ACCESS_NETWORK_STATE` y `FOREGROUND_SERVICE` se eliminan del manifest fusionado. `./gradlew verifyPermissions` (parte de `ci`) falla ante cualquier otro.
+`CAMERA`; `WRITE_CONTACTS` (fase 7, bajo demanda); `USE_BIOMETRIC` (lo declara androidx.biometric para el bloqueo opcional, fase 10; normal). `USE_FINGERPRINT` (solo Android ≤ 9) se elimina. `INTERNET`, `ACCESS_NETWORK_STATE` y `FOREGROUND_SERVICE` se eliminan del manifest fusionado. `./gradlew verifyPermissions` (parte de `ci`) falla ante cualquier otro.
 
 ## Hilos y rendimiento
 
-- Un solo `OcrWorker` encadenado (`ExistingWorkPolicy.APPEND_OR_REPLACE`): evita saturar memoria con Tesseract.
+- Una sola cola de OCR que lee una tarjeta cada vez (`OcrQueue`): evita saturar memoria con Tesseract.
 - Miniaturas pregeneradas (≈400 px) para listas y tarjetero; el visor ampliado carga la imagen procesada.
 - Sin Paging 3 de entrada: `LazyColumn` + `Flow` con consultas indexadas. Si en la fase 10 la medición con 5 000 contactos sintéticos lo exige, se añade Paging (anotándolo en *Desviaciones*).
