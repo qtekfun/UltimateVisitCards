@@ -114,7 +114,7 @@ android {
 kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_21 } }
 
 /**
- * Falla si el manifest fusionado de una variante pide un permiso fuera de la lista permitida (CLAUDE.md):
+ * Falla si el manifest fusionado de una variante pide un permiso fuera de la lista permitida (CONTRIBUTING.md):
  * así ninguna dependencia puede colar INTERNET ni ningún otro sin que se note.
  */
 abstract class VerifyPermissions : DefaultTask() {

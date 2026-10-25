@@ -1,4 +1,4 @@
-// Kotlin puro: sin imports de android.* (ver CLAUDE.md).
+// Kotlin puro: sin imports de android.* (ver CONTRIBUTING.md).
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)

@@ -21,7 +21,7 @@ enum class LabelKind { PHONE, MOBILE, FAX, EMAIL, WEB }
 
 /**
  * The data the extractor relies on, loaded from `dictionaries/` text files (never embedded in code, see
- * CLAUDE.md). Everything is folded with [TextNormalizer] on load.
+ * CONTRIBUTING.md). Everything is folded with [TextNormalizer] on load.
  */
 class ExtractionDictionaries(
     val strongTitles: List<List<String>>,

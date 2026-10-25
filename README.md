@@ -41,13 +41,13 @@ Todo el diseño se mide contra este escenario: captura rápida (modo **Escaneo r
 | Sectores | Configurables; se precarga una lista inicial editable en el primer arranque |
 | XLSX | Escritor mínimo propio (ZIP + XML), sin Apache POI |
 | Alcance | Spec completa del punto 32, dividida en fases siempre compilables |
-| Entregable | Este paquete SDD para trabajar con Claude Code |
+| Entregable | Este paquete de especificación (SDD) y el código que la implementa |
 
 ## Mapa del paquete
 
 | Documento | Contenido |
 |---|---|
-| [`CLAUDE.md`](CLAUDE.md) | Reglas de trabajo para Claude Code en este repo |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Reglas de trabajo y convenciones del repo |
 | [`docs/01-arquitectura.md`](docs/01-arquitectura.md) | Módulos, capas, flavours, DI, dependencias |
 | [`docs/02-modelo-datos.md`](docs/02-modelo-datos.md) | Entidades Room, relaciones, FTS, estados |
 | [`docs/03-pantallas-navegacion.md`](docs/03-pantallas-navegacion.md) | Pantallas, navegación y estados UI |

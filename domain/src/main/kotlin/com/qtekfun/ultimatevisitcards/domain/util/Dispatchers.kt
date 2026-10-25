@@ -2,7 +2,7 @@ package com.qtekfun.ultimatevisitcards.domain.util
 
 import javax.inject.Qualifier
 
-/** Dispatcher for blocking I/O (database, files). Injected, never hard-coded (see CLAUDE.md). */
+/** Dispatcher for blocking I/O (database, files). Injected, never hard-coded (see CONTRIBUTING.md). */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class IoDispatcher
